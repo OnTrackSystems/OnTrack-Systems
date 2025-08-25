@@ -26,12 +26,12 @@ CREATE TABLE usuarios (
   UNIQUE INDEX email_UNIQUE (email),
   UNIQUE INDEX senha_UNIQUE (senha),
   UNIQUE INDEX cpf_UNIQUE (cpf),
-  FOREIGN KEY (fkEmpresa) REFERENCES empresa (idEmpresa)
+  FOREIGN KEY (fkEmpresa) REFERENCES empresas (idEmpresa)
 );
 
 
 CREATE TABLE avisos (
-  idavisos INT NOT NULL,
+  idAvisos INT NOT NULL,
   dataHora DATETIME NULL,
   RAM FLOAT NULL,
   CPU FLOAT NULL,
@@ -41,6 +41,6 @@ CREATE TABLE avisos (
   PacotesRec INT NULL,
   fkEmpresa INT NOT NULL,
   PRIMARY KEY (idavisos),
-  FOREIGN KEY (fkEmpresa) REFERENCES empresa (idEmpresa)
+  FOREIGN KEY (fkEmpresa) REFERENCES empresas (idEmpresa)
   );
  
