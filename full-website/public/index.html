@@ -194,22 +194,22 @@
           Entre em contato!
         </h2>
 
-        <form class="space-y-4">
+        <form id="formContato" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="text" placeholder="Nome"
+            <input type="text" name="nome" placeholder="Nome"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
-            <input type="text" placeholder="Sobrenome"
+            <input type="text" name="sobrenome" placeholder="Sobrenome"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input type="email" placeholder="E-mail"
+            <input type="email" name="email" placeholder="E-mail"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
-            <input type="text" placeholder="Contato"
+            <input type="text" name="contato" placeholder="Contato"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
           </div>
 
-          <textarea placeholder="Mensagem"
+          <textarea name="mensagem" placeholder="Mensagem"
             class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none"></textarea>
 
           <button type="submit"
@@ -221,6 +221,8 @@
             <input type="checkbox" class="mt-1 mr-2">
             Concordo que os termos e condições.
           </label>
+
+          <p id="mensagemStatus" class="mt-4 text-green-600 font-semibold"></p>
         </form>
       </div>
     </div>
@@ -252,4 +254,52 @@
   }
 
   menuBtn.addEventListener('click', toggleMenu);
+
+  const form = document.getElementById("formContato");
+  const status = document.getElementById("mensagemStatus");
+
+  async function enviarFormulario() {
+    const nome = document.querySelector("input[name='nome']").value;
+    const sobrenome = document.querySelector("input[name='sobrenome']").value;
+    const email = document.querySelector("input[name='email']").value;
+    const contato = document.querySelector("input[name='contato']").value;
+    const mensagem = document.querySelector("textarea[name='mensagem']").value;
+
+    const dados = {
+      nome: nome,
+      sobrenome: sobrenome,
+      email: email,
+      contato: contato,
+      mensagem: mensagem
+    };
+
+    try {
+      const resposta = await fetch("/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+
+      const resultado = await resposta.json();
+
+      if (resultado.sucesso) {
+        status.style.color = "green";
+        status.textContent = resultado.msg;
+        form.reset();
+      } else {
+        status.style.color = "red";
+        status.textContent = resultado.msg;
+      }
+    } catch (erro) {
+      status.style.color = "red";
+      status.textContent = "Erro ao enviar a mensagem.";
+      console.log(erro);
+    }
+  }
+
+  // chama a funcao quando o form for enviado
+  form.onsubmit = function() {
+    enviarFormulario();
+    return false; // evita reload na pag
+  }
 </script>
