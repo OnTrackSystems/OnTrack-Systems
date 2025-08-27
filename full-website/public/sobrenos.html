@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>OnTrack | Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto+Slab:wght@100..900&display=swap"
+    rel="stylesheet">
+
+  <script src="./js/sessao.js"></script>
+
+  <link href="/dist/estilos.css" rel="stylesheet">
+  <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+
+</head>
+
+
+<body class="font-['Inter'] bg-[url('./assets/imgs/realhaikei2.svg')] bg-cover">
+  <header class="text-red-600 text-lg font-[1000] fixed top-0 w-full z-50 bg-white/700 backdrop-blur-sm">
+    <div class="max-w-10xl mx-auto flex items-center justify-between p-5 px-[60px]">
+      <!-- LOGO -->
+      <img src="./assets/imgs/logo_BG_claro.png" alt="Logo" class="h-15 w-40">
+
+      <!-- NAV NORMAL - SOME EM TELAS PEQUENAS -->
+      <nav class="hidden [@media(min-width:1100px)]:flex items-center space-x-10 justify-center">
+        <div class="flex items-center rounded-full space-x-10 ml-8 justify-self-center">
+          <a href="index.html"
+            class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-700">Início</a>
+          <a href="#"
+            class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">Sobre</a>
+          <a href="#"
+            class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">Contato</a>
+          <a href="#"
+            class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">FAQ</a>
+        </div>
+      </nav>
+
+      <!-- BOTÕES LOGIN/CADASTRO - SOME EM TELAS PEQUENAS -->
+      <nav class="hidden [@media(min-width:1100px)]:flex items-center space-x-10">
+        <div class="flex items-center space-x-4 ml-8">
+          <a href="login1.html"
+            class="text-red-600 px-4 py-3 rounded-[15px] hover:bg-red-700 hover:text-white transition">Login</a>
+        </div>
+      </nav>
+
+      <!-- MENU ICON - SÓ MOSTRA EM TELAS PEQUENAS -->
+      <div class="block [@media(min-width:1100px)]:hidden">
+        <img src="./assets/icon/menuicon.png" alt="Menu" id="menuBtn" class="w-10 h-10 cursor-pointer">
+      </div>
+    </div>
+  </header>
+
+  <!--MENU LATERAL -->
+  <div id="menuPanel"
+    class="block [@media(min-width:1100px)]:hidden fixed top-[18vh] left-0 right-0 w-full h-[calc(100vh-80px)] bg-white shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col p-6 overflow-y-auto">
+    <nav class="flex flex-col space-y-4 text-lg">
+      <a href="index.html" class="hover:text-red-700">Início</a>
+      <a href="sobrenos.html" class="hover:text-red-700">Sobre</a>
+      <a href="#" class="hover:text-red-700">Contato</a>
+      <a href="#" class="hover:text-red-700">FAQ</a>
+      <a href="#" class="hover:text-red-700">Cadastro</a>
+      <a href="login1.html" class="hover:text-red-700">Login</a>
+    </nav>
+  </div>
+
+
+  <section class="py-12 px-6 max-w-6xl mx-auto text-center pt-44">
+    
+    <h2 class="text-6xl font-bold text-red-700 mb-4">Quem Nós Somos?</h2>
+    <p class="text-gray-600 font-semibold max-w-3xl mx-auto mb-10 pt-10">
+      Somos a OnTrack Systems, uma empresa que valoriza a continuidade do serviço do nosso cliente, 
+      pois sabemos a importância de manter seu sistema ativo em todos os momentos.
+    </p>
+
+    <div class="grid gap-6 md:grid-cols-3 pt-10">
+
+      <div class="transition-transform duration-300 ease-in-out hover:scale-110
+ bg-white p-6 rounded-2xl shadow-md flex flex-col items-center">
+        <img src="https://img.icons8.com/ios-filled/100/fa314a/goal.png" alt="Missão" class="w-36 h-36 mb-10">
+        <h3 class="text-xl font-bold text-red-600 mb-3">Missão</h3>
+        <p class="text-sm  font-semibold text-gray-600">
+          Garantir a confiabilidade, a disponibilidade e a performance de infraestruturas críticas por meio de 
+          soluções de monitoramento avançadas, assegurando que nossos clientes mantenham suas operações sempre 
+          estáveis, seguras e em conformidade com os mais altos padrões tecnológicos.
+        </p>
+      </div>
+
+      <div class="transition-transform duration-300 ease-in-out hover:scale-110
+ bg-white p-6 rounded-2xl shadow-md flex flex-col items-center">
+        <img src="https://img.icons8.com/ios-filled/100/fa314a/hand-holding-heart.png" alt="Valores" class="w-36 h-36 mb-10">
+        <h3 class="text-xl font-bold text-red-600 mb-3">Valores</h3>
+        <ul class="text-sm font-semibold text-gray-600 space-y-2 text-left">
+          <li><strong>Confiabilidade:</strong> atuamos com precisão e responsabilidade.</li>
+          <li><strong>Inovação Contínua:</strong> investimento em tecnologia e melhoria constante.</li>
+          <li><strong>Excelência Operacional:</strong> eficiência em todos os processos.</li>
+          <li><strong>Segurança:</strong> proteção das operações e dados.</li>
+          <li><strong>Parceria Estratégica:</strong> relações sólidas e de longo prazo.</li>
+          <li><strong>Ética e Transparência:</strong> clareza e integridade em todas as relações.</li>
+        </ul>
+      </div>
+
+      <div class="transition-transform duration-300 ease-in-out hover:scale-110
+ bg-white p-6 rounded-2xl shadow-md flex flex-col items-center">
+        <img src="https://img.icons8.com/ios-filled/100/fa314a/visible.png" alt="Visão" class="w-36 h-36 mb-10">
+        <h3 class="text-xl font-bold text-red-600 mb-3">Visão</h3>
+        <p class="text-sm font-semibold text-gray-600">
+          Ser referência nacional e internacional em monitoramento de hardware e sistemas críticos, 
+          reconhecida pela excelência em inovação, confiabilidade e suporte estratégico, contribuindo 
+          para a transformação digital e a continuidade dos negócios de nossos clientes.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+    <footer class="bg-[#8E0000] text-white font-bold p-10 mt-20">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+      <p class="text-sm">© 2025 OnTrack Systems</p>
+      <div class="flex space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:text-red-400">Início</a>
+        <a href="#" class="hover:text-red-400">Sobre</a>
+        <a href="#" class="hover:text-red-400">Contato</a>
+        <a href="#" class="hover:text-red-400">FAQ</a>
+      </div>
+    </div>
+  </footer>
+</body>
