@@ -29,37 +29,42 @@
         margin: 10px;
         color: #d62a2a;
     }
-    .teste{
+
+    .teste {
         border: solid 1px rgb(255, 255, 255);
-        background-color: white ;
+        background-color: white;
         border-radius: 10px;
         padding: 50px;
 
     }
+
     body {
-background-image: url('./assets/imgs/Rectangle\ 4.png');
+        background-image: url('./assets/imgs/Rectangle\ 4.png');
         background-size: cover;
         background-position: center;
         height: 100vh;
 
     }
-    .botaoadd{
+
+    .botaoadd {
         background-color: #d62a2a;
         color: white;
     }
-    .botaoadd:hover{
+
+    .botaoadd:hover {
         background-color: #8E0000;
         color: white;
         text-decoration: none;
     }
-    .botaoadd a{
+
+    .botaoadd a {
         color: white;
         text-decoration: none;
         font-family: "Arial", sans-serif;
     }
 </style>
 
-<body>
+<body onload="buscarUsuarios()">
 
     <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
         <div class="container-fluid ">
@@ -67,7 +72,8 @@ background-image: url('./assets/imgs/Rectangle\ 4.png');
                 aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-           <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo" style="width: 150px; height: auto; margin-left: 10px;"></a>
+            <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo"
+                    style="width: 150px; height: auto; margin-left: 10px;"></a>
             <div class="ms-auto d-flex align-items-center justify-content-center">
                 <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
                 <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
@@ -87,7 +93,8 @@ background-image: url('./assets/imgs/Rectangle\ 4.png');
                 <div class="offcanvas-body slide">
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page" href="dashboard.html">Home</a>
+                            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page"
+                                href="dashboard.html">Home</a>
                         </li>
                         <li class="nav-item d-flex align-items-center">
                             <i class="fa-solid fa-user"></i><a class="nav-link" href="#">Controle de usuários</a>
@@ -120,17 +127,23 @@ background-image: url('./assets/imgs/Rectangle\ 4.png');
         <div class="row d-flex " style="margin-top: 20px;">
             <input class="form-control me-2 w-25" type="search" placeholder="Buscar" aria-label="Search">
             <button class="btn btn-outline-success" style="width: 100px;" type="submit">Buscar</button>
-            <button type="button" class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a href="cadastro.html">+ Adicionar usuários</button></a> 
+            <button type="button" class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
+                    href="cadastro.html">+ Adicionar usuários</button></a>
         </div>
 
         <div class="container mt-4 ">
-            <ul class="list-group">
-                <li class="list-group-item">An item</li>
-                <li class="list-group-item">A second item</li>
-                <li class="list-group-item">A third item</li>
-                <li class="list-group-item">A fourth item</li>
-                <li class="list-group-item">And a fifth one</li>
-            </ul>
+         <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Nome</th>
+      <th scope="col">Email</th>
+      <th scope="col">Função</th>
+    </tr>
+  </thead>
+  <tbody id="listaUsuarios">
+  </tbody>
+</table>
         </div>
 
     </div>
@@ -141,3 +154,31 @@ background-image: url('./assets/imgs/Rectangle\ 4.png');
 </body>
 
 </html>
+<script>
+
+    async function buscarUsuarios() {
+        try {
+            idEmpresa = sessionStorage.ID_EMPRESA
+            resposta = await fetch(`/usuarios/buscarUsuarios/${idEmpresa}`)
+            json_resposta = await resposta.json()
+            console.log(`Achei os usuários: ${JSON.stringify(json_resposta)}`)
+            //FAZER O TRATAMENTO DOS ERROS AQUI DPS
+            let lista = document.getElementById("listaUsuarios");
+            json_resposta.forEach((resposta, index) => {
+            lista.innerHTML += `<tr>
+                      <th scope="row">${index+1}</th>
+      <td>${resposta.nome}</td>
+      <td>${resposta.email}</td>
+      <td>${resposta.funcao}</td>
+      </tr>`
+            
+        })
+
+       } catch(erro){
+        console.error("Erro ao buscar usuários",erro);
+
+       }
+    }
+
+    
+</script>

@@ -23,6 +23,7 @@ function autenticar(req, res) {
                         nome: resultadoAutenticar[0].nome,
                         senha: resultadoAutenticar[0].senha,
                         funcao: resultadoAutenticar[0].funcao,
+                        fkempresa: resultadoAutenticar[0].fkempresa
                         
                     });        
                     } else if (resultadoAutenticar.length == 0) {
@@ -78,8 +79,25 @@ function cadastrar(req, res) {
             );
     }
 }
+function buscarUsuarios(req, res){
+    var idEmpresa = req.params.idEmpresa;
+
+    usuarioModel.buscarUsuarios(idEmpresa)
+    .then(
+        function(resultado){
+            res.json(resultado);
+        }
+    ).catch(
+        function(erro){
+            console.log(erro);
+            console.log("\nHouve um erro ao buscar os usuarios! Erro: ", erro.sqlMessage);
+            res.status(500).json(erro.sqlMessage);
+        }
+    );
+}
 
 module.exports = {
     autenticar,
-    cadastrar
+    cadastrar,
+    buscarUsuarios
 }
