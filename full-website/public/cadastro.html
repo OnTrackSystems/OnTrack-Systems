@@ -56,28 +56,28 @@
                 
                     <div class="mb-3">
                         <label for="nome" class="form-label">Nome:</label>
-                        <input type="text" class="form-control" placeholder="exemplo@exemplo.com">
+                        <input type="text" id="ipt_nome" class="form-control" placeholder="exemplo@exemplo.com">
                     </div>
                     <div class="mb-3">
-                        <label for="cpf" class="form-label">Cpf:</label>
-                        <input type="text" class="form-control" placeholder="999.999.999-99">
+                        <label for="cpf" class="form-label">CPF:</label>
+                        <input type="text" id="ipt_cpf" class="form-control" placeholder="999.999.999-99">
                     </div> 
                    <div class="mb-3">
                         <label for="email" class="form-label">Email:</label>
-                        <input type="email" class="form-control" placeholder="exemplo@exemplo
+                        <input type="email" id="ipt_email" class="form-control" placeholder="exemplo@exemplo
 .com">
                     </div>
                     <div class="mb-3">
                         <label for="telefone" class="form-label">Telefone:</label>
-                        <input type="text" class="form-control" placeholder="(99) 99999-9999">
+                        <input type="text" id="ipt_telefone" class="form-control" placeholder="(99) 99999-9999">
                     </div>
                     <div class="mb-3">
                         <label for="senha" class="form-label">Senha:</label>
-                        <input type="password" class="form-control" placeholder="*********">
+                        <input type="password" id="ipt_senha" class="form-control" placeholder="*********">
                     </div>
                     <div class="mb-3">
                         <label for="confirmar-senha" class="form-label">Confirmar Senha:</label>
-                        <input type="password" class="form-control" placeholder="*********">
+                        <input type="password" id="ipt_senha_confirma" class="form-control" placeholder="*********">
                     </div>
                     <div>
 
@@ -106,3 +106,104 @@
 </body>
 
 </html>
+<script>
+ function cadastrar() {
+          div_validacao.innerHTML = ""
+      const nomeVar = ipt_nome.value;
+      const cpfVar=ipt_cpf.value;
+     const telefoneVar=ipt_telefone.value;
+      const emailVar = ipt_email.value;
+      const senhaVar = ipt_senha.value;
+      const senha_confirmaVar = ipt_senha_confirma.value;
+      if (
+        nomeVar == "" ||
+        emailVar == "" ||
+        senhaVar == "" ||
+        telefoneVar==""||
+        senha_confirmaVar == ""
+        || cpfVar == ""
+      ) {
+        div_validacao.innerHTML += `
+        <p>⚠️Não deixe nenhum campo em branco⚠️</p>`
+        return
+      }
+      else if (senhaVar != senha_confirmaVar) {
+        div_validacao.innerHTML += `
+        <p>⚠️Confirme a senha corretamente⚠️</p>`
+        return
+      }
+      let cpfigual = false
+      let emailigual = false
+      for (let i = 0; i < listaUsuarios.length; i++) {
+        if (listaUsuarios[i].nickname == nicknamevar) {
+          nicknameigual=true
+          break
+
+        }
+        if (listaUsuarios[i].email == emailVar) {
+          emailigual = true
+          break
+        }
+      }
+      if (nicknameigual) {
+        div_validacao.innerHTML += `
+        <p>⚠️Esse nickname já está em uso⚠️</p>`
+        return
+      }
+      else if (emailigual) {
+        div_validacao.innerHTML += `
+        <p>⚠️Esse email já está em uso⚠️</p>`
+        return
+      }
+      // Enviando o valor da nova input
+      fetch("/usuarios/cadastrar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // crie um atributo que recebe o valor recuperado aqui
+          // Agora vá para o arquivo routes/usuario.js
+          nomeServer: nomeVar,
+          emailServer: emailVar,
+          senhaServer: senhaVar,
+          imagemPerfilServer: imagemperfil,
+          nicknameServer: nicknamevar,
+        }),
+      })
+        .then(function (resposta) {
+          console.log("resposta: ", resposta);
+
+          if (resposta.ok) {
+            Swal.fire({
+              title: "Bem vindo!",
+              text: "Seu cadastro foi realizado com sucesso, seja bem vindo ao Stich&Script! Você será direcionado para tela de login em alguns segundos💜",
+              imageUrl: "/img/gifcadastro.gif",
+              imageWidth: 400,
+
+
+
+            }); setTimeout(() => {
+              window.location = "login.html"
+
+            }, "5000");
+
+            limparFormulario();
+            finalizarAguardar()
+
+              ;
+          } else {
+            throw "Houve um erro ao tentar realizar o cadastro!";
+          }
+        })
+        .catch(function (resposta) {
+          console.log(`#ERRO: ${resposta}`);
+          ;
+        });
+
+      return false;
+    }
+
+</script>
+
+   

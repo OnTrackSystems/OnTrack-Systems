@@ -61,6 +61,11 @@
         color: white;
         text-decoration: none;
         font-family: "Arial", sans-serif;
+        
+    }
+    .btn_excluir:hover{
+        color: #8E0000;
+    margin-left: 3px;        
     }
 </style>
 
@@ -127,7 +132,7 @@
         <div class="row d-flex " style="margin-top: 20px;">
             <input class="form-control me-2 w-25" type="search" placeholder="Buscar" aria-label="Search">
             <button class="btn btn-outline-success" style="width: 100px;" type="submit">Buscar</button>
-            <button type="button" class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
+            <button type="button"  class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
                     href="cadastro.html">+ Adicionar usuários</button></a>
         </div>
 
@@ -139,6 +144,8 @@
       <th scope="col">Nome</th>
       <th scope="col">Email</th>
       <th scope="col">Função</th>
+      <th scope="col">Deletar</th>
+      <th scope="col">Editar</th>
     </tr>
   </thead>
   <tbody id="listaUsuarios">
@@ -155,7 +162,17 @@
 
 </html>
 <script>
+    async function deletarUsuarios(idUsuario) {
+        try{
+            resposta=await fetch(`/usuarios/deletarUsuarios/${idUsuario}`,{method:'DELETE'})
+            json_resposta=await resposta.json()
+            console.log(json_resposta)
+        }
+        catch(erro){
+                    console.error("Erro ao deletar usuário",erro);
 
+        }
+    }
     async function buscarUsuarios() {
         try {
             idEmpresa = sessionStorage.ID_EMPRESA
@@ -170,6 +187,10 @@
       <td>${resposta.nome}</td>
       <td>${resposta.email}</td>
       <td>${resposta.funcao}</td>
+      <td ><i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})" ></i></td>
+    <td ><i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})" ></i></td>
+
+
       </tr>`
             
         })
