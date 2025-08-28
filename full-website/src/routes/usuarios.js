@@ -16,6 +16,14 @@ router.get("/buscarUsuarios/:idEmpresa", function (req, res) {
 router.delete("/deletarUsuarios/:idUsuario",function(req,res){
     usuarioController.deletarUsuarios(req,res);
 }
-)
+);
+router.post("/editarUsuarios/:idUsuario",function(req,res){
+    usuarioController.editarUsuarios(req,res);
+}
+);
+router.get("/carregarUsuario/:idUsuario", function (req, res) {
+    usuarioController.carregarUsuario(req, res);
+});
+
 
 module.exports = router;

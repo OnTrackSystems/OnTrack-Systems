@@ -25,6 +25,10 @@
 .offcanvas-body i{
 margin: 10px;
 color: #d62a2a;}
+.admin{
+    display: flex;
+
+}
 </style>
 <body>
     
@@ -53,20 +57,10 @@ color: #d62a2a;}
           <li class="nav-item d-flex align-items-center">
            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page" href="#">Home</a>
           </li>
-          <li class="nav-item d-flex align-items-center">
-            <i class="fa-solid fa-user"></i><a class="nav-link" href="controle_usuarios.html">Controle de usuários</a>
+          <li class=" admin nav-item  align-items-center " >
+            <i class="fa-solid fa-user  "></i><a class="nav-link " href="controle_usuarios.html">Controle de usuários</a>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
+
         </ul>
         <form class="d-flex mt-3" role="search">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
@@ -84,3 +78,8 @@ color: #d62a2a;}
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<script>
+  const linkUsuarios = document.querySelector(".admin");
+  if (sessionStorage.FUNCAO !== "Administrador") {
+    linkUsuarios.style.display = "none";}
+</script>

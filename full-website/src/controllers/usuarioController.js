@@ -103,15 +103,52 @@ function deletarUsuarios(req,res){
     }).catch(
         function(erro){
             console.log(erro);
-            console.log("\nHouve um erro ao buscar os usuarios! Erro: ", erro.sqlMessage);
+            console.log("\nHouve um erro ao deletar os usuarios! Erro: ", erro.sqlMessage);
             res.status(500).json(erro.sqlMessage);
         }
     )
+}
+function editarUsuarios(req, res){
+    var idUsuario=req.params.idUsuario;
+    var cpf=req.body.cpfServer;
+    var nome=req.body.nomeServer;
+    var email=req.body.emailServer;     
+    var acesso =req.body.acessoServer;
+    var senha=req.body.senhaServer;
+    var telefone=req.body.telefoneServer;
+
+    usuarioModel.editarUsuarios(idUsuario, nome, email, acesso, senha, telefone,cpf)
+    .then(function(resultado){
+        res.json(resultado)
+    }).catch(
+        function(erro){
+    console.log(erro);
+            console.log("\nHouve um erro ao editar os usuarios! Erro: ", erro.sqlMessage);
+            res.status(500).json(erro.sqlMessage);
+        }
+    )
+
+}
+function carregarUsuario(req, res){
+    var idUsuario=req.params.idUsuario;
+    usuarioModel.carregarUsuario(idUsuario)
+    .then(function(resultado){
+        res.json(resultado)
+    }).catch(
+        function(erro){
+            console.log(erro);
+            console.log("\nHouve um erro ao carregar os usuarios! Erro: ", erro.sqlMessage);
+            res.status(500).json(erro.sqlMessage);
+        }
+    )
+
 }
 
 module.exports = {
     autenticar,
     cadastrar,
     buscarUsuarios,
-    deletarUsuarios
+    deletarUsuarios,
+    editarUsuarios,
+    carregarUsuario
 }
