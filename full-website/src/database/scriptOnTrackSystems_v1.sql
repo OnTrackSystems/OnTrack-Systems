@@ -24,7 +24,6 @@ CREATE TABLE usuarios (
   fkEmpresa INT NOT NULL,
   PRIMARY KEY (idUsuario),
   UNIQUE INDEX email_UNIQUE (email),
-  UNIQUE INDEX senha_UNIQUE (senha),
   UNIQUE INDEX cpf_UNIQUE (cpf),
   FOREIGN KEY (fkEmpresa) REFERENCES empresas (idEmpresa)
 );
