@@ -61,11 +61,12 @@
         color: white;
         text-decoration: none;
         font-family: "Arial", sans-serif;
-        
+
     }
-    .btn_excluir:hover{
+
+    .btn_excluir:hover {
         color: #8E0000;
-    margin-left: 3px;        
+        margin-left: 3px;
     }
 </style>
 
@@ -104,25 +105,12 @@
                         <li class="nav-item d-flex align-items-center">
                             <i class="fa-solid fa-user"></i><a class="nav-link" href="#">Controle de usuários</a>
                         </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Dropdown
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
                         </li>
+                        <li class=" d-flex nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
+                                class="nav-link" href="controle_maquinas.html">Controle de maquinas</a>
+                        </li>
+
                     </ul>
-                    <form class="d-flex mt-3" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Buscar</button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -132,93 +120,96 @@
         <div class="row d-flex " style="margin-top: 20px;">
             <input class="form-control me-2 w-25" type="search" placeholder="Buscar" aria-label="Search">
             <button class="btn btn-outline-success" style="width: 100px;" type="submit">Buscar</button>
-            <button type="button"  class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
+            <button type="button" class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
                     href="cadastro.html">+ Adicionar usuários</button></a>
         </div>
 
         <div class="container mt-4 ">
-         <table class="table">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nome</th>
-      <th scope="col">Email</th>
-      <th scope="col">Função</th>
-      <th scope="col">Deletar</th>
-      <th scope="col">Editar</th>
-    </tr>
-  </thead>
-  <tbody id="listaUsuarios">
-  </tbody>
-</table>
+            <table class="table ">
+                <thead>
+                    <tr>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Função</th>
+                        <th scope="col ">Deletar</th>
+                        <th scope="col">Editar</th>
+                    </tr>
+                </thead>
+                <tbody id="listaUsuarios">
+                </tbody>
+            </table>
         </div>
 
     </div>
-<!-- Button trigger modal -->
+    <!-- Button trigger modal -->
 
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content vh-80">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Alterar informações</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-         <div class="row shadow-lg rounded overflow-hidden bg-white d-flex align-items-center justify-content-center">
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content vh-80">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Alterar informações</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div
+                        class="row shadow-lg rounded overflow-hidden bg-white d-flex align-items-center justify-content-center">
 
 
-            <div class="col-12 col-md-10 p-5 d-flex flex-column justify-content-center">
-            
-        
-                
-                    <div class="mb-3">
-                        <label for="nome" class="form-label">Nome:</label>
-                        <input type="text" id="ipt_nome" class="form-control" placeholder="exemplo">
-                    </div>
-                    <div class="mb-3">
-                        <label for="cpf" class="form-label">CPF:</label>
-                        <input type="text" id="ipt_cpf" class="form-control" placeholder="999.999.999-99">
-                    </div> 
-                   <div class="mb-3">
-                        <label for="email" class="form-label">Email:</label>
-                        <input type="email" id="ipt_email" class="form-control" placeholder="exemplo@exemplo
+                        <div class="col-12 col-md-10 p-5 d-flex flex-column justify-content-center">
+
+
+
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome:</label>
+                                <input type="text" id="ipt_nome" class="form-control" placeholder="exemplo">
+                            </div>
+                            <div class="mb-3">
+                                <label for="cpf" class="form-label">CPF:</label>
+                                <input type="text" id="ipt_cpf" class="form-control" placeholder="999.999.999-99">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" id="ipt_email" class="form-control" placeholder="exemplo@exemplo
 .com">
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefone" class="form-label">Telefone:</label>
-                        <input type="text" id="ipt_telefone" class="form-control" placeholder="(99) 99999-9999">
-                    </div>
-                    <div class="mb-3">
-                        <label for="senha" class="form-label">Senha:</label>
-                        <input type="password" id="ipt_senha" class="form-control" placeholder="*********">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmar-senha" class="form-label">Confirmar Senha:</label>
-                        <input type="password" id="ipt_senha_confirma" class="form-control" placeholder="*********">
-                    </div>
-                    <div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="telefone" class="form-label">Telefone:</label>
+                                <input type="text" id="ipt_telefone" class="form-control" placeholder="(99) 99999-9999">
+                            </div>
+                            <div class="mb-3">
+                                <label for="senha" class="form-label">Senha:</label>
+                                <input type="password" id="ipt_senha" class="form-control" placeholder="*********">
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmar-senha" class="form-label">Confirmar Senha:</label>
+                                <input type="password" id="ipt_senha_confirma" class="form-control"
+                                    placeholder="*********">
+                            </div>
+                            <div>
+
+                            </div>
+                            <div class="mb-3 ">
+                                <label for="tipo-usuario" class="form-label">Tipo de Usuário:</label>
+                                <select class="form-select" id="ipt_acesso">
+                                    <option value="Usuário">Usuário</option>
+                                    <option value="Administrador">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
 
                     </div>
-                    <div class="mb-3 ">
-                        <label for="tipo-usuario" class="form-label">Tipo de Usuário:</label>
-                        <select class="form-select" id="ipt_acesso">
-                            <option value="Usuário">Usuário</option>
-                            <option value="Administrador">Administrador</option>
-                        </select>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" onclick="editarUsuarios(sessionStorage.ID_EDITANDO)"
+                        class="btn btn-danger">Editar usuário</button>
+                </div>
             </div>
-
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" onclick="editarUsuarios(sessionStorage.ID_EDITANDO)" class="btn btn-primary">Understood</button>
-      </div>
     </div>
-  </div>
-</div>
 
     <!-- Bootstrap JS bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -228,85 +219,85 @@
 </html>
 <script>
     async function deletarUsuarios(idUsuario) {
-        try{
+        try {
             Swal.fire({
-  title: "Você tem certeza?",
-  text: "Essa ação não poderá ser revertida!",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Sim, deletar!"
-}).then((result) => {
-  if (result.isConfirmed) {
+                title: "Você tem certeza?",
+                text: "Essa ação não poderá ser revertida!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sim, deletar!"
+            }).then((result) => {
+                if (result.isConfirmed) {
 
-          resposta= fetch(`/usuarios/deletarUsuarios/${idUsuario}`,{method:'DELETE'})
-           
+                    resposta = fetch(`/usuarios/deletarUsuarios/${idUsuario}`, { method: 'DELETE' })
 
-    Swal.fire({
-      title: "Deletado!",
-      text: "O usuário foi deletado com sucesso.",
-      icon: "success"
-    });                setTimeout(() => {
-            window.location.reload()
-          }, "5000");
-  }
-});
-  
-        }
-        catch(erro){
-                    console.error("Erro ao deletar usuário",erro);
+
+                    Swal.fire({
+                        title: "Deletado!",
+                        text: "O usuário foi deletado com sucesso.",
+                        icon: "success"
+                    }); setTimeout(() => {
+                        window.location.reload()
+                    }, "5000");
+                }
+            });
 
         }
-            
-}
+        catch (erro) {
+            console.error("Erro ao deletar usuário", erro);
+
+        }
+
+    }
     async function editarUsuarios(idUsuario) {
-        try{
+        try {
             carregarUsuario(idUsuario);
-      const nomeVar = ipt_nome.value;
-      const cpfVar=ipt_cpf.value;
-     const telefoneVar=ipt_telefone.value;
-      const emailVar = ipt_email.value;
-      const senhaVar = ipt_senha.value;
-      const senha_confirmaVar = ipt_senha_confirma.value;
-      if (senhaVar !== senha_confirmaVar) {
-Swal.fire({
-  title: "Senhas desiguais",
-  text: "As senhas digitadas não são iguais. Por favor, verifique e tente novamente.",
-  icon: "error"
-});
-        return; 
-      }
-      const acessoVar = ipt_acesso.value;
+            const nomeVar = ipt_nome.value;
+            const cpfVar = ipt_cpf.value;
+            const telefoneVar = ipt_telefone.value;
+            const emailVar = ipt_email.value;
+            const senhaVar = ipt_senha.value;
+            const senha_confirmaVar = ipt_senha_confirma.value;
+            if (senhaVar !== senha_confirmaVar) {
+                Swal.fire({
+                    title: "Senhas desiguais",
+                    text: "As senhas digitadas não são iguais. Por favor, verifique e tente novamente.",
+                    icon: "error"
+                });
+                return;
+            }
+            const acessoVar = ipt_acesso.value;
             fetch(`/usuarios/editarUsuarios/${idUsuario}`, {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                nomeServer:`${nomeVar}`,
-                cpfServer:`${cpfVar}`,
-                emailServer:`${emailVar}`,
-                telefoneServer:`${telefoneVar}`,
-                acessoServer:`${acessoVar}`,
-                senhaServer:`${senhaVar}`                
+                    nomeServer: `${nomeVar}`,
+                    cpfServer: `${cpfVar}`,
+                    emailServer: `${emailVar}`,
+                    telefoneServer: `${telefoneVar}`,
+                    acessoServer: `${acessoVar}`,
+                    senhaServer: `${senhaVar}`
 
 
                 })
             })
 
 
-    window.location.reload();
+            window.location.reload();
 
         }
-        catch(erro){
-   console.error("Erro ao deletar usuário",erro);
+        catch (erro) {
+            console.error("Erro ao deletar usuário", erro);
         }
-        
+
     }
     async function buscarUsuarios() {
         try {
-            if(sessionStorage.ACESSO !="Administrador"){
+            if (sessionStorage.ACESSO != "Administrador") {
                 window.location.href = "erro.html"
             }
             idEmpresa = sessionStorage.ID_EMPRESA
@@ -316,53 +307,52 @@ Swal.fire({
             //FAZER O TRATAMENTO DOS ERROS AQUI DPS
             let lista = document.getElementById("listaUsuarios");
             json_resposta.forEach((resposta, index) => {
-            lista.innerHTML += `<tr>
-                      <th scope="row">${index+1}</th>
+                lista.innerHTML += `<tr>
       <td >${resposta.nome}</td>
       <td>${resposta.email}</td>
       <td>${resposta.acesso}</td>
 <td>
-      ${sessionStorage.ACESSO === "Administrador" ? 
-        `<i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})"></i>` 
-        : ""}
+      ${sessionStorage.ACESSO === "Administrador" ?
+                        `<i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})"></i>`
+                        : ""}
     </td>
     <td>
-      ${sessionStorage.ACESSO === "Administrador" ? 
-        `<i class="fa-solid fa-pencil" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="carregarUsuario(${resposta.idUsuario})"></i>`
-        : ""}
+      ${sessionStorage.ACESSO === "Administrador" ?
+                        `<i class="fa-solid fa-pencil" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="carregarUsuario(${resposta.idUsuario})"></i>`
+                        : ""}
     </td>
 
 
     </tr>`;
-            
-        })
-  
 
-       } catch(erro){
-        console.error("Erro ao buscar usuários",erro);
+            })
 
-       }
+
+        } catch (erro) {
+            console.error("Erro ao buscar usuários", erro);
+
+        }
     }
     async function carregarUsuario(idUsuario) {
-  try {
-    const resposta = await fetch(`/usuarios/carregarusuario/${idUsuario}`);
-    const usuario = await resposta.json();
-    console.log(`Usuário carregado: ${JSON.stringify(usuario)}`);
-    // Preenche os inputs do modal
-    document.getElementById("ipt_nome").value = usuario[0].nome;
-    document.getElementById("ipt_cpf").value = usuario[0].cpf;
-    document.getElementById("ipt_telefone").value = usuario[0].telefone;
-    document.getElementById("ipt_email").value = usuario[0].email;
-    document.getElementById("ipt_senha").value = usuario[0].senha;
-    document.getElementById("ipt_acesso").value = usuario[0].acesso;
+        try {
+            const resposta = await fetch(`/usuarios/carregarusuario/${idUsuario}`);
+            const usuario = await resposta.json();
+            console.log(`Usuário carregado: ${JSON.stringify(usuario)}`);
+            // Preenche os inputs do modal
+            document.getElementById("ipt_nome").value = usuario[0].nome;
+            document.getElementById("ipt_cpf").value = usuario[0].cpf;
+            document.getElementById("ipt_telefone").value = usuario[0].telefone;
+            document.getElementById("ipt_email").value = usuario[0].email;
+            document.getElementById("ipt_senha").value = usuario[0].senha;
+            document.getElementById("ipt_acesso").value = usuario[0].acesso;
 
-    // guarda o id em algum lugar (ex: atributo hidden ou variavel global)
-    sessionStorage.ID_EDITANDO = idUsuario;
+            // guarda o id em algum lugar (ex: atributo hidden ou variavel global)
+            sessionStorage.ID_EDITANDO = idUsuario;
 
-  } catch (erro) {
-    console.error("Erro ao carregar usuário:", erro);
-  }
-}
+        } catch (erro) {
+            console.error("Erro ao carregar usuário:", erro);
+        }
+    }
 
-    
+
 </script>
