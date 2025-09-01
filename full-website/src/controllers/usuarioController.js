@@ -22,7 +22,7 @@ function autenticar(req, res) {
                         email: resultadoAutenticar[0].email,
                         nome: resultadoAutenticar[0].nome,
                         senha: resultadoAutenticar[0].senha,
-                        funcao: resultadoAutenticar[0].funcao,
+                        acesso: resultadoAutenticar[0].acesso,
                         fkempresa: resultadoAutenticar[0].fkempresa
                         
                     });        
@@ -50,8 +50,7 @@ function cadastrar(req, res) {
     var senha = req.body.senhaServer;
     var cpf = req.body.cpfServer;
     var telefone = req.body.telefoneServer
-    var cargo = req.body.cargoServer;
-    var funcao = req.body.funcaoServer;
+    var acesso = req.body.acessoServer;
     var fkEmpresa = req.body.empresaServer;
 
 
@@ -67,7 +66,7 @@ function cadastrar(req, res) {
     // } else {
 
         // Passe os valores como parâmetro e vá para o arquivo usuarioModel.js
-        usuarioModel.cadastrar(nome, email, senha, cpf, telefone, cargo, funcao, fkEmpresa)
+        usuarioModel.cadastrar(nome, email, senha, cpf, telefone, acesso, fkEmpresa)
             .then(
                 function (resultado) {
                     res.json(resultado);

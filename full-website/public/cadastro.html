@@ -113,8 +113,7 @@
       const senhaVar = ipt_senha.value;
       const cpfVar=ipt_cpf.value;
       const telefoneVar=ipt_telefone.value;
-      const cargoVar = tipo_usuario.value;
-      const funcaoVar = "Temporariamente chumbado"
+      const acessoVar = tipo_usuario.value;
       const senha_confirmaVar = ipt_senha_confirma.value;
       const id_empresaVar = sessionStorage.ID_EMPRESA;
 
@@ -124,7 +123,7 @@
         senhaVar == "" ||
         cpfVar == "" ||
         telefoneVar==""||
-        cargoVar==""||
+        acessoVar==""||
         senha_confirmaVar == ""
 
       ) {
@@ -150,8 +149,7 @@
           senhaServer: senhaVar,
           cpfServer: cpfVar,
           telefoneServer: telefoneVar,
-          cargoServer: cargoVar,
-          funcaoServer: funcaoVar,
+          acessoServer: acessoVar,
           empresaServer: id_empresaVar
           
         }),
