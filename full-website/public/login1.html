@@ -56,14 +56,7 @@
             <input type="password" class="form-control" id="ipt_senha" placeholder="*********">
           </div>
           <button type="submit" class="btn btn-custom w-100" onclick="entrar()">Entrar</button>
-          <div>
-            <h4 id="mensagem_erro"></h4>
-          </div>
-        
-
-        <p class="text-center mt-4 text-muted">
-          Não tem conta? <a href="#" class="text-primary fw-bold">Cadastre-se</a>
-        </p>
+          <p class="text-center d-flexjustify-content-center" id="div_mensagem"></p>
       </div>
 
     </div>
@@ -102,21 +95,17 @@
                     sessionStorage.ID_EMPRESA=json.fkempresa;
                     sessionStorage.ACESSO = json.acesso;
 
+                    div_mensagem.innerHTML = "Login realizado com sucesso..."
                     setTimeout(function () {
                         window.location = "./dashboard.html";
-                    }, 1000); // apenas para exibir o loading
+                    }, 800);
 
                 });
 
             } else {
 
                 console.log("Houve um erro ao tentar realizar o login!");
-
-                Swal.fire({
-                title: "Conta não encontrada",
-                text: "Por favor verifique as informações inseridas e tente novamente",
-                icon: "error"
-                });
+                div_mensagem.innerHTML = "Erro! Conta não encontrada!"
             }
 
         }).catch(function (erro) {
