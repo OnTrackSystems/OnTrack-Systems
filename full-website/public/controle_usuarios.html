@@ -175,7 +175,7 @@
                 
                     <div class="mb-3">
                         <label for="nome" class="form-label">Nome:</label>
-                        <input type="text" id="ipt_nome" class="form-control" placeholder="exemplo@exemplo.com">
+                        <input type="text" id="ipt_nome" class="form-control" placeholder="exemplo">
                     </div>
                     <div class="mb-3">
                         <label for="cpf" class="form-label">CPF:</label>
@@ -229,16 +229,37 @@
 <script>
     async function deletarUsuarios(idUsuario) {
         try{
-            resposta=await fetch(`/usuarios/deletarUsuarios/${idUsuario}`,{method:'DELETE'})
-            json_resposta=await resposta.json()
-            console.log(json_resposta)
-            window.location.reload();
+            Swal.fire({
+  title: "Você tem certeza?",
+  text: "Essa ação não poderá ser revertida!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Sim, deletar!"
+}).then((result) => {
+  if (result.isConfirmed) {
+
+          resposta= fetch(`/usuarios/deletarUsuarios/${idUsuario}`,{method:'DELETE'})
+           
+
+    Swal.fire({
+      title: "Deletado!",
+      text: "O usuário foi deletado com sucesso.",
+      icon: "success"
+    });                setTimeout(() => {
+            window.location.reload()
+          }, "5000");
+  }
+});
+  
         }
         catch(erro){
                     console.error("Erro ao deletar usuário",erro);
 
         }
-    }
+            
+}
     async function editarUsuarios(idUsuario) {
         try{
             carregarUsuario(idUsuario);
@@ -285,6 +306,9 @@ Swal.fire({
     }
     async function buscarUsuarios() {
         try {
+            if(sessionStorage.ACESSO !="Administrador"){
+                window.location.href = "erro.html"
+            }
             idEmpresa = sessionStorage.ID_EMPRESA
             resposta = await fetch(`/usuarios/buscarUsuarios/${idEmpresa}`)
             json_resposta = await resposta.json()
@@ -294,7 +318,7 @@ Swal.fire({
             json_resposta.forEach((resposta, index) => {
             lista.innerHTML += `<tr>
                       <th scope="row">${index+1}</th>
-      <td>${resposta.nome}</td>
+      <td >${resposta.nome}</td>
       <td>${resposta.email}</td>
       <td>${resposta.acesso}</td>
 <td>
@@ -312,6 +336,7 @@ Swal.fire({
     </tr>`;
             
         })
+  
 
        } catch(erro){
         console.error("Erro ao buscar usuários",erro);

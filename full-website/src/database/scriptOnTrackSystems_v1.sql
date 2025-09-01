@@ -45,5 +45,5 @@ CREATE TABLE avisos (
 insert into empresas (nome,CNPJ,endereco)
 values("SPTrans",60498417000158,"Rua Boa Vista, 236 – Centro, São Paulo/SP");
 
-insert into usuarios (nome,email,senha,cpf,telefone,cargo,funcao,fkEmpresa)
-values ("Ronaldo","admin@sptrans.com",123,12345678909,1191234-5678,"ADM","Administrador",1);
+insert into usuarios (nome,email,senha,cpf,telefone,acesso,fkEmpresa)
+values ("Ronaldo","admin@sptrans.com",123,12345678909,1191234-5678,"Administrador",1);
