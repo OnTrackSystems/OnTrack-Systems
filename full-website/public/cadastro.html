@@ -85,10 +85,11 @@
                     </div>
                     <div class="mb-3 ">
                         <label for="tipo-usuario" class="form-label">Tipo de Usuário:</label>
-                        <select class="form-select" id="tipo-usuario">
-                            <option value="cliente">Cliente</option>
-                            <option value="tecnico">Técnico</option>
-                            <option value="admin">Administrador</option>
+                        <select class="form-select" id="tipo_usuario">
+                          <option value="Administrador">Administrador</option>
+                          <option value="Analista">Analista</option>
+                          <option value="cliente">Cliente</option>
+                            <option value="Técnico">Técnico</option>
                         </select>
                     </div>
 
@@ -108,21 +109,24 @@
 
       div_validacao.innerHTML = ""
       const nomeVar = ipt_nome.value;
-      const cpfVar=ipt_cpf.value;
-      const telefoneVar=ipt_telefone.value;
       const emailVar = ipt_email.value;
       const senhaVar = ipt_senha.value;
+      const cpfVar=ipt_cpf.value;
+      const telefoneVar=ipt_telefone.value;
+      const cargoVar = tipo_usuario.value;
+      const funcaoVar = "Temporariamente chumbado"
       const senha_confirmaVar = ipt_senha_confirma.value;
       const id_empresaVar = sessionStorage.ID_EMPRESA;
 
-
       if (
         nomeVar == "" ||
-        cpfVar == "" ||
-        telefoneVar==""||
         emailVar == "" ||
         senhaVar == "" ||
+        cpfVar == "" ||
+        telefoneVar==""||
+        cargoVar==""||
         senha_confirmaVar == ""
+
       ) {
         div_validacao.innerHTML += `
         <p>⚠️Não deixe nenhum campo em branco⚠️</p>`
@@ -144,8 +148,10 @@
           nomeServer: nomeVar,
           emailServer: emailVar,
           senhaServer: senhaVar,
-          telefoneServer: telefoneVar, 
-          senhaServer: senhaVar,
+          cpfServer: cpfVar,
+          telefoneServer: telefoneVar,
+          cargoServer: cargoVar,
+          funcaoServer: funcaoVar,
           empresaServer: id_empresaVar
           
         }),
@@ -161,7 +167,7 @@
               text: "Seu cadastro foi realizado com sucesso.",
 
             }); setTimeout(() => {
-              window.location = "controle_usuarios.html"
+              window.location = "./controle_usuarios.html"
 
             }, "5000");
 
