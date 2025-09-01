@@ -296,14 +296,14 @@ Swal.fire({
                       <th scope="row">${index+1}</th>
       <td>${resposta.nome}</td>
       <td>${resposta.email}</td>
-      <td>${resposta.funcao}</td>
+      <td>${resposta.acesso}</td>
 <td>
-      ${sessionStorage.FUNCAO === "Administrador" ? 
+      ${sessionStorage.ACESSO === "Administrador" ? 
         `<i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})"></i>` 
         : ""}
     </td>
     <td>
-      ${sessionStorage.FUNCAO === "Administrador" ? 
+      ${sessionStorage.ACESSO === "Administrador" ? 
         `<i class="fa-solid fa-pencil" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="carregarUsuario(${resposta.idUsuario})"></i>`
         : ""}
     </td>
@@ -329,7 +329,7 @@ Swal.fire({
     document.getElementById("ipt_telefone").value = usuario[0].telefone;
     document.getElementById("ipt_email").value = usuario[0].email;
     document.getElementById("ipt_senha").value = usuario[0].senha;
-    document.getElementById("ipt_acesso").value = usuario[0].funcao;
+    document.getElementById("ipt_acesso").value = usuario[0].acesso;
 
     // guarda o id em algum lugar (ex: atributo hidden ou variavel global)
     sessionStorage.ID_EDITANDO = idUsuario;
