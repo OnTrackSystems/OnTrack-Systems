@@ -118,8 +118,7 @@
     <div class="container teste" style="margin-top: 150px;">
         <h1 class="text-center ">Controle de Usuários</h1>
         <div class="row d-flex " style="margin-top: 20px;">
-            <input class="form-control me-2 w-25" type="search" placeholder="Buscar" aria-label="Search">
-            <button class="btn btn-outline-success" style="width: 100px;" type="submit">Buscar</button>
+            <input oninput="buscarUsuariosPesquisa()" id="ipt_buscaNome" class="form-control me-2 w-25" type="search" placeholder="Buscar" aria-label="Search">
             <button type="button" class="btn  botaoadd btn-sm ms-auto" style="max-width: 150px;"><a
                     href="cadastro.html">+ Adicionar usuários</button></a>
         </div>
@@ -332,6 +331,49 @@
             console.error("Erro ao buscar usuários", erro);
 
         }
+    }
+
+    async function buscarUsuariosPesquisa(idEmpresa, ipt_busca) {
+        var ipt_busca = ipt_buscaNome.value;
+        if (ipt_busca == '') {
+                buscarUsuarios()
+                return 
+            }
+        try {
+            var nome = ipt_busca;
+            idEmpresa = sessionStorage.ID_EMPRESA
+            resposta = await fetch(`/usuarios/buscarUsuariosPesquisa/${idEmpresa}/${nome}`)
+            json_resposta = await resposta.json()
+            console.log(`Achei os usuários: ${JSON.stringify(json_resposta)}`)
+            //FAZER O TRATAMENTO DOS ERROS AQUI DPS
+            let lista = document.getElementById("listaUsuarios");
+
+            lista.innerHTML = '';
+
+            
+
+            json_resposta.forEach((resposta, index) => {
+            lista.innerHTML += `
+            <tr>
+            <th scope="row">${index+1}</th>
+            <td>${resposta.nome}</td>
+            <td>${resposta.email}</td>
+            <td>${resposta.acesso}</td>
+            
+        <td>${sessionStorage.ACESSO === "Administrador" ? 
+            `<i class="fa-solid fa-trash btn_excluir" onclick="deletarUsuarios(${resposta.idUsuario})"></i>` 
+            : ""}</td>
+        <td>${sessionStorage.ACESSO === "Administrador" ? 
+            `<i class="fa-solid fa-pencil" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="carregarUsuario(${resposta.idUsuario})"></i>`
+            : ""}</td>
+    </tr>`;
+         
+        })
+
+       } catch(erro){
+        console.error("Erro ao buscar usuários",erro);
+
+       }
     }
     async function carregarUsuario(idUsuario) {
         try {

@@ -13,6 +13,9 @@ router.post("/autenticar", function (req, res) {
 router.get("/buscarUsuarios/:idEmpresa", function (req, res) {
     usuarioController.buscarUsuarios(req, res);
 });
+router.get("/buscarUsuariosPesquisa/:idEmpresa/:nome", function (req, res) {
+    usuarioController.buscarUsuariosPesquisa(req, res);
+});
 router.delete("/deletarUsuarios/:idUsuario",function(req,res){
     usuarioController.deletarUsuarios(req,res);
 }

@@ -99,6 +99,23 @@ function buscarUsuarios(req, res){
         }
     );
 }
+function buscarUsuariosPesquisa(req, res){
+    var idEmpresa = req.params.idEmpresa;
+    var nome = req.params.nome;
+
+    usuarioModel.buscarUsuariosPesquisa(idEmpresa,nome)
+    .then(
+        function(resultado){
+            res.json(resultado);
+        }
+    ).catch(
+        function(erro){
+            console.log(erro);
+            console.log("\nHouve um erro ao buscar os usuarios! Erro: ", erro.sqlMessage);
+            res.status(500).json(erro.sqlMessage);
+        }
+    );
+}
 function deletarUsuarios(req,res){
     var idUsuario=req.params.idUsuario;
     usuarioModel.deletarUsuarios(idUsuario)
@@ -152,6 +169,7 @@ module.exports = {
     autenticar,
     cadastrar,
     buscarUsuarios,
+    buscarUsuariosPesquisa,
     deletarUsuarios,
     editarUsuarios,
     carregarUsuario
