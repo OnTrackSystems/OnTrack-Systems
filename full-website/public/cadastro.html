@@ -45,7 +45,7 @@
     </style>
 </head>
 
-<body class="d-flex align-items-center justify-content-center ">
+<body onload="buscarUsuarios()" class="d-flex align-items-center justify-content-center ">
 
     <div class="container login-container m-3">
         <div class="row shadow-lg rounded overflow-hidden bg-white d-flex align-items-center justify-content-center">
@@ -94,7 +94,7 @@
                     </div>
 
 
-                    <button type="submit" onclick="cadastrar()" class="btn btn-custom w-100">Entrar</button>
+                    <button type="submit" onclick="cadastrar()" class="btn btn-custom w-100">Cadastrar</button>
                     <div class="text-center -flex align-items-center" id="div_validacao"></div>
             </div>
 
@@ -105,8 +105,15 @@
 
 </html>
 <script>
+  // Listando os usuarios existentes para futura validação:
+    
+    async function buscarUsuarios(){
+    idEmpresa = sessionStorage.ID_EMPRESA
+    resposta = await fetch(`/usuarios/buscarUsuarios/${idEmpresa}`)
+    listaUsuarios = await resposta.json()
+    }
  function cadastrar() {
-
+    // Variaveis:
       div_validacao.innerHTML = ""
       const nomeVar = ipt_nome.value;
       const emailVar = ipt_email.value;
@@ -116,6 +123,8 @@
       const acessoVar = tipo_usuario.value;
       const senha_confirmaVar = ipt_senha_confirma.value;
       const id_empresaVar = sessionStorage.ID_EMPRESA;
+
+      // Validações:
 
       if (
         nomeVar == "" ||
@@ -127,16 +136,53 @@
         senha_confirmaVar == ""
 
       ) {
-        div_validacao.innerHTML += `
-        <p>⚠️Não deixe nenhum campo em branco⚠️</p>`
+        Swal.fire({
+              title: "Não deixe nenhum campo em branco",
+               icon: "error",
+            });
         return
       }
       else if (senhaVar != senha_confirmaVar) {
-        div_validacao.innerHTML += `
-        <p>⚠️Confirme a senha corretamente⚠️</p>`
+        Swal.fire({
+            title: "Senhas diferentes",
+            text: "Confirme a senha corretamente",
+            icon: "error",
+          });
         return
       }
 
+      let emailigual = false
+      let cpfigual = false
+
+      for (let i = 0; i < listaUsuarios.length; i++) {
+        if (listaUsuarios[i].email == emailVar) {
+          emailigual=true
+          break
+        }
+        if (listaUsuarios[i].cpf == cpfVar) {
+          cpfigual = true
+          break
+        }
+      }
+
+      if (emailigual) {
+            Swal.fire({
+            title: "Esse email já está em uso",
+            text: "Altere o email para efetuar o cadastro",
+            icon: "error",
+          });
+          return;
+      }       
+      else if (cpfigual) {
+        Swal.fire({
+            title: "Esse CPF já está em uso",
+            text: "Já existe um usuário com este CPF",
+            icon: "error",
+          });
+        return;
+      }
+
+      //Cadastrando no banco de dados:
 
       fetch("/usuarios/cadastrar", {
         method: "POST",
@@ -163,11 +209,12 @@
             Swal.fire({
               title: "Cadastro concluído",
               text: "Seu cadastro foi realizado com sucesso.",
+              icon: "success",
 
             }); setTimeout(() => {
               window.location = "./controle_usuarios.html"
 
-            }, "5000");
+            }, "2000");
 
             limparFormulario();
             finalizarAguardar()
