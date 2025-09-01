@@ -14,7 +14,7 @@ async function enviarEmail(req, res) {
 
     let textoEmail = {
         from: `"Site Contato" <${process.env.EMAIL_USER}>`,
-        to: "felipe.nogueira@sptech.school",
+        to: "OnTrack@sptech.school",
         replyTo: email,
         subject: `Contato do site de ${nome} ${sobrenome}`,
         text: `Nome: ${nome} ${sobrenome}\nE-mail: ${email}\nContato: ${contato}\nMensagem: ${mensagem}`,
