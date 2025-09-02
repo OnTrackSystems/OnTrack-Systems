@@ -77,13 +77,13 @@
 
     <div class="relative z-10 max-w-3xl px-6">
       <h1 class="text-[90px] md:text-[90px] font-bold leading-tight">
-        Monitoramento Inteligente <br> de Servidores.
+        Monitorando seu hardware, <br> cuidando de seu negócio.
       </h1>
       <p class="mt-6 text-lg md:text-xl">
-        A OnTrack Systems garante estabilidade e confiança no acompanhamento de hardware crítico da SPTrans.
+        A OnTrack Systems garante um monitoramento inteligente, estável e confiavel, acompanhando o hardware de serviços de transporte público.
       </p>
       <div class="flex flex-col md:flex-row gap-4 justify-center mt-8">
-        <a href="#sobre"
+        <a href="/sobrenos.html"
           class="px-6 py-3 bg-[#800000] text-white rounded-full font-semibold hover:bg-[#a00000] transition">
           Saiba Mais
         </a>
@@ -103,7 +103,7 @@
       <div class="flex flex-col text-center md:text-left mb-8">
         <div class="text-black text-lg">SOBRE NÓS</div>
         <div class="text-black font-bold text-3xl md:text-5xl leading-tight">
-          Monitoramento inteligente da infraestrutura da SPTrans
+          Monitoramento inteligente da infraestrutura de hardware
         </div>
       </div>
 
@@ -133,7 +133,7 @@
         <img src="./assets/imgs/bell.svg" class="h-56 w-56 mx-auto" alt="">
         <h3 class="mt-4 font-bold text-[30px]">Detecção proativa</h3>
         <p class="text-md text-gray-600 mt-2">
-          Alertas automáticos sempre que CPU, RAM ou Disco atingirem níveis críticos, evitando falhas inesperadas.
+          Alertas automáticos sempre que CPU, RAM, Disco e Rede fugirem do parâmetro, evitando falhas inesperadas.
         </p>
       </div>
 
@@ -151,7 +151,7 @@
         <img src="./assets/imgs/shield.svg" class="h-56 w-56 mx-auto" alt="">
         <h3 class="mt-4 font-bold text-[30px]">Alta disponibilidade</h3>
         <p class="text-md text-gray-600 mt-2">
-          Redução drástica do risco de paralisações, garantindo continuidade no sistema de bilhetagem.
+          Redução drástica do risco de paralisações, garantindo continuidade no funcionamento do transporte.
         </p>
       </div>
     </div>
@@ -190,7 +190,7 @@
     </div>
 
     <div class="flex items-center justify-center px-8 py-12 bg-[#F2F2F2]">
-      <div class="w-full max-w-lg">
+      <div id="form" class="w-full max-w-lg">
         <p class="uppercase tracking-wide text-gray-400 text-md">Contato</p>
         <h2 class="text-5xl font-bold mb-6 leading-tight">
           Tem alguma dúvida?<br>
@@ -208,7 +208,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input type="email" name="email" placeholder="E-mail"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
-            <input type="text" name="contato" placeholder="Contato"
+            <input type="text" name="telefone" placeholder="Telefone"
               class="w-full p-3 bg-transparent border-b border-gray-500 focus:outline-none">
           </div>
 
@@ -221,8 +221,8 @@
           </button>
 
           <label class="flex items-start mt-4 text-sm text-gray-400">
-            <input type="checkbox" class="mt-1 mr-2">
-            Concordo que os termos e condições.
+            <input id="checkbox" name="checkbox" type="checkbox" class="mt-1 mr-2">
+            Concordo em compartilhar meus dados acima.
           </label>
 
           <p id="mensagemStatus" class="mt-4 text-green-600 font-semibold"></p>
@@ -251,6 +251,8 @@
   const menuBtn = document.getElementById('menuBtn');
   const menuPanel = document.getElementById('menuPanel');
 
+
+
   // Alternar menu
   function toggleMenu() {
     menuPanel.classList.toggle('translate-x-full');
@@ -262,17 +264,33 @@
   const status = document.getElementById("mensagemStatus");
 
   async function enviarFormulario() {
+    
+    const termosDados = document.getElementById("checkbox").checked;
     const nome = document.querySelector("input[name='nome']").value;
     const sobrenome = document.querySelector("input[name='sobrenome']").value;
     const email = document.querySelector("input[name='email']").value;
-    const contato = document.querySelector("input[name='contato']").value;
+    const telefone = document.querySelector("input[name='telefone']").value;
     const mensagem = document.querySelector("textarea[name='mensagem']").value;
+
+    function sumirStatus() {
+      mensagemStatus.innerHTML = ''
+    }
+
+    if (nome == '' || sobrenome == '' || email == '' || telefone == '' || mensagem == '') {
+        mensagemStatus.innerHTML = `<p class="mt-4 text-red-600 font-semibold">Preencha todos os campos</p>`
+        setTimeout(sumirStatus, 4000)
+        return
+    } else if (termosDados != document.getElementById("checkbox").checked) {
+        mensagemStatus.innerHTML = `<p class="mt-4 text-red-600 font-semibold">Aceite o compartilhamento de dados.</p>`
+        setTimeout(sumirStatus, 4000)
+        return
+    }
 
     const dados = {
       nome: nome,
       sobrenome: sobrenome,
       email: email,
-      contato: contato,
+      telefone: telefone,
       mensagem: mensagem
     };
 
