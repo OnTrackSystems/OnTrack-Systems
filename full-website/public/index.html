@@ -23,7 +23,7 @@
 </head>
 
 
-<body class="font-['Inter']">
+<body onload="limparSession()" class="font-['Inter']">
   <header class="text-red-600 text-lg font-[1000] fixed top-0 w-full z-50 bg-white/700 backdrop-blur-sm">
     <div class="max-w-10xl mx-auto flex items-center justify-between p-5 px-[60px]">
       <!-- LOGO -->
@@ -36,9 +36,9 @@
             class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-700">Início</a>
           <a href="sobrenos.html"
             class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">Sobre</a>
-          <a href="#"
+          <a href="contato.html"
             class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">Contato</a>
-          <a href="#"
+          <a href="FAQ.html"
             class="hover:text-white transition px-4 py-3 rounded-[15px] hover:underline hover:bg-red-700 hover:text-red-900">FAQ</a>
         </div>
       </nav>
@@ -64,9 +64,8 @@
     <nav class="flex flex-col space-y-4 text-lg">
       <a href="index.html" class="hover:text-red-700">Início</a>
       <a href="sobrenos.html" class="hover:text-red-700">Sobre</a>
-      <a href="#" class="hover:text-red-700">Contato</a>
-      <a href="#" class="hover:text-red-700">FAQ</a>
-      <a href="#" class="hover:text-red-700">Cadastro</a>
+      <a href="contato.html" class="hover:text-red-700">Contato</a>
+      <a href="FAQ.html" class="hover:text-red-700">FAQ</a>
       <a href="login1.html" class="hover:text-red-700">Login</a>
     </nav>
   </div>
@@ -87,7 +86,7 @@
           class="px-6 py-3 bg-[#800000] text-white rounded-full font-semibold hover:bg-[#a00000] transition">
           Saiba Mais
         </a>
-        <a href="#cadastro"
+        <a href="/contato.html"
           class="px-6 py-3 border border-white rounded-full font-semibold hover:bg-white hover:text-black transition">
           Começar Agora
         </a>
@@ -115,7 +114,7 @@
         </p>
         <p class="text-[#808080] text-base md:text-lg leading-relaxed flex-1">
           Com dashboards intuitivos e alertas automáticos, oferecemos visibilidade total do desempenho dos servidores,
-          desde o uso de CPU, disco e memória até a detecção de comportamentos anômalos. Isso assegura maior
+          desde o uso de CPU, disco, memória e Rede até a detecção de comportamentos anômalos. Isso assegura maior
           confiabilidade e reduz riscos de prejuízos decorrentes de paradas inesperadas.
         </p>
       </div>
@@ -236,9 +235,9 @@
       <p class="text-sm">© 2025 OnTrack Systems</p>
       <div class="flex space-x-4 mt-4 md:mt-0">
         <a href="#" class="hover:text-red-400">Início</a>
-        <a href="#" class="hover:text-red-400">Sobre</a>
-        <a href="#" class="hover:text-red-400">Contato</a>
-        <a href="#" class="hover:text-red-400">FAQ</a>
+        <a href="sobrenos.html" class="hover:text-red-400">Sobre</a>
+        <a href="contato.html" class="hover:text-red-400">Contato</a>
+        <a href="FAQ.html" class="hover:text-red-400">FAQ</a>
       </div>
     </div>
   </footer>
@@ -248,6 +247,10 @@
 </html>
 
 <script>
+function limparSession() {
+  sessionStorage.clear();
+}
+
   const menuBtn = document.getElementById('menuBtn');
   const menuPanel = document.getElementById('menuPanel');
 

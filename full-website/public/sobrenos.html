@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>OnTrack | Home</title>
+  <title>OnTrack | Sobre Nós</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -64,9 +64,8 @@
     <nav class="flex flex-col space-y-4 text-lg">
       <a href="index.html" class="hover:text-red-700">Início</a>
       <a href="sobrenos.html" class="hover:text-red-700">Sobre</a>
-      <a href="#" class="hover:text-red-700">Contato</a>
-      <a href="#" class="hover:text-red-700">FAQ</a>
-      <a href="#" class="hover:text-red-700">Cadastro</a>
+      <a href="contato.html" class="hover:text-red-700">Contato</a>
+      <a href="FAQ.html" class="hover:text-red-700">FAQ</a>
       <a href="login1.html" class="hover:text-red-700">Login</a>
     </nav>
   </div>
@@ -126,11 +125,19 @@
     <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
       <p class="text-sm">© 2025 OnTrack Systems</p>
       <div class="flex space-x-4 mt-4 md:mt-0">
-        <a href="#" class="hover:text-red-400">Início</a>
+        <a href="index.html" class="hover:text-red-400">Início</a>
         <a href="#" class="hover:text-red-400">Sobre</a>
-        <a href="#" class="hover:text-red-400">Contato</a>
-        <a href="#" class="hover:text-red-400">FAQ</a>
+        <a href="contato.html" class="hover:text-red-400">Contato</a>
+        <a href="FAQ.html" class="hover:text-red-400">FAQ</a>
       </div>
     </div>
   </footer>
 </body>
+
+<script>
+   function toggleMenu() {
+    menuPanel.classList.toggle('translate-x-full');
+  }
+
+  menuBtn.addEventListener('click', toggleMenu);
+</script>
