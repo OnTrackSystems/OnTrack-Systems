@@ -16,6 +16,7 @@ var HOST_APP = process.env.APP_HOST;
 var app = express();
 
 var usuarioRouter = require("./src/routes/usuarios");
+var maquinaRouter = require("./src/routes/maquina");
 var emailRouter = require("./src/routes/email");
 
 app.use(express.json());
@@ -27,6 +28,7 @@ app.use(cors());
 
 app.use("/usuarios", usuarioRouter);
 app.use("/email", emailRouter);
+app.use("/maquina", maquinaRouter);
 
 
 app.listen(PORTA_APP, function () {

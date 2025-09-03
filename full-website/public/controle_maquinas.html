@@ -70,10 +70,78 @@
             color: #8E0000;
             margin-left: 3px;
         }
+
+        #listaMaquinas {
+            top: 120px;
+            display: flex;
+            position: relative;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .maquina-card {
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+            border-radius: 12px;
+            width: 200px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .maquina-card:hover {
+            transform: scale(1.05);
+        }
+
+        .modal-content {
+            background: #ffffff;
+            color: #000000;
+            border-radius: 8px;
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-bottom: 1px solid #000;
+        }
+
+        .modal-footer {
+            border-bottom: none;
+        }
+
+        .modal-body hr {
+            border: none;
+            border-top: 1px solid #000 !important;
+            /* força a borda preta */
+            opacity: 1 !important;
+            /* remove o efeito de "transparência" do Bootstrap */
+        }
+
+        .modal-body .comp-row {
+            border-top: 1px solid #000;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+
+        .modal-body .comp-row:first-child {
+            border-top: none;
+            padding-top: 0;
+            margin-top: 0;
+        }
+
+        .btn-close {
+            filter: none;
+            opacity: 1;
+        }
     </style>
 </head>
 
-<body>
+<body onload="listarMaquinasPorEmpresas()">
     <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
         <div class="container-fluid ">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
@@ -120,7 +188,74 @@
             </div>
         </div>
     </nav>
-    
+
+    <div id="listaMaquinas" class="container mt-5"></div>
+
+    <div class="modal fade" id="maquinaModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="maquinaModalLabel">Detalhes da Máquina</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body" id="modalConteudo"></div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
+
+<script>
+    function listarMaquinasPorEmpresas() {
+        const idEmpresa = sessionStorage.getItem("ID_EMPRESA");
+
+        fetch(`/maquina?idEmpresa=${idEmpresa}`)
+            .then(res => res.json())
+            .then(maquinas => {
+                const lista = document.getElementById("listaMaquinas");
+                lista.innerHTML = "";
+
+                maquinas.forEach(m => {
+                    let status = "estavel";
+                    let cor = status === "estavel" ? "green" :
+                        status === "alerta" ? "yellow" : "red";
+
+                    const card = document.createElement("div");
+                    card.className = "maquina-card";
+                    card.innerHTML = `
+                    <h4>Máquina ${m.idMaquina}</h4>
+                    <span class="badge" style="background:${cor}; font-size:14px;">
+                        ${status.toUpperCase()}
+                    </span>
+                `;
+
+                    card.onclick = () => abrirModal(m, status);
+                    lista.appendChild(card);
+                });
+            })
+            .catch(err => console.error(err));
+    }
+
+    function abrirModal(maquina, status) {
+        let html = `
+      <h5>Máquina ${maquina.idMaquina}</h5>
+      <p>Status: <span style="color:${status === 'estavel' ? 'green' : status === 'alerta' ? 'yellow' : 'red'}">
+        ${status.toUpperCase()}
+      </span></p> 
+      <hr>
+      <h6>Componentes</h6>
+      <ul>
+        ${maquina.componentes.map(c => `
+          <li><strong>${c.componente}</strong> (${c.unidade}) 
+              → Min: ${c.parametroMin}, Max: ${c.parametroMax}</li>
+        `).join("")}
+      </ul>
+    `;
+
+        document.getElementById("modalConteudo").innerHTML = html;
+        new bootstrap.Modal(document.getElementById("maquinaModal")).show();
+    }
+</script>
