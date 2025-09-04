@@ -8,7 +8,6 @@ function listarPorEmpresa(req, res) {
 
     maquinaModel.listarPorEmpresa(idEmpresa)
         .then(resultado => {
-            // tratamento: agrupar por idMaquina
             const maquinas = [];
 
             resultado.forEach(row => {
@@ -40,6 +39,37 @@ function listarPorEmpresa(req, res) {
         });
 }
 
+// Cadastro de máquina
+async function cadastrar(req, res) {
+    try {
+        const { idMaquina, idEmpresa, componentes } = req.body;
+
+        if (!idEmpresa || !idMaquina || !componentes || componentes.length === 0) {
+            return res.status(400).send("Dados inválidos para cadastro da máquina");
+        }
+
+        // 1. Inserir máquina
+        const maquina = await maquinaModel.cadastrarMaquina(idMaquina, idEmpresa);
+
+        // 2. Inserir parâmetros/componentes
+        for (const c of componentes) {
+            await maquinaModel.cadastrarComponente(
+                maquina.insertId, 
+                c.nomeComponente, 
+                c.unidade,
+                c.parametroMin,
+                c.parametroMax
+            );
+        }
+
+        res.status(201).send("Máquina cadastrada com sucesso!");
+    } catch (erro) {
+        console.log(erro);
+        res.status(500).json(erro.sqlMessage);
+    }
+}
+
 module.exports = {
-    listarPorEmpresa
+    listarPorEmpresa,
+    cadastrar
 };

@@ -11,6 +11,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        body {
+            background-image: url('./assets/imgs/Rectangle\ 4.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            padding-top: 80px;
+        }
+
         .nav-item a {
             color: #d62a2a;
             font-size: 20px;
@@ -37,14 +45,6 @@
             background-color: white;
             border-radius: 10px;
             padding: 50px;
-
-        }
-
-        body {
-            background-image: url('./assets/imgs/Rectangle\ 4.png');
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
 
         }
 
@@ -138,10 +138,75 @@
             filter: none;
             opacity: 1;
         }
+
+        .button {
+            width: 150px;
+            height: 40px;
+            border: 2px solid #333;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .button_text {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: all 0.3s;
+            color: #333;
+        }
+
+        .button_icon {
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin-top: 1.5px;
+            height: 100%;
+            width: 40px;
+            background: white;
+            display: flex;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .button:hover .button_text {
+            color: transparent;
+        }
+
+        .button:hover .button_icon {
+            width: 100%;
+            right: 0;
+        }
+
+        .btn-addcomp {
+            background-color: white;
+            border: 1px solid black;
+            color: black;
+            font-weight: 500;
+        }
+
+        .btn-addcomp:hover {
+            background-color: #f5f5f5;
+            color: black;
+            border-color: black;
+        }
+
+        .button:active {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px #333;
+        }
     </style>
 </head>
 
 <body onload="listarMaquinasPorEmpresas()">
+    <!-- NAVBAR -->
     <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
         <div class="container-fluid ">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
@@ -152,14 +217,13 @@
                     style="width: 150px; height: auto; margin-left: 10px;"></a>
             <div class="ms-auto d-flex align-items-center justify-content-center">
                 <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
-                <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
+                <div class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
                     style="width: 50px; height: 50px;">
-                    <img src="./assets/imgs/perfil.png" alt="Perfil" style="width: auto; height: 50px; ">
+                    <img src="./assets/imgs/perfil.png" alt="Perfil" style="width: auto; height: 50px;">
                 </div>
             </div>
 
-
-
+            <!-- MENU LATERAL -->
             <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
@@ -182,15 +246,24 @@
                         <li class="nav-item d-flex align-items-center">
                             <i class="fa-solid fa-x"></i><a class="nav-link" href="index.html">Sair</a>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </div>
     </nav>
 
-    <div id="listaMaquinas" class="container mt-5"></div>
+    <!-- BOTÃO ADICIONAR MÁQUINA -->
+    <div class="container pt-5 d-flex justify-content-end">
+        <button class="button" type="button" data-bs-toggle="modal" data-bs-target="#addMaquinaModal">
+            <span class="button_text">Adicionar</span>
+            <span class="button_icon">+</span>
+        </button>
+    </div>
 
+
+    <div id="listaMaquinas" class="container mt-3"></div>
+
+    <!-- MODAL DETALHES DA MÁQUINA -->
     <div class="modal fade" id="maquinaModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -198,20 +271,51 @@
                     <h5 class="modal-title" id="maquinaModalLabel">Detalhes da Máquina</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-
                 <div class="modal-body" id="modalConteudo"></div>
             </div>
         </div>
     </div>
 
+    <!-- MODAL ADICIONAR MÁQUINA -->
+    <div class="modal fade" id="addMaquinaModal">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <form id="formAddMaquina" onsubmit="salvarMaquina(event)">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cadastrar Nova Máquina</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="empresaId" value="">
+
+                        <div class="mb-3">
+                            <label for="idMaquina" class="form-label">ID da Máquina</label>
+                            <input type="text" class="form-control" id="idMaquina" name="idMaquina" required>
+                        </div>
+
+                        <h6>Componentes</h6>
+                        <div id="componentesContainer"></div>
+                        <button type="button" class="btn btn-sm btn-addcomp mt-2" onclick="adicionarComponente()">
+                            + Adicionar Componente
+                        </button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn botaoadd">Salvar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
+
 
 </html>
 
 <script>
-    function listarMaquinasPorEmpresas() {
-        const idEmpresa = sessionStorage.getItem("ID_EMPRESA");
+    const idEmpresa = sessionStorage.getItem("ID_EMPRESA");
 
+    function listarMaquinasPorEmpresas() {
         fetch(`/maquina?idEmpresa=${idEmpresa}`)
             .then(res => res.json())
             .then(maquinas => {
@@ -226,11 +330,11 @@
                     const card = document.createElement("div");
                     card.className = "maquina-card";
                     card.innerHTML = `
-                    <h4>Máquina ${m.idMaquina}</h4>
-                    <span class="badge" style="background:${cor}; font-size:14px;">
-                        ${status.toUpperCase()}
-                    </span>
-                `;
+                        <h4>Máquina ${m.idMaquina}</h4>
+                        <span class="badge" style="background:${cor}; font-size:14px;">
+                            ${status.toUpperCase()}
+                        </span>
+                    `;
 
                     card.onclick = () => abrirModal(m, status);
                     lista.appendChild(card);
@@ -241,21 +345,81 @@
 
     function abrirModal(maquina, status) {
         let html = `
-      <h5>Máquina ${maquina.idMaquina}</h5>
-      <p>Status: <span style="color:${status === 'estavel' ? 'green' : status === 'alerta' ? 'yellow' : 'red'}">
-        ${status.toUpperCase()}
-      </span></p> 
-      <hr>
-      <h6>Componentes</h6>
-      <ul>
-        ${maquina.componentes.map(c => `
-          <li><strong>${c.componente}</strong> (${c.unidade}) 
-              → Min: ${c.parametroMin}, Max: ${c.parametroMax}</li>
-        `).join("")}
-      </ul>
-    `;
+            <h5>Máquina ${maquina.idMaquina}</h5>
+            <p>Status: <span style="color:${status === 'estavel' ? 'green' : status === 'alerta' ? 'yellow' : 'red'}">
+                ${status.toUpperCase()}
+            </span></p> 
+            <hr>
+            <h6>Componentes</h6>
+            <ul>
+                ${maquina.componentes.map(c => `
+                    <li><strong>${c.componente}</strong> (${c.unidade}): Min: ${c.parametroMin}, Max: ${c.parametroMax}</li>
+                `).join("")}
+            </ul>
+        `;
 
         document.getElementById("modalConteudo").innerHTML = html;
         new bootstrap.Modal(document.getElementById("maquinaModal")).show();
+    }
+
+    function adicionarComponente() {
+        const container = document.getElementById("componentesContainer");
+        const div = document.createElement("div");
+        div.className = "comp-row mb-3";
+        div.innerHTML = `
+            <input type="text" class="form-control mb-2" name="nomeComponente[]" placeholder="Nome do componente">
+            <input type="text" class="form-control mb-2" name="unidade[]" placeholder="Unidade de medida">
+            <input type="number" class="form-control mb-2" name="parametroMin[]" placeholder="Parâmetro Mínimo">
+            <input type="number" class="form-control mb-2" name="parametroMax[]" placeholder="Parâmetro Máximo">
+        `;
+        container.appendChild(div);
+    }
+
+    async function salvarMaquina(event) {
+        event.preventDefault();
+
+        const form = document.getElementById("formAddMaquina");
+        const formData = new FormData(form);
+
+        const idMaquina = formData.get("idMaquina");
+        const nomes = formData.getAll("nomeComponente[]");
+        const unidades = formData.getAll("unidade[]");
+        const minimos = formData.getAll("parametroMin[]");
+        const maximos = formData.getAll("parametroMax[]");
+
+        const componentes = [];
+        for (let i = 0; i < nomes.length; i++) {
+            componentes.push({
+                nomeComponente: nomes[i],
+                unidade: unidades[i],
+                parametroMin: minimos[i],
+                parametroMax: maximos[i]
+            });
+        }
+
+        const maquina = { idMaquina, idEmpresa, componentes };
+
+        try {
+            const response = await fetch("/maquina/adicionar", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(maquina)
+            });
+
+            if (!response.ok) {
+                const err = await response.json();
+                alert("Erro do servidor: " + err.message);
+                return;
+            }
+
+            alert("Máquina cadastrada com sucesso!");
+            form.reset();
+            listarMaquinasPorEmpresas();
+            bootstrap.Modal.getInstance(document.getElementById("addMaquinaModal")).hide();
+
+        } catch (err) {
+            console.error("Erro de conexão:", err);
+            alert("Erro de conexão com o servidor.");
+        }
     }
 </script>
