@@ -72,15 +72,16 @@ async function cadastrar(req, res) {
 
 async function editar(req, res) {
     try {
-        const { idComponenteHardware, nomeComponente, unidadeMedida } = req.body;
+        const { idComponenteHardware, nomeComponente, unidadeMedida, parametroMin, parametroMax } = req.body;
 
         console.log("Dados recebidos na edição:", req.body);
 
-        if (!idComponenteHardware || !nomeComponente || !unidadeMedida) {
+        if (!idComponenteHardware || !nomeComponente || !unidadeMedida || !parametroMin || !parametroMax) {
             return res.status(400).send("Dados inválidos para edição");
         }
 
-        await maquinaModel.editarComponente(idComponenteHardware, nomeComponente, unidadeMedida);
+        await maquinaModel.editarComponente(idComponenteHardware, nomeComponente, unidadeMedida, parametroMin, parametroMax);
+        await maquinaModel.editarHardware(idComponenteHardware, parametroMin, parametroMax);
 
         res.status(200).json({ message: "Componente editado com sucesso" });
     } catch (erro) {

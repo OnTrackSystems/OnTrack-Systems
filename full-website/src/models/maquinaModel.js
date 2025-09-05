@@ -64,6 +64,18 @@ function editarComponente(idComponenteHardware, nomeComponente, unidadeMedida) {
         WHERE idComponenteHardware = ${idComponenteHardware};
     `;
     console.log("Executando SQL: \n" + instrucaoSql);
+
+    return database.executar(instrucaoSql);
+}
+
+function editarHardware(idComponenteHardware, parametroMin, parametroMax){
+    const instrucaoSql = `
+        UPDATE parametros
+        SET parametroMIn = '${parametroMin}', parametroMax = '${parametroMax}'
+        WHERE fkComponenteHardware = ${idComponenteHardware};
+    `;
+    console.log("Executando SQL: \n" + instrucaoSql);
+
     return database.executar(instrucaoSql);
 }
 
@@ -81,5 +93,6 @@ module.exports = {
     cadastrarMaquina,
     cadastrarComponente,
     editarComponente,
+    editarHardware,
     excluirMaquina
 };
