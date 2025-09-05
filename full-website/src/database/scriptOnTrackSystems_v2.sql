@@ -23,6 +23,7 @@ CREATE TABLE empresas (
   cpf CHAR(11) NOT NULL,
   telefone CHAR(11) NOT NULL,
   acesso VARCHAR(20) NOT NULL,
+  fotoPerfil VARCHAR(200),
   fkEmpresa INT NOT NULL,
   PRIMARY KEY (idUsuario),
   UNIQUE INDEX email_UNIQUE (email),
