@@ -45,9 +45,13 @@ async function cadastrar(req, res) {
     try {
         const { idMaquina, idEmpresa, componentes } = req.body;
 
-        if (!idEmpresa || !idMaquina || !componentes || componentes.length === 0) {
-            return res.status(400).send("Dados inválidos para cadastro da máquina");
-        }
+        if (!idEmpresa) {
+            return res.status(400).send("Empresa inválidos");
+        } else if (!idMaquina) {
+            return res.status(400).send("Maquina inválidos");
+        } else if (!componentes) {
+            return res.status(400).send("Componentes inválidos");
+        } 
 
         // 1. Inserir máquina
         const maquina = await maquinaModel.cadastrarMaquina(idMaquina, idEmpresa);

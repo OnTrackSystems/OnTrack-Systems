@@ -269,7 +269,8 @@
         const div = document.createElement("div");
         div.className = "comp-row mb-3";
         div.innerHTML = `
-            <select type="text" class="form-control mb-2 name="nomeComponente[]">
+            <select class="form-control mb-2" name="nomeComponente[]">
+                <option value="0"> Selecione um Componente</option>
                 <option value="CPU">CPU</option>
                 <option value="RAM">RAM</option>
                 <option value="DISCO">DISCO</option>
@@ -293,6 +294,12 @@
         const minimos = formData.getAll("parametroMin[]");
         const maximos = formData.getAll("parametroMax[]");
 
+        console.log(idMaquina)
+        console.log(nomes)
+        console.log(unidades)
+        console.log(minimos)
+        console.log(maximos)
+        
         const componentes = [];
         for (let i = 0; i < nomes.length; i++) {
             componentes.push({
@@ -302,6 +309,8 @@
                 parametroMax: maximos[i]
             });
         }
+
+        console.log(componentes)
 
         const maquina = { idMaquina, idEmpresa, componentes };
 
@@ -314,18 +323,30 @@
 
             if (!response.ok) {
                 const err = await response.json();
-                alert("Erro do servidor: " + err.message);
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro do servidor",
+                    text: err.message
+                });
                 return;
-            }
+            }   
 
-            alert("Máquina cadastrada com sucesso!");
+            Swal.fire({
+                icon: "success",
+                title: "Sucesso!",
+                text: "Máquina cadastrada com sucesso!"
+            });
             form.reset();
             listarMaquinasPorEmpresas();
             bootstrap.Modal.getInstance(document.getElementById("addMaquinaModal")).hide();
 
         } catch (err) {
             console.error("Erro de conexão:", err);
-            alert("Erro de conexão com o servidor.");
+            Swal.fire({
+                icon: "error",
+                title: "Erro de conexão",
+                text: "Não foi possível conectar ao servidor."
+            });
         }
     }
 
@@ -349,19 +370,19 @@
             const row = document.createElement("div");
             row.className = "comp-row mb-3";
             row.innerHTML = `
-      <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware ?? ""}">
+      <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
       <div class="row g-2">
         <div class="col-md-4">
-          <input type="text" class="form-control" name="nomeComponente[]" placeholder="Nome" value="${c.componente ?? ""}">
+          <input type="text" class="form-control" name="nomeComponente[]" placeholder="Nome" value="${c.componente}">
         </div>
         <div class="col-md-2">
-          <input type="text" class="form-control" name="unidade[]" placeholder="Unidade" value="${c.unidade ?? ""}">
+          <input type="text" class="form-control" name="unidade[]" placeholder="Unidade" value="${c.unidade}">
         </div>
         <div class="col-md-3">
-          <input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin ?? ""}">
+          <input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}">
         </div>
         <div class="col-md-3">
-          <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax ?? ""}">
+          <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}">
         </div>
       </div>
     `;
@@ -377,7 +398,11 @@
         const idsComponentes = JSON.parse(sessionStorage.getItem("IDS_COMPONENTES")) || [];
 
         if (idsComponentes.length === 0) {
-            alert("Nenhum componente encontrado para editar!");
+            Swal.fire({
+                icon: "warning",
+                title: "Atenção",
+                text: "Nenhum componente encontrado para editar!"
+            });
             return;
         }
 
@@ -389,8 +414,25 @@
         const parametroMin = document.querySelector("[name='parametroMin[]']").value.trim();
         const parametroMax = document.querySelector("[name='parametroMax[]']").value.trim();
 
+        if(!nomeComponente){
+            alert("componente")
+        }
+        if(!unidadeMedida){
+            alert("unidade medida")
+        }
+        if(!parametroMax){
+            alert("max")
+        }
+        if(!parametroMin){
+            alert("min")
+        }
+
         if (!nomeComponente || !unidadeMedida || !parametroMax || !parametroMin) {
-            alert("Preencha todos os campos antes de salvar!");
+            Swal.fire({
+                icon: "error",
+                title: "Campos obrigatórios",
+                text: "Preencha todos os campos antes de salvar!"
+            });
             return;
         }
 
@@ -421,11 +463,23 @@
             })
             .then(data => {
                 console.log("Resposta do servidor:", data);
-                alert("Componente editado com sucesso!");
+                Swal.fire({
+                    icon: "success",
+                    title: "Sucesso!",
+                    text: "Componente editado com sucesso!"
+                });
                 bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
+                bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
                 listarMaquinasPorEmpresas();
             })
-            .catch(err => console.error("Erro na edição:", err));
+            .catch(err => {
+                console.error("Erro na edição:", err);
+                Swal.fire({
+                    icon: "error",
+                    title: "Erro na edição",
+                    text: "Não foi possível editar o componente."
+                });
+            });
     }
 
 
@@ -448,13 +502,22 @@
                 throw new Error("Erro ao excluir máquina");
             }
 
-            alert("Máquina excluída com sucesso!");
+            Swal.fire({
+                icon: "success",
+                title: "Máquina excluída",
+                text: "Máquina excluída com sucesso!"
+            });
+
             listarMaquinasPorEmpresas();
             bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal")).hide();
             bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
         } catch (error) {
             console.error(error);
-            alert("Erro ao excluir máquina");
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Erro ao excluir máquina"
+            });
         }
     });
 </script>
