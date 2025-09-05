@@ -62,13 +62,6 @@ CREATE TABLE parametros (
   );
 
 
-CREATE TABLE avisos (
-  idAvisos INT NOT NULL,
-  dataHora DATETIME NULL DEFAULT NULL,
-  fkParametros INT NOT NULL,
-  PRIMARY KEY (idAvisos),
-  FOREIGN KEY (fkParametros) REFERENCES parametros (idParametros)
-  );
 
 select * from maquinas;
 
