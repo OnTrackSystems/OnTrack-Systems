@@ -5,6 +5,7 @@ function listarPorEmpresa(idEmpresa) {
         SELECT m.idMaquina,
             e.nome AS empresa,
             p.idParametros,
+            ch.idComponenteHardware,
             ch.nomeComponente,
             ch.unidadeMedida,        
             p.parametroMax,
@@ -56,8 +57,29 @@ async function cadastrarComponente(idMaquina, nomeComponente, unidadeMedida, par
     return database.executar(instrucaoParametro);
 }
 
+function editarComponente(idComponenteHardware, nomeComponente, unidadeMedida) {
+    const instrucaoSql = `
+        UPDATE componentesHardware
+        SET nomeComponente = '${nomeComponente}', unidadeMedida = '${unidadeMedida}'
+        WHERE idComponenteHardware = ${idComponenteHardware};
+    `;
+    console.log("Executando SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+// Excluir máquina (remove parâmetros, depois a máquina)
+async function excluirMaquina(idMaquina) {
+    var deleteParametros = `DELETE FROM parametros WHERE fkMaquina = ${idMaquina};`;
+    await database.executar(deleteParametros);
+
+    var deleteMaquina = `DELETE FROM maquinas WHERE idMaquina = ${idMaquina};`;
+    return database.executar(deleteMaquina);
+}
+
 module.exports = {
     listarPorEmpresa,
     cadastrarMaquina,
-    cadastrarComponente
+    cadastrarComponente,
+    editarComponente,
+    excluirMaquina
 };

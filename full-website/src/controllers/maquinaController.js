@@ -23,6 +23,7 @@ function listarPorEmpresa(req, res) {
 
                 if (row.nomeComponente) {
                     maquina.componentes.push({
+                        idComponenteHardware: row.idComponenteHardware, 
                         componente: row.nomeComponente,
                         unidade: row.unidadeMedida,
                         parametroMax: row.parametroMax,
@@ -54,8 +55,8 @@ async function cadastrar(req, res) {
         // 2. Inserir parâmetros/componentes
         for (const c of componentes) {
             await maquinaModel.cadastrarComponente(
-                maquina.insertId, 
-                c.nomeComponente, 
+                maquina.insertId,
+                c.nomeComponente,
                 c.unidade,
                 c.parametroMin,
                 c.parametroMax
@@ -69,7 +70,46 @@ async function cadastrar(req, res) {
     }
 }
 
+async function editar(req, res) {
+    try {
+        const { idComponenteHardware, nomeComponente, unidadeMedida } = req.body;
+
+        console.log("Dados recebidos na edição:", req.body);
+
+        if (!idComponenteHardware || !nomeComponente || !unidadeMedida) {
+            return res.status(400).send("Dados inválidos para edição");
+        }
+
+        await maquinaModel.editarComponente(idComponenteHardware, nomeComponente, unidadeMedida);
+
+        res.status(200).json({ message: "Componente editado com sucesso" });
+    } catch (erro) {
+        console.error("Erro ao editar componente:", erro);
+        res.status(500).json(erro.sqlMessage || "Erro interno do servidor");
+    }
+}
+
+// Excluir máquina
+async function excluir(req, res) {
+    try {
+        const idMaquina = req.params.idMaquina;
+
+        if (!idMaquina) {
+            return res.status(400).send("idMaquina é obrigatório");
+        }
+
+        await maquinaModel.excluirMaquina(idMaquina);
+
+        res.status(200).send("Máquina excluída com sucesso!");
+    } catch (erro) {
+        console.log(erro);
+        res.status(500).json(erro.sqlMessage);
+    }
+}
+
 module.exports = {
     listarPorEmpresa,
-    cadastrar
+    cadastrar,
+    editar,
+    excluir
 };
