@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
+    <title>OnTrack | Editar Perfil</title>
+    <script src="https://kit.fontawesome.com/adb04f503a.js" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    .nav-item a {
+        color: #d62a2a;
+        font-size: 20px;
+    }
+
+    .nav-item a:hover {
+        color: #d62a2a;
+        font-size: 22px;
+    }
+
+    .offcanvas-header {
+        background-color: #d62a2a;
+        font-weight: bold;
+        font-size: 25px;
+    }
+
+    .offcanvas-body i {
+        margin: 10px;
+        color: #d62a2a;
+    }
+
+    .teste {
+        border: solid 1px rgb(255, 255, 255);
+        background-color: white;
+        border-radius: 10px;
+        padding: 50px;
+
+    }
+
+    body {
+        background-image: url('./assets/imgs/Rectangle\ 4.png');
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh; /* troque height por min-height */
+    }
+
+    .botaoadd {
+        background-color: #d62a2a;
+        color: white;
+    }
+
+    .botaoadd:hover {
+        background-color: #8E0000;
+        color: white;
+        text-decoration: none;
+    }
+
+    .botaoadd a {
+        color: white;
+        text-decoration: none;
+        font-family: "Arial", sans-serif;
+
+    }
+
+    .btn_excluir:hover {
+        color: #8E0000;
+        margin-left: 3px;
+    }
+
+  .main-content-push {
+    padding-top: 270px; 
+}
+</style>
+
+<body onload="carregarPerfil()">
+
+    <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
+        <div class="container-fluid ">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo"
+                    style="width: 150px; height: auto; margin-left: 10px;"></a>
+            <div class="ms-auto d-flex align-items-center justify-content-center">
+                <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
+                <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
+                    style="width: 50px; height: 50px;">
+                    <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px; ">
+                </div>
+            </div>
+
+
+
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title text-white" id="offcanvasNavbarLabel">Menu</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body slide">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item d-flex align-items-center">
+                            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page"
+                                href="dashboard.html">Dashboard</a>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <i class="fa-solid fa-user"></i><a class="nav-link" href="#">Editar Perfil</a>
+                        </li>
+                        </li>
+                        <li class=" d-flex nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
+                                class="nav-link" href="controle_maquinas.html">Controle de maquinas</a>
+                        </li>
+                        <li class="nav-item d-flex align-items-center">
+                            <i class="fa-solid fa-x"></i><a class="nav-link" href="index.html">Sair</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container main-content-push">
+            
+        <div class="row shadow-lg rounded bg-white p-5 mt-10">
+            <h1 class="text-center  rounded">Editar Perfil</h1>
+
+            <div class="col-12 col-md-8 mx-auto">
+
+                <div class="mb-3">
+                    <label for="ipt_nome" class="form-label">Nome:</label>
+                    <input type="text" id="ipt_nome" class="form-control" placeholder="Seu nome">
+                </div>
+
+                <div class="mb-3">
+                    <label for="ipt_email" class="form-label">Email:</label>
+                    <input type="email" id="ipt_email" class="form-control" placeholder="seuemail@email.com">
+                </div>
+
+                <div class="mb-3">
+                    <label for="ipt_telefone" class="form-label">Telefone:</label>
+                    <input type="text" id="ipt_telefone" class="form-control" placeholder="(99) 99999-9999">
+                </div>
+
+                <div class="mb-3">
+                    <label for="ipt_senha" class="form-label">Senha:</label>
+                    <input type="password" id="ipt_senha" class="form-control" placeholder="*********">
+                </div>
+
+                <div class="mb-3">
+                    <label for="ipt_senha_confirma" class="form-label">Confirmar Senha:</label>
+                    <input type="password" id="ipt_senha_confirma" class="form-control" placeholder="*********">
+                </div>
+
+                <button type="button" onclick="editarPerfil()" class="btn btn-danger w-100">Salvar Alterações</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS bundle -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        async function carregarPerfil() {
+            try {
+                let idUsuario = sessionStorage.ID_USUARIO;
+                const resposta = await fetch(`/usuarios/carregarusuario/${idUsuario}`);
+                const usuario = await resposta.json();
+
+                document.getElementById("ipt_nome").value = usuario[0].nome;
+                document.getElementById("ipt_telefone").value = usuario[0].telefone;
+                document.getElementById("ipt_email").value = usuario[0].email;
+                document.getElementById("ipt_senha").value = usuario[0].senha;
+            } catch (erro) {
+                console.error("Erro ao carregar perfil:", erro);
+            }
+        }
+
+        async function editarPerfil() {
+            try {
+                let idUsuario = sessionStorage.ID_USUARIO;
+
+                const nomeVar = ipt_nome.value;
+                const telefoneVar = ipt_telefone.value;
+                const emailVar = ipt_email.value;
+                const senhaVar = ipt_senha.value;
+                const senha_confirmaVar = ipt_senha_confirma.value;
+
+                if (senhaVar !== senha_confirmaVar) {
+                    Swal.fire({
+                        title: "Senhas desiguais",
+                        text: "As senhas digitadas não são iguais.",
+                        icon: "error"
+                    });
+                    return;
+                }
+
+                await fetch(`/usuarios/editarUsuarios/${idUsuario}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        nomeServer: nomeVar,
+                        telefoneServer: telefoneVar,
+                        emailServer: emailVar,
+                        senhaServer: senhaVar,
+                        cpfServer: "", 
+                        acessoServer: "" 
+                    })
+                });
+
+                Swal.fire({
+                    title: "Sucesso!",
+                    text: "Perfil atualizado com sucesso.",
+                    icon: "success"
+                });
+
+            } catch (erro) {
+                console.error("Erro ao editar perfil:", erro);
+            }
+        }
+    </script>
+
+</body>
+
+</html>
