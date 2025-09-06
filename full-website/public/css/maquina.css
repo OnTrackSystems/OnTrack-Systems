@@ -1,0 +1,300 @@
+body {
+    background-image: url('../assets/imgs/Rectangle\ 4.png');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    padding-top: 80px;
+}
+
+.nav-item a {
+    color: #d62a2a;
+    font-size: 20px;
+}
+
+.nav-item a:hover {
+    color: #d62a2a;
+    font-size: 22px;
+}
+
+.offcanvas-header {
+    background-color: #d62a2a;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+.offcanvas-body i {
+    margin: 10px;
+    color: #d62a2a;
+}
+
+.teste {
+    border: solid 1px rgb(255, 255, 255);
+    background-color: white;
+    border-radius: 10px;
+    padding: 50px;
+
+}
+
+.botaoadd {
+    background-color: #d62a2a;
+    color: white;
+}
+
+.botaoadd:hover {
+    background-color: white;
+    color: black;
+    text-decoration: none;
+    border: 2px solid #d62a2a;
+}
+
+.botaoadd a {
+    color: white;
+    text-decoration: none;
+    font-family: "Arial", sans-serif;
+
+}
+
+.btn_excluir:hover {
+    color: #8E0000;
+    margin-left: 3px;
+}
+
+#listaMaquinas {
+    top: 120px;
+    display: flex;
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.maquina-card {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 12px;
+    width: 200px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.maquina-card:hover {
+    transform: scale(1.05);
+}
+
+.modal-content {
+    display: flex;
+    background: #ffffff;
+    color: #000000;
+    border-radius: 8px;
+}
+
+.modal-header,
+.modal-footer {
+    border-bottom: 1px solid #000;
+}
+
+.modal-footer {
+    border-bottom: none;
+}
+
+.modal-body hr {
+    border: none;
+    border-top: 1px solid #000 !important;
+    /* força a borda preta */
+    opacity: 1 !important;
+    /* remove o efeito de "transparência" do Bootstrap */
+
+}
+
+.modal-body .comp-row {
+    border-top: 1px solid #000;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
+.modal-body .comp-row:first-child {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.btn-close {
+    filter: none;
+    opacity: 1;
+}
+
+/* Botão base */
+.btn-edit {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 140px;
+    height: 40px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 10px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    /* esconde texto quando some */
+}
+
+/* Texto some no hover */
+.btn-edit .btn-text {
+    transition: opacity .25s ease;
+}
+
+.btn-edit:hover .btn-text {
+    opacity: 0;
+}
+
+/* Ícone começa colado à direita dentro do botão */
+.btn-edit i {
+    position: absolute;
+    left: calc(100% - 35px);
+    top: 50%;
+    transform: translateY(-50%);
+    transition: left .30s ease, transform .30s ease, opacity .20s ease;
+    font-size: 16px;
+}
+
+/* No hover, o ícone desliza pro centro */
+.btn-edit:hover i {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* centraliza pelo próprio centro */
+}
+
+.btn-edit:active {
+    transform: scale(1.05);
+    /* aumenta 5% ao clicar */
+    transition: transform 0.1s ease;
+}
+
+.btn-delete {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 140px;
+    height: 40px;
+    border: none;
+    padding: 0 15px;
+    background-color: white;
+    color: red;
+    border: 1px solid red;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+/* Texto */
+.btn-delete .text {
+    transition: 0.3s;
+}
+
+/* Ícone */
+.btn-delete .icon {
+    position: absolute;
+    right: 20px;
+    width: 16px;
+    height: 16px;
+    transition: 0.3s;
+    fill: white;
+}
+
+/* Hover → texto some */
+.btn-delete:hover .text {
+    color: transparent;
+}
+
+/* Hover → ícone vai pro centro */
+.btn-delete:hover .icon {
+    right: 50%;
+    transform: translateX(50%);
+}
+
+/* Clique → cresce um pouco */
+.btn-delete:active {
+    transform: scale(1.05);
+    transition: transform 0.1s ease;
+}
+
+.button {
+    width: 150px;
+    height: 40px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    font-weight: bold;
+    margin-left: -0.8vw;
+}
+
+.button_text {
+    position: absolute;
+    left: 20px;
+    margin-top: 1.45px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.3s;
+    color: #333;
+}
+
+.button_icon {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin-top: 2.6px;
+    height: 100%;
+    width: 40px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s;
+    font-size: 20px;
+    color: #333;
+}
+
+.button:hover .button_text {
+    color: transparent;
+}
+
+.button:hover .button_icon {
+    width: 100%;
+    right: 0;
+}
+
+.btn-addcomp {
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    font-weight: 500;
+}
+
+.btn-addcomp:hover {
+    background-color: white;
+    color: black;
+    border-color: black;
+}
+
+.button:active {
+    transform: scale(1.05);
+    transition: transform 0.1s ease;
+}

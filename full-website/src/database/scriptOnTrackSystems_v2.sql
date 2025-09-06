@@ -23,6 +23,7 @@ CREATE TABLE empresas (
   cpf CHAR(11) NOT NULL,
   telefone CHAR(11) NOT NULL,
   acesso VARCHAR(20) NOT NULL,
+  fotoPerfil VARCHAR(200),
   fkEmpresa INT NOT NULL,
   PRIMARY KEY (idUsuario),
   UNIQUE INDEX email_UNIQUE (email),
@@ -61,13 +62,6 @@ CREATE TABLE parametros (
   );
 
 
-CREATE TABLE avisos (
-  idAvisos INT NOT NULL,
-  dataHora DATETIME NULL DEFAULT NULL,
-  fkParametros INT NOT NULL,
-  PRIMARY KEY (idAvisos),
-  FOREIGN KEY (fkParametros) REFERENCES parametros (idParametros)
-  );
 
 select * from maquinas;
 

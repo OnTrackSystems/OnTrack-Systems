@@ -13,4 +13,14 @@ router.post("/adicionar", function (req, res) {
     maquinaController.cadastrar(req, res);
 });
 
+// Editar máquina
+router.put("/editar", function (req, res) {
+    maquinaController.editar(req, res);
+});
+
+// Excluir máquina
+router.delete("/excluir/:idMaquina", function (req, res) {
+    maquinaController.excluir(req, res);
+});
+
 module.exports = router;
