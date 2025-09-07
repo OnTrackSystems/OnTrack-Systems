@@ -23,7 +23,7 @@ function listarPorEmpresa(req, res) {
 
                 if (row.nomeComponente) {
                     maquina.componentes.push({
-                        idComponenteHardware: row.idComponenteHardware, 
+                        idComponenteHardware: row.idComponenteHardware,
                         componente: row.nomeComponente,
                         unidade: row.unidadeMedida,
                         parametroMax: row.parametroMax,
@@ -40,28 +40,22 @@ function listarPorEmpresa(req, res) {
         });
 }
 
-// Cadastro de máquina
 async function cadastrar(req, res) {
     try {
         const { idMaquina, idEmpresa, componentes } = req.body;
 
-        if (!idEmpresa) {
-            return res.status(400).send("Empresa inválidos");
-        } else if (!idMaquina) {
-            return res.status(400).send("Maquina inválidos");
-        } else if (!componentes) {
-            return res.status(400).send("Componentes inválidos");
-        } 
+        if (!idEmpresa || !idMaquina || !componentes) {
+            return res.status(400).send("Dados inválidos");
+        }
 
-        // 1. Inserir máquina
-        const maquina = await maquinaModel.cadastrarMaquina(idMaquina, idEmpresa);
+        // Inserir máquina
+        await maquinaModel.cadastrarMaquina(idMaquina, idEmpresa);
 
-        // 2. Inserir parâmetros/componentes
+        // Inserir parâmetros
         for (const c of componentes) {
-            await maquinaModel.cadastrarComponente(
-                maquina.insertId,
-                c.nomeComponente,
-                c.unidade,
+            await maquinaModel.cadastrarParametro(
+                idMaquina,
+                c.idComponente,
                 c.parametroMin,
                 c.parametroMax
             );
@@ -70,6 +64,16 @@ async function cadastrar(req, res) {
         res.status(201).send("Máquina cadastrada com sucesso!");
     } catch (erro) {
         console.log(erro);
+        res.status(500).json(erro.sqlMessage);
+    }
+}
+
+async function listar(req, res) {
+    try {
+        const componentes = await maquinaModel.listar();
+        res.json(componentes);
+    } catch (erro) {
+        console.log("Erro ao listar componentes:", erro);
         res.status(500).json(erro.sqlMessage);
     }
 }
@@ -115,6 +119,7 @@ async function excluir(req, res) {
 module.exports = {
     listarPorEmpresa,
     cadastrar,
+    listar,
     editar,
     excluir
 };

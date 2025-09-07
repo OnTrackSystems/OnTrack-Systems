@@ -47,8 +47,14 @@ CREATE TABLE  componentesHardware (
   nomeComponente VARCHAR(20) NULL,
   unidadeMedida VARCHAR(20) NULL,
   PRIMARY KEY (idComponenteHardware)
-  );
-
+  );	
+  
+insert into componentesHardware (nomeComponente, unidadeMedida) values
+('CPU', '%'),
+('RAM', '%'),
+('DISCO', 'GB'),
+('REDE', 'Pacotes'),
+('REDE', 'Tempo I/O');
 
 CREATE TABLE parametros (
   idParametros INT NOT NULL AUTO_INCREMENT,
