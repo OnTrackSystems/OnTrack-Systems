@@ -14,10 +14,21 @@
     <link rel="stylesheet" href="./css/maquina.css">
 </head>
 
+<style>
+    .admin {
+        display: flex;
+
+    }
+
+    .cliente {
+        display: flex;
+    }
+</style>
+
 <body onload="listarMaquinasPorEmpresas()">
     <!-- NAVBAR -->
-    <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
-        <div class="container-fluid ">
+    <nav class="navbar bg-body-tertiary fixed-top">
+        <div class="container-fluid">
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
                 aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -26,13 +37,14 @@
                     style="width: 150px; height: auto; margin-left: 10px;"></a>
             <div class="ms-auto d-flex align-items-center justify-content-center">
                 <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
-                <div class="rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
+                <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
                     style="width: 50px; height: 50px;">
-                    <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px;">
+                    <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px; ">
                 </div>
             </div>
 
-            <!-- MENU LATERAL -->
+
+
             <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
                 aria-labelledby="offcanvasNavbarLabel">
                 <div class="offcanvas-header">
@@ -43,19 +55,26 @@
                     <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
                         <li class="nav-item d-flex align-items-center">
                             <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page"
-                                href="dashboard.html">Dashboard</a>
+                                href="#">Dashboard</a>
                         </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-user"></i><a class="nav-link" href="controle_usuarios.html">Controle
-                                de usuários</a>
+                        <li class=" admin nav-item  align-items-center ">
+                            <i class="fa-solid fa-user  "></i><a class="nav-link "
+                                href="controle_usuarios.html">Controle de
+                                usuários</a>
                         </li>
-                        <li class=" d-flex nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
+                        <li class=" cliente nav-item  align-items-center">
+                            <i class="fa-solid fa-user"></i><a class="nav-link" href="editarperfil.html">Editar
+                                Perfil</a>
+                        </li>
+                        <li class=" admin nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
                                 class="nav-link " href="controle_maquinas.html">Controle de maquinas</a>
                         </li>
                         <li class="nav-item d-flex align-items-center">
                             <i class="fa-solid fa-x"></i><a class="nav-link" href="index.html">Sair</a>
                         </li>
+
                     </ul>
+
                 </div>
             </div>
         </div>
@@ -218,6 +237,16 @@
 </html>
 
 <script>
+    const linkUsuarios = document.querySelector(".admin");
+    const acessoCliente = document.querySelector(".cliente")
+    if (sessionStorage.ACESSO !== "Administrador") {
+        linkUsuarios.style.display = "none";
+    }
+    if (sessionStorage.ACESSO !== "Usuário") {
+        acessoCliente.style.display = "none";
+        console.log("aura")
+    }
+
     const idEmpresa = sessionStorage.getItem("ID_EMPRESA");
 
     function listarMaquinasPorEmpresas() {
@@ -425,8 +454,8 @@
 
             // Linha com inputs e botão excluir
             row.innerHTML = `
-            <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
-            <div class="row g-2 align-items-center">
+                <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
+                <div class="row g-2 align-items-center">
                 <div class="col-md-4">
                     <select class="form-control" name="idComponente[]">
                         ${options}
@@ -438,8 +467,11 @@
                 <div class="col-md-3">
                     <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}">
                 </div>
-                <div class="col-md-2">
-                    <button type="button" style="margin-left" class="btn btn-danger btn-sm" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})">Excluir</button>                </div>
+                <div class="col-md-2 d-flex justify-content-end">
+                    <button style="width:auto;" class="btn-deletee" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})">
+                        <i class="fa-solid fa-trash icon"></i>
+                    </button>
+                </div>
                 </div>
         `;
 
@@ -477,6 +509,8 @@
 
             // Fecha o modal de confirmação
             bootstrap.Modal.getInstance(document.getElementById("confirmDeleteCompModal")).hide();
+
+            listarMaquinasPorEmpresas()
 
             Swal.fire({
                 icon: "success",

@@ -245,6 +245,43 @@ body {
     transition: transform 0.1s ease;
 }
 
+.btn-deletee {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 140px;
+    height: 40px;
+    border: none;
+    padding: 0 15px;
+    background-color: white;
+    color: red;
+    border: 1px solid red;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: 0.3s;
+    overflow: hidden;
+}
+
+/* Texto */
+.btn-deletee .text {
+    transition: 0.3s;
+}
+
+/* Ícone */
+.btn-deletee .icon {
+    width: 16px;
+    height: 16px;
+    transition: 0.3s;
+    fill: white;
+}
+
+/* Clique → cresce um pouco */
+.btn-deletee:active {
+    transform: scale(1.05);
+    transition: transform 0.1s ease;
+}
+
 .button {
     width: 150px;
     height: 40px;
@@ -313,10 +350,12 @@ body {
 }
 
 select.form-control {
-  appearance: none; /* remove o padrão */
-  background: white url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
-  background-size: 16px;
-  padding-right: 30px; /* espaço pra seta não sobrepor o texto */
-  border: 1px solid #ccc;
-  border-radius: 6px;
+    appearance: none;
+    /* remove o padrão */
+    background: white url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+    background-size: 16px;
+    padding-right: 30px;
+    /* espaço pra seta não sobrepor o texto */
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
