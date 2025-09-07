@@ -134,7 +134,7 @@
                     </div>
 
                     <div class="modal-body" style="border-bottom: 1px solid black;">
-                        <!-- IDs -->
+
                         <input type="hidden" id="editOldIdMaquina">
 
                         <div class="row g-3">
@@ -153,8 +153,16 @@
 
                         <h6>Componentes</h6>
                         <div id="editComponentesWrap"></div>
-                        <small class="text-muted">Edite nome, unidade e limites. (Os parâmetros serão
-                            atualizados.)</small>
+
+                        <h6 style="margin-top: 15px; margin-left: 1px;">Adicionar Componentes</h6>
+                        <div style="margin-top: 5px;" id="adicionarComponente"></div>
+
+                        <div class="btn btn-sm btn-addcomp" style="border: none;" onclick="adicionarComponenteEditar()">
+                            <button class="button" type="button">
+                                <span class="button_text" style="margin-top: -1px;">Adicionar</span>
+                                <span class="button_icon">+</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
@@ -166,11 +174,31 @@
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAR EXCLUSÃO -->
-    <div class="modal fade" id="deleteConfirmModal">
+    <!-- MODAL CONFIRMAR EXCLUSÃO DE COMPONENTE -->
+    <div class="modal fade" id="confirmDeleteCompModal" tabindex="-1" aria-labelledby="confirmDeleteCompModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmDeleteCompModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir este componente?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="confirmDeleteCompBtn">Excluir</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMAR EXCLUSÃO -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border: none;">
+                <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Confirmar Exclusão</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
@@ -187,8 +215,6 @@
 
 </body>
 
-<div style="font-weight: bold;"></div>
-
 </html>
 
 <script>
@@ -198,15 +224,9 @@
         fetch(`/maquina?idEmpresa=${idEmpresa}`)
             .then(res => res.json())
             .then(maquinas => {
+
                 const lista = document.getElementById("listaMaquinas");
                 lista.innerHTML = "";
-
-                // Aqui salvamos os IDs de todos os componentes encontrados
-                const idsComponentes = maquinas
-                    .flatMap(m => m.componentes.map(c => c.idComponenteHardware));
-
-                // Armazena no sessionStorage como string JSON
-                sessionStorage.setItem("IDS_COMPONENTES", JSON.stringify(idsComponentes));
 
                 maquinas.forEach(m => {
                     let status = "estavel";
@@ -216,11 +236,11 @@
                     const card = document.createElement("div");
                     card.className = "maquina-card";
                     card.innerHTML = `
-                        <h4>Máquina ${m.idMaquina}</h4>
-                        <span class="badge" style="background:${cor}; font-size:14px;">
-                            ${status.toUpperCase()}
-                        </span>
-                    `;
+                    <h4>Máquina ${m.idMaquina}</h4>
+                    <span class="badge" style="background:${cor}; font-size:14px;">
+                        ${status.toUpperCase()}
+                    </span>
+                `;
 
                     card.onclick = () => abrirModal(m, status);
                     lista.appendChild(card);
@@ -260,6 +280,8 @@
         </ul>
         `;
 
+        console.log("Maquina detalhes:", JSON.stringify(maquina));
+
         document.getElementById("modalConteudo").innerHTML = html;
         new bootstrap.Modal(document.getElementById("maquinaModal")).show();
     }
@@ -274,8 +296,8 @@
         const div = document.createElement("div");
         div.className = "comp-row mb-3";
 
-        // Monta o select com os dados vindos do banco
         let options = `<option value="">Selecione um Componente</option>`;
+        // Monta o select com os dados vindos do banco
         componentes.forEach(c => {
             options += `<option value="${c.idComponenteHardware}">
                         ${c.nomeComponente} (${c.unidadeMedida})
@@ -292,6 +314,33 @@
         container.appendChild(div);
     }
 
+    async function adicionarComponenteEditar() {
+        const container = document.getElementById("adicionarComponente");
+
+        // Busca os componentes do banco
+        const resp = await fetch("/maquina/listar");
+        const componentes = await resp.json();
+
+        const div = document.createElement("div");
+        div.className = "comp-roww";
+
+        let options = `<option value="">Selecione um Componente</option>`;
+        // Monta o select com os dados vindos do banco
+        componentes.forEach(c => {
+            options += `<option value="${c.idComponenteHardware}">
+                        ${c.nomeComponente} (${c.unidadeMedida})
+                    </option>`;
+        });
+
+        div.innerHTML = `
+        <select class="form-control mb-2" name="idComponenteNovo[]">
+            ${options}
+        </select>
+        <input type="number" class="form-control mb-2" name="parametroMinNovo[]" placeholder="Parâmetro Mínimo">
+        <input type="number" class="form-control mb-2" name="parametroMaxNovo[]" placeholder="Parâmetro Máximo">
+    `;
+        container.appendChild(div);
+    }
 
     async function salvarMaquina(event) {
         event.preventDefault();
@@ -343,144 +392,231 @@
     let maquinaEmEdicao = null;
 
     // Abre o modal de edição preenchendo os campos
-    function abrirModalEdicao(maquina) {
-        // IMPORTANTE: cada componente precisa ter idComponenteHardware vindo da API
+    async function abrirModalEdicao(maquina) {
+        document.getElementById("adicionarComponente").innerHTML = "";
         maquinaEmEdicao = maquina;
 
-        // ids
+        // IDs
         document.getElementById("editOldIdMaquina").value = maquina.idMaquina;
         document.getElementById("editIdMaquinaView").value = maquina.idMaquina;
         document.getElementById("editNovoIdMaquina").value = maquina.idMaquina;
 
-        // componentes
+        // Componentes
         const wrap = document.getElementById("editComponentesWrap");
         wrap.innerHTML = "";
 
+        // Busca os componentes do banco
+        const resp = await fetch("/maquina/listar");
+        const componentes = await resp.json();
+
+        // Para cada componente da máquina, cria uma linha
         (maquina.componentes || []).forEach((c) => {
             const row = document.createElement("div");
-            row.className = "comp-row mb-3";
+            row.className = "comp-row mb-2";
+
+            // Monta as opções
+            let options = `<option value="">Selecione um Componente</option>`;
+            componentes.forEach(comp => {
+                const isSelected = comp.idComponenteHardware == c.idComponenteHardware ? "selected" : "";
+                options += `<option value="${comp.idComponenteHardware}" ${isSelected}>
+                        ${comp.nomeComponente} (${comp.unidadeMedida})
+                    </option>`;
+            });
+
+            // Linha com inputs e botão excluir
             row.innerHTML = `
-      <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
-      <div class="row g-2">
-        <div class="col-md-4">
-          <input type="text" class="form-control" name="nomeComponente[]" placeholder="Nome" value="${c.componente}">
-        </div>
-        <div class="col-md-2">
-          <input type="text" class="form-control" name="unidade[]" placeholder="Unidade" value="${c.unidade}">
-        </div>
-        <div class="col-md-3">
-          <input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}">
-        </div>
-        <div class="col-md-3">
-          <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}">
-        </div>
-      </div>
-    `;
+            <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <select class="form-control" name="idComponente[]">
+                        ${options}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}">
+                </div>
+                <div class="col-md-3">
+                    <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" style="margin-left" class="btn btn-danger btn-sm" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})">Excluir</button>                </div>
+                </div>
+        `;
+
             wrap.appendChild(row);
         });
 
+        // Mostra o modal
         new bootstrap.Modal(document.getElementById("editMaquinaModal")).show();
     }
 
-    function salvarEdicao(event) {
-        event.preventDefault(); // Evita recarregar a página
+    let componenteParaExcluir = null;
 
-        const idsComponentes = JSON.parse(sessionStorage.getItem("IDS_COMPONENTES")) || [];
+    function abrirModalExcluirComponente(idMaquina, idComponente) {
+        componenteParaExcluir = { idMaquina, idComponente };
 
-        if (idsComponentes.length === 0) {
-            Swal.fire({
-                icon: "warning",
-                title: "Atenção",
-                text: "Nenhum componente encontrado para editar!",
-                backdrop: false
-            });
-            return;
-        }
+        // Fecha o modal de edição
+        bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
+        bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
 
-        const idComponenteHardware = idsComponentes[0]; // pega o primeiro ID
-
-        // Pegando valores do modal
-        const nomeComponente = document.querySelector("[name='nomeComponente[]']").value.trim();
-        const unidadeMedida = document.querySelector("[name='unidade[]']").value.trim();
-        const parametroMin = document.querySelector("[name='parametroMin[]']").value.trim();
-        const parametroMax = document.querySelector("[name='parametroMax[]']").value.trim();
-
-        if (!nomeComponente) {
-            alert("componente")
-        }
-        if (!unidadeMedida) {
-            alert("unidade medida")
-        }
-        if (!parametroMax) {
-            alert("max")
-        }
-        if (!parametroMin) {
-            alert("min")
-        }
-
-        if (!nomeComponente || !unidadeMedida || !parametroMax || !parametroMin) {
-            Swal.fire({
-                icon: "error",
-                title: "Campos obrigatórios",
-                text: "Preencha todos os campos antes de salvar!",
-                backdrop: false
-            });
-            return;
-        }
-
-        console.log("Enviando para edição:", {
-            idComponenteHardware,
-            nomeComponente,
-            unidadeMedida,
-            parametroMin,
-            parametroMax
-        });
-
-        fetch(`/maquina/editar`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                idComponenteHardware,
-                nomeComponente,
-                unidadeMedida,
-                parametroMin,
-                parametroMax
-            })
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("Erro ao editar componente");
-                return res.json();
-            })
-            .then(data => {
-                console.log("Resposta do servidor:", data);
-                Swal.fire({
-                    icon: "success",
-                    title: "Sucesso!",
-                    text: "Componente editado com sucesso!",
-                    backdrop: false
-                });
-                bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
-                bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
-                listarMaquinasPorEmpresas();
-            })
-            .catch(err => {
-                console.error("Erro na edição:", err);
-                Swal.fire({
-                    icon: "error",
-                    title: "Erro na edição",
-                    text: "Não foi possível editar o componente.",
-                    backdrop: false 
-                });
-            });
+        const modal = new bootstrap.Modal(document.getElementById("confirmDeleteCompModal"));
+        modal.show();
     }
 
+    document.getElementById("confirmDeleteCompBtn").addEventListener("click", async () => {
+        if (!componenteParaExcluir) return;
+
+        const { idMaquina, idComponente } = componenteParaExcluir;
+
+        try {
+            const res = await fetch(`/maquina/excluirComponente/${idMaquina}/${idComponente}`, {
+                method: "DELETE"
+            });
+
+            if (!res.ok) throw new Error("Erro ao excluir componente");
+
+            // Fecha o modal de confirmação
+            bootstrap.Modal.getInstance(document.getElementById("confirmDeleteCompModal")).hide();
+
+            Swal.fire({
+                icon: "success",
+                title: "Componente excluído",
+                text: "O componente foi removido com sucesso.",
+                backdrop: false
+            });
+
+        } catch (err) {
+            console.error(err);
+            Swal.fire({
+                icon: "error",
+                title: "Erro",
+                text: "Não foi possível excluir o componente.",
+                backdrop: false
+            });
+        }
+    });
+
+    async function salvarEdicao(event) {
+        event.preventDefault();
+
+        const rows = document.querySelectorAll("#editComponentesWrap .comp-row");
+        const updates = [];
+
+        rows.forEach(row => {
+            const antigoId = row.querySelector("input[name='idComponenteHardware[]']").value;
+            const novoId = row.querySelector("select[name='idComponente[]']").value;
+            const parametroMin = row.querySelector("input[name='parametroMin[]']").value.trim();
+            const parametroMax = row.querySelector("input[name='parametroMax[]']").value.trim();
+
+            if (!parametroMin || !parametroMax || !novoId) {
+                return Swal.fire({
+                    icon: "error",
+                    title: "Campos obrigatórios",
+                    text: "Preencha todos os campos antes de salvar!",
+                    backdrop: false
+                });
+            }
+
+            updates.push({
+                antigoId,
+                novoId,
+                parametroMin,
+                parametroMax
+            });
+        });
+
+        try {
+            // Atualiza os componentes existentes
+            const resEditar = await fetch("/maquina/editar", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ updates })
+            });
+
+            if (!resEditar.ok) throw new Error("Erro ao editar componente");
+            await resEditar.json(); // pode ignorar o retorno se não for usado
+
+            // Prepara novos componentes (se houver)
+            const form = document.getElementById("formEditMaquina");
+            const formData = new FormData(form);
+
+            const idsComponentes = formData.getAll("idComponenteNovo[]");
+            const minimos = formData.getAll("parametroMinNovo[]");
+            const maximos = formData.getAll("parametroMaxNovo[]");
+
+            const novosComponentes = [];
+            for (let i = 0; i < idsComponentes.length; i++) {
+                if (!idsComponentes[i]) continue;
+                novosComponentes.push({
+                    idComponente: idsComponentes[i],
+                    parametroMin: minimos[i],
+                    parametroMax: maximos[i]
+                });
+            }
+
+            const idMaquina = document.getElementById("editIdMaquinaView").value;
+
+            if (novosComponentes.length > 0) {
+                // Adiciona novos componentes
+                const resAdd = await fetch("/maquina/adicionarComponente", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idMaquina, componentes: novosComponentes })
+                });
+
+                if (!resAdd.ok) throw new Error("Erro ao adicionar novo componente");
+                const msg = await resAdd.text();
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Edição concluída",
+                    text: msg,
+                    backdrop: false
+                }).then(() => {
+                    bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
+                    bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
+                    listarMaquinasPorEmpresas();
+                });
+            } else {
+                // Apenas edição de componentes existentes
+                Swal.fire({
+                    icon: "success",
+                    title: "Edição concluída",
+                    text: "Componentes editados com sucesso!",
+                    backdrop: false
+                }).then(() => {
+                    bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
+                    bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
+                    listarMaquinasPorEmpresas();
+                });
+            }
+
+        } catch (err) {
+            console.error("Erro na edição:", err);
+            Swal.fire({
+                icon: "error",
+                title: "Erro na edição",
+                text: "Não foi possível editar os componentes.",
+                backdrop: false
+            });
+        }
+    }
 
     // Abrir modal de exclusão
     function abrirModalExclusao(maquina) {
         maquinaSelecionada = maquina;
-        new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
+
+        console.log("Máquina selecionada para exclusão:", maquinaSelecionada);
+
+        // Fecha o modal de detalhes (se estiver aberto)
+        const modalMaquina = bootstrap.Modal.getInstance(document.getElementById("maquinaModal"));
+        if (modalMaquina) {
+            modalMaquina.hide();
+        }
+
+        // Abre o modal de exclusão
+        const modalDelete = bootstrap.Modal.getOrCreateInstance(document.getElementById("deleteConfirmModal"));
+        modalDelete.show();
     }
 
     // Confirmar exclusão (DELETE)

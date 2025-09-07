@@ -18,6 +18,16 @@ router.post("/adicionar", function (req, res) {
     maquinaController.cadastrar(req, res);
 });
 
+// Cadastrar nova máquina
+router.post("/adicionarComponente", function (req, res) {
+    maquinaController.adicionarComponente(req, res);
+});
+
+// Excluir componente da máquina
+router.delete("/excluirComponente/:idMaquina/:idComponente", function(req, res) {
+    maquinaController.excluirComponente(req, res);
+});
+
 // Editar máquina
 router.put("/editar", function (req, res) {
     maquinaController.editar(req, res);

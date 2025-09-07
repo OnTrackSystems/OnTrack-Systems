@@ -50,27 +50,28 @@ function listar() {
     return database.executar(instrucao);
 }
 
-function editarComponente(idComponenteHardware, nomeComponente, unidadeMedida) {
-    const instrucaoSql = `
-        UPDATE componentesHardware
-        SET nomeComponente = '${nomeComponente}', unidadeMedida = '${unidadeMedida}'
-        WHERE idComponenteHardware = ${idComponenteHardware};
-    `;
-    console.log("Executando SQL: \n" + instrucaoSql);
 
-    return database.executar(instrucaoSql);
+function editarParametro(antigoId, novoId, parametroMin, parametroMax) {
+  const instrucaoSql = `
+    UPDATE parametros
+    SET parametroMin = '${parametroMin}', 
+        parametroMax = '${parametroMax}', 
+        fkComponenteHardware = '${novoId}'
+    WHERE fkComponenteHardware = ${antigoId};
+  `;
+  console.log("Executando SQL: \n" + instrucaoSql);
+
+  return database.executar(instrucaoSql);
 }
 
-function editarHardware(idComponenteHardware, parametroMin, parametroMax){
-    const instrucaoSql = `
-        UPDATE parametros
-        SET parametroMIn = '${parametroMin}', parametroMax = '${parametroMax}'
-        WHERE fkComponenteHardware = ${idComponenteHardware};
+function excluirParametro(idMaquina, idComponente) {
+    const sql = `
+        DELETE FROM parametros
+        WHERE fkMaquina = ${idMaquina} AND fkComponenteHardware = ${idComponente};
     `;
-    console.log("Executando SQL: \n" + instrucaoSql);
-
-    return database.executar(instrucaoSql);
+    return database.executar(sql);
 }
+
 
 // Excluir máquina (remove parâmetros, depois a máquina)
 async function excluirMaquina(idMaquina) {
@@ -85,8 +86,8 @@ module.exports = {
     listarPorEmpresa,
     cadastrarMaquina,
     cadastrarParametro,
-    editarComponente,
-    editarHardware,
+    editarParametro,
     excluirMaquina,
-    listar
+    listar,
+    excluirParametro
 };

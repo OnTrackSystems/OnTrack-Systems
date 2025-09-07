@@ -118,7 +118,19 @@ body {
     margin-top: 8px;
 }
 
+.modal-body .comp-roww {
+    border-top: 1px solid #000;
+    padding-top: 8px;
+    margin-top: 8px;
+}
+
 .modal-body .comp-row:first-child {
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+}
+
+.modal-body .comp-roww:first-child {
     border-top: none;
     padding-top: 0;
     margin-top: 0;
@@ -286,6 +298,7 @@ body {
     border: 1px solid black;
     color: black;
     font-weight: 500;
+    margin-top: -5px;
 }
 
 .btn-addcomp:hover {

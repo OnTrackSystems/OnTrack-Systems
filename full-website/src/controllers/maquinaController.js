@@ -68,6 +68,49 @@ async function cadastrar(req, res) {
     }
 }
 
+async function adicionarComponente(req, res) {
+    try {
+        const { idMaquina, componentes } = req.body;
+
+        if (!idMaquina || !componentes) {
+            return res.status(400).send("Dados inválidos");
+        }
+
+        // Inserir parâmetros
+        for (const c of componentes) {
+            await maquinaModel.cadastrarParametro(
+                idMaquina,
+                c.idComponente,
+                c.parametroMin,
+                c.parametroMax
+            );
+        }
+
+        res.status(201).send("Máquina cadastrada com sucesso!");
+    } catch (erro) {
+        console.log(erro);
+        res.status(500).json(erro.sqlMessage);
+    }
+}
+
+async function excluirComponente(req, res) {
+    try {
+        const idMaquina = req.params.idMaquina;
+        const idComponente = req.params.idComponente;
+
+        if (!idMaquina || !idComponente) {
+            return res.status(400).send("Parâmetros inválidos");
+        }
+
+        await maquinaModel.excluirParametro(idMaquina, idComponente);
+
+        res.status(200).send("Componente excluído com sucesso!");
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err.sqlMessage);
+    }
+}
+
 async function listar(req, res) {
     try {
         const componentes = await maquinaModel.listar();
@@ -79,23 +122,17 @@ async function listar(req, res) {
 }
 
 async function editar(req, res) {
-    try {
-        const { idComponenteHardware, nomeComponente, unidadeMedida, parametroMin, parametroMax } = req.body;
+  const { updates } = req.body;
 
-        console.log("Dados recebidos na edição:", req.body);
-
-        if (!idComponenteHardware || !nomeComponente || !unidadeMedida || !parametroMin || !parametroMax) {
-            return res.status(400).send("Dados inválidos para edição");
-        }
-
-        await maquinaModel.editarComponente(idComponenteHardware, nomeComponente, unidadeMedida, parametroMin, parametroMax);
-        await maquinaModel.editarHardware(idComponenteHardware, parametroMin, parametroMax);
-
-        res.status(200).json({ message: "Componente editado com sucesso" });
-    } catch (erro) {
-        console.error("Erro ao editar componente:", erro);
-        res.status(500).json(erro.sqlMessage || "Erro interno do servidor");
+  try {
+    for (let u of updates) {
+      await maquinaModel.editarParametro(u.antigoId, u.novoId, u.parametroMin, u.parametroMax);
     }
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao editar parâmetros" });
+  }
 }
 
 // Excluir máquina
@@ -121,5 +158,7 @@ module.exports = {
     cadastrar,
     listar,
     editar,
-    excluir
+    excluir,
+    adicionarComponente,
+    excluirComponente
 };
