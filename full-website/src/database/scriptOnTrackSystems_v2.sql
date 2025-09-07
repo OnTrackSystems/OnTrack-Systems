@@ -51,10 +51,10 @@ CREATE TABLE  componentesHardware (
   
 insert into componentesHardware (nomeComponente, unidadeMedida) values
 ('CPU', '%'),
+('CPU', 'Tempo I/O'),
 ('RAM', '%'),
 ('DISCO', 'GB'),
-('REDE', 'Pacotes'),
-('REDE', 'Tempo I/O');
+('REDE', 'Pacotes');
 
 CREATE TABLE parametros (
   idParametros INT NOT NULL AUTO_INCREMENT,
@@ -67,9 +67,6 @@ CREATE TABLE parametros (
   FOREIGN KEY (fkComponenteHardware) REFERENCES componentesHardware (idComponenteHardware)
   );
 
-
-
-select * from maquinas;
 
 insert into empresas (nome,CNPJ,endereco)
 values("SPTrans",60498417000158,"Rua Boa Vista, 236 – Centro, São Paulo/SP");
