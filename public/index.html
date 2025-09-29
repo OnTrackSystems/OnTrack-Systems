@@ -282,7 +282,7 @@ function limparSession() {
         mensagemStatus.innerHTML = `<p class="mt-4 text-red-600 font-semibold">Preencha todos os campos</p>`
         setTimeout(sumirStatus, 4000)
         return
-    } else if (termosDados != document.getElementById("checkbox").checked) {
+    } else if (!termosDados) {
         mensagemStatus.innerHTML = `<p class="mt-4 text-red-600 font-semibold">Aceite o compartilhamento de dados.</p>`
         setTimeout(sumirStatus, 4000)
         return
