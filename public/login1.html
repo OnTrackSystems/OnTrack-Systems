@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,115 +11,144 @@
   <style>
     body {
       background-image: url('./assets/imgs/Rectangle\ 4.png');
-        background-size: cover;
-        background-position: center;
-       
+      background-size: cover;
+      background-position: center;
+
     }
+
     .login-container {
       max-width: 900px;
     }
+
     .form-control {
       border-radius: 30px;
       padding: 12px 20px;
     }
+
     .btn-custom {
-    color: white;
+      color: white;
       border-radius: 30px;
       padding: 12px;
       font-weight: bold;
       background: #d62a2a;
       border: none;
     }
+
     .btn-custom:hover {
       background: #8E0000;
-          color: white;
+      color: white;
 
     }
+
     .texto {
-      color: #8E0000 ;
+      color: #8E0000;
     }
   </style>
 </head>
+
 <body class="d-flex align-items-center justify-content-center vh-100">
 
   <div class="container login-container">
     <div class="row shadow-lg rounded overflow-hidden bg-white">
       <div class="col-md-6 d-none d-md-block p-0 ">
-        <img src="./assets/imgs/Design sem nome.png" class="img-fluid h-100 w-100 object-fit-cover" alt="Imagem de fundo">
+        <img src="./assets/imgs/Design sem nome.png" class="img-fluid h-100 w-100 object-fit-cover"
+          alt="Imagem de fundo">
       </div>
 
       <div class="col-12 col-md-6 p-5 d-flex flex-column justify-content-center">
         <h2 class="mb-4 text-center fw-bold texto">Bem-vindo!</h2>
-        
-          <div class="mb-3">
-            <input type="email" class="form-control" id="ipt_email" placeholder="exemplo@exemplo.com">
-          </div>
-          <div class="mb-3">
-            <input type="password" class="form-control" id="ipt_senha" placeholder="*********">
-          </div>
-          <button type="submit" class="btn btn-custom w-100" onclick="entrar()">Entrar &#x1F5F8;</button><br>
-          <button class="btn btn-custom w-100" onclick="voltar()">&#8592; Voltar</button>
-          <p class="text-center d-flexjustify-content-center" id="div_mensagem"></p>
+
+        <div class="mb-3">
+          <input type="email" class="form-control" id="ipt_email" placeholder="exemplo@exemplo.com">
+        </div>
+        <div class="mb-3">
+          <input type="password" class="form-control" id="ipt_senha" placeholder="*********">
+        </div>
+        <button type="submit" class="btn btn-custom w-100" onclick="entrar()">Entrar &#x1F5F8;</button><br>
+        <button class="btn btn-custom w-100" onclick="voltar()">&#8592; Voltar</button>
+        <p class="text-center d-flexjustify-content-center" id="div_mensagem"></p>
+      </div>
+      <div class="container">
+        <div class="inputs">
+          Nome da empresa:
+          <input type="text" id="iptNomeEmpresa">
+          Nome do usuário:
+          <input type="text" id="iptNomeUsuario">
+          Email:
+          <input type="text" id="iptEmail">
+          CNPJ:
+          <input type="text" id="iptCNPJ">
+          Senha:
+          <input type="text" id="iptSenha">
+          <button onclick="cadastrar()">Cadastrar</button>
+        </div>
       </div>
 
     </div>
   </div>
 
 </body>
+
 </html>
 <script>
   function voltar() {
     window.location.href = "index.html"
   }
 
-  function entrar(){
+  function entrar() {
     var emailVar = ipt_email.value;
-      var senhaVar = ipt_senha.value;
+    var senhaVar = ipt_senha.value;
 
-// Futuramente add verificação
+    // Futuramente add verificação
 
-      fetch("/usuarios/autenticar", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                emailServer: emailVar,
-                senhaServer: senhaVar
-            })
-        }).then(function (resposta) {
-            console.log("ESTOU NO THEN DO entrar()!")
+    fetch("/usuarios/autenticar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        emailServer: emailVar,
+        senhaServer: senhaVar
+      })
+    }).then(function (resposta) {
+      console.log("ESTOU NO THEN DO entrar()!")
 
-            if (resposta.ok) {
-                console.log(resposta);
+      if (resposta.ok) {
+        console.log(resposta);
 
-                resposta.json().then(json => {
-                    console.log(json);
-                    console.log(JSON.stringify(json));
-                    sessionStorage.EMAIL_USUARIO = json.email;
-                    sessionStorage.NOME_USUARIO = json.nome;
-                    sessionStorage.ID_USUARIO = json.idUsuario;
-                    sessionStorage.ID_EMPRESA=json.fkempresa;
-                    sessionStorage.ACESSO = json.acesso;
+        resposta.json().then(json => {
+          console.log(json);
+          console.log(JSON.stringify(json));
+          sessionStorage.EMAIL_USUARIO = json.email;
+          sessionStorage.NOME_USUARIO = json.nome;
+          sessionStorage.ID_USUARIO = json.idUsuario;
+          sessionStorage.ID_EMPRESA = json.fkempresa;
+          sessionStorage.ACESSO = json.acesso;
 
-                    div_mensagem.innerHTML = "Login realizado com sucesso..."
-                    setTimeout(function () {
-                        window.location = "./dashboard.html";
-                    }, 800);
+          div_mensagem.innerHTML = "Login realizado com sucesso..."
+          setTimeout(function () {
+            window.location = "./dashboard.html";
+          }, 800);
 
-                });
+        });
 
-            } else {
+      } else {
 
-                console.log("Houve um erro ao tentar realizar o login!");
-                div_mensagem.innerHTML = "Erro! Conta não encontrada!"
-            }
+        console.log("Houve um erro ao tentar realizar o login!");
+        div_mensagem.innerHTML = "Erro! Conta não encontrada!"
+      }
 
-        }).catch(function (erro) {
-            console.log(erro);
-        })
+    }).catch(function (erro) {
+      console.log(erro);
+    })
 
-        return false;
-    }
-  
+    return false;
+  }
+
+  function cadastrar() {
+    let nomeEmpresa = iptNomeEmpresa.value;
+    let nomeUsuario = iptNomeUsuario.value;
+
+  }
+
 </script>
