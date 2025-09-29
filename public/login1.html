@@ -145,10 +145,82 @@
     return false;
   }
 
-  function cadastrar() {
+  async function cadastrar() {
     let nomeEmpresa = iptNomeEmpresa.value;
     let nomeUsuario = iptNomeUsuario.value;
+    let email = iptEmail.value;
+    let cnpj = iptCNPJ.value;
+    let senha = iptSenha.value;
 
+    let respostaCadastroEmpresa = await fetch(`/empresas/cadastrarEmpresa`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nomeEmpresaServer: nomeEmpresa,
+        cnpjEmpresaServer: cnpj
+      })
+    });
+
+    if (!respostaCadastroEmpresa.ok) {
+      respostaCadastroEmpresa.text().then((texto) => {
+        console.error(texto);
+      });
+
+      return;
+    }
+
+    let jsonEmpresa = await respostaCadastroEmpresa.json();
+
+    let fkEmpresa = jsonEmpresa.insertId;
+
+    let respostaCadastroAdmin = await fetch(`/cargos/cadastrarCargo`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nomeCargoServer: 'Admin',
+        fkEmpresaServer: fkEmpresa
+      })
+    });
+
+    if(!respostaCadastroAdmin.ok) {
+      respostaCadastroAdmin.text().then((texto) => {
+        console.error(texto);
+      });
+
+      return;
+    }
+
+    let jsonAdmin = await respostaCadastroAdmin.json();
+
+    let fkCargoAdmin = jsonEmpresa.insertId;
+
+    let respostaCadastroUsuario = await fetch(`/usuarios/cadastrar`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        nomeServer: nomeUsuario,
+        emailServer: email,
+        senhaServer: senha,
+        idCargoServer: fkCargoAdmin,
+        idEmpresaServer: fkEmpresa
+      })
+    });
+
+    if(!respostaCadastroUsuario.ok) {
+      respostaCadastroUsuario.text().then((texto) => {
+        console.error(texto);
+      });
+
+      return;
+    }
+
+    window.location = "index.html";
   }
 
 </script>

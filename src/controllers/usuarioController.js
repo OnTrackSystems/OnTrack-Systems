@@ -47,9 +47,10 @@ function cadastrar(req, res) {
     var nome = req.body.nomeServer;
     var email = req.body.emailServer;
     var senha = req.body.senhaServer;
-    var idCargo = req.body.idCargo;
+    var idCargo = req.body.idCargoServer;
+    let idEmpresa = req.body.idEmpresaServer;
 
-    usuarioModel.cadastrar(nome, email, senha, idCargo)
+    usuarioModel.cadastrar(nome, email, senha, idCargo, idEmpresa)
         .then(
             function (resultado) {
                 res.json(resultado);

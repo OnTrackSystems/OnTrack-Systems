@@ -18,6 +18,8 @@ var app = express();
 var usuarioRouter = require("./src/routes/usuarios");
 var maquinaRouter = require("./src/routes/maquina");
 var emailRouter = require("./src/routes/email");
+var empresaRouter = require("./src/routes/empresas");
+var cargoRouter = require("./src/routes/cargos");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -25,10 +27,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(cors());
 
-
 app.use("/usuarios", usuarioRouter);
 app.use("/email", emailRouter);
 app.use("/maquina", maquinaRouter);
+app.use("/empresas", empresaRouter);
+app.use("/cargos", cargoRouter);
 
 
 app.listen(PORTA_APP, function () {
