@@ -19,37 +19,36 @@ function listarPorEmpresa(idEmpresa) {
             ON ch.idComponenteHardware = p.fkComponenteHardware
         WHERE m.fkEmpresa = ${idEmpresa};
     `;
+    
     console.log("Executando SQL: \n" + instrucaoSql);
     return database.executar(instrucaoSql);
 }
 
-// Inserir máquina
 function cadastrarMaquina(idMaquina, idEmpresa) {
-    var sql = `
+    var instrucaoSql = `
         INSERT INTO maquinas (idMaquina, fkEmpresa)
         VALUES (${idMaquina}, ${idEmpresa});
     `;
-    return database.executar(sql);
+
+    return database.executar(instrucaoSql);
 }
 
-// Inserir parâmetros (sem criar componente novo)
 function cadastrarParametro(idMaquina, idComponente, parametroMin, parametroMax) {
-    var sql = `
+    var instrucaoSql = `
         INSERT INTO parametros (fkMaquina, fkComponenteHardware, parametroMin, parametroMax)
         VALUES (${idMaquina}, ${idComponente}, ${parametroMin}, ${parametroMax});
     `;
-    return database.executar(sql);
+    return database.executar(instrucaoSql);
 }
 
-// Buscar todos os componentes
 function listar() {
-    var instrucao = `
+    var instrucaoSql = `
         SELECT idComponenteHardware, nomeComponente, unidadeMedida
         FROM componentesHardware;
     `;
-    return database.executar(instrucao);
-}
 
+    return database.executar(instrucaoSql);
+}
 
 function editarParametro(antigoId, novoId, parametroMin, parametroMax) {
   const instrucaoSql = `
@@ -59,8 +58,8 @@ function editarParametro(antigoId, novoId, parametroMin, parametroMax) {
         fkComponenteHardware = '${novoId}'
     WHERE fkComponenteHardware = ${antigoId};
   `;
-  console.log("Executando SQL: \n" + instrucaoSql);
 
+  console.log("Executando SQL: \n" + instrucaoSql);
   return database.executar(instrucaoSql);
 }
 
@@ -72,8 +71,6 @@ function excluirParametro(idMaquina, idComponente) {
     return database.executar(sql);
 }
 
-
-// Excluir máquina (remove parâmetros, depois a máquina)
 async function excluirMaquina(idMaquina) {
     var deleteParametros = `DELETE FROM parametros WHERE fkMaquina = ${idMaquina};`;
     await database.executar(deleteParametros);

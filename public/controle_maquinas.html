@@ -12,6 +12,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="./css/maquina.css">
+    <link rel="stylesheet" href="style/navbar.css">
+    <link href="https://cdn.jsdelivr.net/npm/fastbootstrap@2.2.0/dist/css/fastbootstrap.min.css" rel="stylesheet" integrity="sha256-V6lu+OdYNKTKTsVFBuQsyIlDiRWiOmtC8VQ8Lzdm2i4=" crossorigin="anonymous">
 </head>
 
 <style>
@@ -27,57 +29,8 @@
 
 <body onload="listarMaquinasPorEmpresas()">
     <!-- NAVBAR -->
-    <nav class="navbar bg-body-tertiary fixed-top">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo"
-                    style="width: 150px; height: auto; margin-left: 10px;"></a>
-            <div class="ms-auto d-flex align-items-center justify-content-center">
-                <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
-                <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
-                    style="width: 50px; height: 50px;">
-                    <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px; ">
-                </div>
-            </div>
-
-
-
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
-                aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title text-white" id="offcanvasNavbarLabel">Menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body slide">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page"
-                                href="#">Dashboard</a>
-                        </li>
-                        <li class=" admin nav-item  align-items-center ">
-                            <i class="fa-solid fa-user  "></i><a class="nav-link "
-                                href="controle_usuarios.html">Controle de
-                                usuários</a>
-                        </li>
-                        <li class=" cliente nav-item  align-items-center">
-                            <i class="fa-solid fa-user"></i><a class="nav-link" href="editarperfil.html">Editar
-                                Perfil</a>
-                        </li>
-                        <li class=" admin nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
-                                class="nav-link " href="controle_maquinas.html">Controle de maquinas</a>
-                        </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-x"></i><a class="nav-link" href="index.html">Sair</a>
-                        </li>
-
-                    </ul>
-
-                </div>
-            </div>
-        </div>
+    <nav class="navbar bg-body-tertiary fixed-top" id="nav">
+        
     </nav>
 
     <!-- BOTÃO ADICIONAR MÁQUINA -->
@@ -235,6 +188,9 @@
 </body>
 
 </html>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<script src="./js/navbar.js"></script>
 
 <script>
     const linkUsuarios = document.querySelector(".admin");

@@ -73,52 +73,7 @@
 
 <body onload="buscarUsuarios()">
 
-    <nav class="navbar bg-body-tertiary fixed-top" style="margin-bottom: 50px;">
-        <div class="container-fluid ">
-            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
-                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo"
-                    style="width: 150px; height: auto; margin-left: 10px;"></a>
-            <div class="ms-auto d-flex align-items-center justify-content-center">
-                <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
-                <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
-                    style="width: 50px; height: 50px;">
-                    <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px; ">
-                </div>
-            </div>
-
-
-
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar"
-                aria-labelledby="offcanvasNavbarLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title text-white" id="offcanvasNavbarLabel">Menu</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-                <div class="offcanvas-body slide">
-                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-house"></i> <a class="nav-link " aria-current="page"
-                                href="dashboard.html">Dashboard</a>
-                        </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-user"></i><a class="nav-link" href="#">Controle de usuários</a>
-                        </li>
-                        </li>
-                        <li class=" d-flex nav-item  align-items-center"><i class="fa-solid fa-computer"></i><a
-                                class="nav-link" href="controle_maquinas.html">Controle de maquinas</a>
-                        </li>
-                        <li class="nav-item d-flex align-items-center">
-                            <i class="fa-solid fa-x"></i><a class="nav-link" href="index.html">Sair</a>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <nav class="navbar bg-body-tertiary fixed-top" id="nav" style="margin-bottom: 50px;"></nav>
     <div class="container teste" style="margin-top: 150px;">
         <h1 class="text-center ">Controle de Usuários</h1>
         <div class="row d-flex " style="margin-top: 20px;">

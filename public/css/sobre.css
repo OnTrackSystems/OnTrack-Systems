@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+#team {
+      text-align: center;
+      padding: clamp(48px, 6vw, 80px) 20px;
+    font-family: "Montserrat", sans-serif;
+
+    }
+
+    #team h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4.4rem, 5vw, 2.6rem);
+      margin: 0 0 1rem 0;
+      color: rgb(185 28 28 / var(--tw-text-opacity, 1));
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .perfis {
+      display: flex;
+      justify-content: center;
+      gap: clamp(16px, 5vw, 40px);
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .perfil {
+      text-align: center;
+      width: clamp(140px, 32vw, 200px);
+    }
+
+    .perfil img {
+      width: clamp(130px, 26vw, 160px);
+      height: clamp(130px, 26vw, 160px);
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform ease 0.3s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .perfil span {
+      font-family: 'Inter', sans-serif;
+      display: block;
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: clamp(1.5rem, 3vw, 1.2rem);
+      color: #d62a2a;
+      text-align: center;
+    }
+
+    .perfil p {
+      font-family: 'Inter', sans-serif;
+      display: block;
+      margin-top: 2px;
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: #000000;
+      text-align: center;
+    }
+
+    .perfil img:hover {
+      transform: scale(1.05);
+      border: 2px solid rgb(185 28 28 / var(--tw-text-opacity, 1));;
+    }
+
+
+    @media (max-width: 900px) {
+
+      .quem-somos-cards {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+
+      .quem-somos-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .quem-somos,
+      #team {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .card {
+        padding: 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .perfil {
+        width: 100%;
+      }
+
+      .perfil img {
+        width: 96px;
+        height: 96px;
+      }
+    }

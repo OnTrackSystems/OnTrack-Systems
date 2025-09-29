@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    font-family: "Montserrat", sans-serif;
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.links {
+    text-decoration: none;
+}
+
+#navbar {
+    width: 12.5vw;
+    height: 100vh;
+    position: fixed;
+    background-color: #313a46;
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+}
+
+#navbar .logo {
+    width: 30%;
+    height: 11%;
+    padding-top: 20px;
+    align-self: center;
+    margin-bottom: 40px;
+}
+
+#navbar h1 {
+    color: #7b8898;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+#navbar .categoriaSection {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 20px;
+}
+
+#navbar .collapseSection {
+    
+}
+
+#navbar .collapseSection .collapseTitulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#navbar .collapseSection .collapseTitulo h2{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.collapsePages h3{
+    color: #7b8898;
+    font-size: 14px;
+    margin: 10px 0px 0px 35px;
+}
+
+.logout {
+    justify-self: flex-end;
+}
