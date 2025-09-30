@@ -26,7 +26,7 @@ function buscarUsuarios(idEmpresa) {
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function buscarUsuarios():", idEmpresa);
 
     var instrucaoSql = `
-        SELECT * FROM Usuario WHERE fkempresa = ${idEmpresa};
+        SELECT * FROM Usuario WHERE fkEmpresa = ${idEmpresa};
     `;
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
@@ -70,14 +70,14 @@ function editarUsuarios(idUsuario, nome, email, acesso, senha, telefone,cpf){
     `;
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql)
+    return database.executar(instrucaoSql);
 }
 
 function carregarUsuario(idUsuario){
     console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function carregarUsuarios():", idUsuario);
 
     var instrucaoSql = `
-        SELECT * FROM usuarios WHERE idUsuario = ${idUsuario};
+        SELECT * FROM Usuario WHERE idUsuario = ${idUsuario};
     `;
 
     console.log("Executando a instrução SQL: \n" + instrucaoSql);

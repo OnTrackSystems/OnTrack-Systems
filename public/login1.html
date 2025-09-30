@@ -64,7 +64,7 @@
         <div class="mb-3">
           <input type="password" class="form-control" id="ipt_senha" placeholder="*********">
         </div>
-        <button type="submit" class="btn btn-custom w-100" onclick="entrar()">Entrar &#x1F5F8;</button><br>
+        <button type="submit" class="btn btn-custom w-100" onclick="autenticarUsuario()">Entrar &#x1F5F8;</button><br>
         <button class="btn btn-custom w-100" onclick="voltar()">&#8592; Voltar</button>
         <p class="text-center d-flexjustify-content-center" id="div_mensagem"></p>
       </div>
@@ -95,54 +95,45 @@
     window.location.href = "index.html"
   }
 
-  function entrar() {
-    var emailVar = ipt_email.value;
-    var senhaVar = ipt_senha.value;
+  async function autenticarUsuario() {
+    let emailVar = ipt_email.value;
+    let senhaVar = ipt_senha.value;
 
-    // Futuramente add verificação
-
-    fetch("/usuarios/autenticar", {
+    let respostaAutenticarUsuario = await fetch(`/usuarios/autenticar`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
         emailServer: emailVar,
         senhaServer: senhaVar
       })
-    }).then(function (resposta) {
-      console.log("ESTOU NO THEN DO entrar()!")
+    });
 
-      if (resposta.ok) {
-        console.log(resposta);
+    if (!respostaAutenticarUsuario.ok) {
+      respostaAutenticarUsuario.text().then((texto) => {
+        console.error(texto);
+      });
 
-        resposta.json().then(json => {
-          console.log(json);
-          console.log(JSON.stringify(json));
-          sessionStorage.EMAIL_USUARIO = json.email;
-          sessionStorage.NOME_USUARIO = json.nome;
-          sessionStorage.ID_USUARIO = json.idUsuario;
-          sessionStorage.ID_EMPRESA = json.fkempresa;
-          sessionStorage.ACESSO = json.acesso;
+      return;
+    }
 
-          div_mensagem.innerHTML = "Login realizado com sucesso..."
-          setTimeout(function () {
-            window.location = "./dashboard.html";
-          }, 800);
+    let jsonAutenticarUsuario = await respostaAutenticarUsuario.json();
+    let jsonLogin = jsonAutenticarUsuario[0];
+    console.log(jsonLogin);
 
-        });
+    console.log(jsonLogin.fkEmpresa)
 
-      } else {
+    sessionStorage.EMAIL_USUARIO = jsonLogin.email;
+    sessionStorage.NOME_USUARIO = jsonLogin.nome;
+    sessionStorage.ID_USUARIO = jsonLogin.idUsuario;
+    sessionStorage.ID_EMPRESA = jsonLogin.fkEmpresa;
+    sessionStorage.ID_CARGO = jsonLogin.fkCargo;
 
-        console.log("Houve um erro ao tentar realizar o login!");
-        div_mensagem.innerHTML = "Erro! Conta não encontrada!"
-      }
-
-    }).catch(function (erro) {
-      console.log(erro);
-    })
-
-    return false;
+    div_mensagem.innerHTML = "Login realizado com sucesso..."
+    setTimeout(function () {
+      window.location = "./dashboard.html";
+    }, 800);
   }
 
   async function cadastrar() {
@@ -186,7 +177,7 @@
       })
     });
 
-    if(!respostaCadastroAdmin.ok) {
+    if (!respostaCadastroAdmin.ok) {
       respostaCadastroAdmin.text().then((texto) => {
         console.error(texto);
       });
@@ -212,7 +203,7 @@
       })
     });
 
-    if(!respostaCadastroUsuario.ok) {
+    if (!respostaCadastroUsuario.ok) {
       respostaCadastroUsuario.text().then((texto) => {
         console.error(texto);
       });

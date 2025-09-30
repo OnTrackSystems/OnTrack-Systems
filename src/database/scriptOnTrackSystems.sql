@@ -1,24 +1,44 @@
 CREATE DATABASE IF NOT EXISTS OnTrackSystems;
 USE OnTrackSystems;
 
+DROP DATABASE OnTrackSystems;
+
 CREATE TABLE Empresa (
 	idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
 	nome VARCHAR(45) NOT NULL,
 	cnpj CHAR(14) NOT NULL,
 	ativo TINYINT NOT NULL,
 	aprovada TINYINT NOT NULL,
-	dataCadastro DATE,
-	UNIQUE INDEX CNPJ_UNIQUE(CNPJ)
+	dataCadastro DATE NOT NULL DEFAULT (CURRENT_DATE())
 );
 
 CREATE TABLE Cargo (
-	idCargo INT PRIMARY KEY AUTO_INCREMENT,
+	idCargo INT AUTO_INCREMENT,
     nome VARCHAR(45) NOT NULL,
-    dataCadastro DATE NOT NULL,
+    dataCadastro DATE NOT NULL DEFAULT (CURRENT_DATE()),
 	fkEmpresa INT NOT NULL,
 CONSTRAINT fkCargoEmpresa
 	FOREIGN KEY (fkEmpresa)
-    REFERENCES Empresa(idEmpresa)
+    REFERENCES Empresa(idEmpresa),
+PRIMARY KEY(idCargo, fkEmpresa)
+);
+
+CREATE TABLE Permissao (
+	idPermissao INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(50),
+    descricao VARCHAR(200)
+);
+
+CREATE TABLE CargoPermissao (
+	fkCargo INT,
+    fkPermissao INT,
+CONSTRAINT fkCargo
+	FOREIGN KEY (fkCargo)
+    REFERENCES Cargo(idCargo),
+CONSTRAINT fkPermissao
+	FOREIGN KEY (fkPermissao)
+    REFERENCES Permissao(idPermissao),
+PRIMARY KEY(fkCargo, fkPermissao)
 );
   
 CREATE TABLE Usuario (
@@ -27,12 +47,13 @@ CREATE TABLE Usuario (
 	email VARCHAR(200) NOT NULL,
 	senha VARCHAR(255) NOT NULL,
 	fotoPerfil VARCHAR(200),
-    dataCadastro DATE NOT NULL,
+    dataCadastro DATE NOT NULL DEFAULT (CURRENT_DATE()),
     fkCargo INT NOT NULL,
+    fkEmpresa INT NOT NULL,
 	UNIQUE INDEX email_UNIQUE(email),
 CONSTRAINT fkUsuarioCargo
-	FOREIGN KEY (fkCargo)
-    REFERENCES Cargo(idCargo)
+	FOREIGN KEY (fkCargo, fkEmpresa)
+    REFERENCES Cargo(idCargo, fkEmpresa)
 );
 
 CREATE TABLE Maquina (
@@ -40,7 +61,7 @@ CREATE TABLE Maquina (
 	fkEmpresa INT NOT NULL,
     nome VARCHAR(50) NOT NULL,
     uuid CHAR(36) NOT NULL,
-    dataCadastro DATE NOT NULL,
+    dataCadastro DATE NOT NULL DEFAULT (CURRENT_DATE()),
 CONSTRAINT fkMaquinaEmpresa
 	FOREIGN KEY (fkEmpresa) 
     REFERENCES Empresa(idEmpresa)
@@ -52,7 +73,7 @@ CREATE TABLE ComponenteHardware (
   unidadeMedida VARCHAR(20) NOT NULL
 );	
   
-insert into componentesHardware (nomeComponente, unidadeMedida) VALUES
+INSERT INTO ComponenteHardware (nomeComponente, unidadeMedida) VALUES
 ('CPU', '%'),
 ('CPU', 'Tempo I/O'),
 ('RAM', '%'),
@@ -74,8 +95,6 @@ CONSTRAINT fkParametroComponente
     REFERENCES ComponenteHardware(idComponenteHardware)
 );
 
-insert into empresas (nome,CNPJ,endereco)
-values("SPTrans",60498417000158,"Rua Boa Vista, 236 – Centro, São Paulo/SP");
-
-insert into usuarios (nome,email,senha,cpf,telefone,acesso,fkEmpresa)
-values ("Ronaldo","admin@sptrans.com",123,12345678909,1191234-5678,"Administrador",1);
+SELECT * FROM Cargo;
+SELECT * FROM Empresa;
+SELECT * FROM Usuario;
