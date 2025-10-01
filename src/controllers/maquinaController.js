@@ -40,32 +40,37 @@ function listarPorEmpresa(req, res) {
         });
 }
 
-async function cadastrar(req, res) {
-    try {
-        const { idMaquina, idEmpresa, componentes } = req.body;
+function adicionarServidor(req, res) {
+    let uuid = req.body.uuid;
+    let idEmpresa = req.body.idEmpresa;
 
-        if (!idEmpresa || !idMaquina || !componentes) {
-            return res.status(400).send("Dados inválidos");
+    maquinaModel.adicionarServidor(uuid, idEmpresa).then((resultado) => {
+        res.status(200).send("✅ Servidor cadastrado com sucesso!");
+    });
+}
+
+function buscarServidorUUID(req, res) {
+    let uuid = req.params.uuid;
+
+    maquinaModel.buscarServidorUUID(uuid).then((resultado) => {
+        if(resultado.length == 1) {
+            res.status(200).send("Servidor encontrado");
+        } else {
+            res.status(403).send("UUID do servidor não encontrada");    
         }
+    });
+}
 
-        // Inserir máquina
-        await maquinaModel.cadastrarMaquina(idMaquina, idEmpresa);
+function atualizarServidor(req, res) {
+    let uuid = req.body.uuid;
+    let modeloCPU = req.body.modeloCPU;
+    let qtdRam = req.body.qtdRam;
+    let qtdDisco = req.body.qtdDisco;
+    let sistemaOperacional = req.body.sistemaOperacional;
 
-        // Inserir parâmetros
-        for (const c of componentes) {
-            await maquinaModel.cadastrarParametro(
-                idMaquina,
-                c.idComponente,
-                c.parametroMin,
-                c.parametroMax
-            );
-        }
-
-        res.status(201).send("Máquina cadastrada com sucesso!");
-    } catch (erro) {
-        console.log(erro);
-        res.status(500).json(erro.sqlMessage);
-    }
+    maquinaModel.atualizarServidor(uuid, modeloCPU, qtdRam, qtdDisco, sistemaOperacional).then((resultado) => {
+        res.status(200).send("✅ Servidor atualizado com sucesso!");
+    });
 }
 
 async function adicionarComponente(req, res) {
@@ -155,10 +160,12 @@ async function excluir(req, res) {
 
 module.exports = {
     listarPorEmpresa,
-    cadastrar,
     listar,
     editar,
     excluir,
     adicionarComponente,
-    excluirComponente
+    excluirComponente,
+    adicionarServidor,
+    buscarServidorUUID,
+    atualizarServidor
 };

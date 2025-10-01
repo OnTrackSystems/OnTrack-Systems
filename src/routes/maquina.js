@@ -13,9 +13,16 @@ router.get("/listar", function (req, res) {
     maquinaController.listar(req, res);
 });
 
-// Cadastrar nova máquina
-router.post("/adicionar", function (req, res) {
-    maquinaController.cadastrar(req, res);
+router.post("/adicionarServidor", function(req, res) {
+    maquinaController.adicionarServidor(req, res);
+});
+
+router.get("/buscarServidorUUID/:uuid", function(req, res) {
+    maquinaController.buscarServidorUUID(req, res);
+});
+
+router.put("/atualizarServidor", function(req, res) {
+    maquinaController.atualizarServidor(req, res);
 });
 
 // Cadastrar nova máquina

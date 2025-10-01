@@ -119,18 +119,15 @@
     }
 
     let jsonAutenticarUsuario = await respostaAutenticarUsuario.json();
-    let jsonLogin = jsonAutenticarUsuario[0];
-    console.log(jsonLogin);
 
-    console.log(jsonLogin.fkEmpresa)
+    sessionStorage.EMAIL_USUARIO = jsonAutenticarUsuario.email;
+    sessionStorage.NOME_USUARIO = jsonAutenticarUsuario.nome;
+    sessionStorage.ID_USUARIO = jsonAutenticarUsuario.idUsuario;
+    sessionStorage.ID_EMPRESA = jsonAutenticarUsuario.fkEmpresa;
+    sessionStorage.ID_CARGO = jsonAutenticarUsuario.fkCargo;
 
-    sessionStorage.EMAIL_USUARIO = jsonLogin.email;
-    sessionStorage.NOME_USUARIO = jsonLogin.nome;
-    sessionStorage.ID_USUARIO = jsonLogin.idUsuario;
-    sessionStorage.ID_EMPRESA = jsonLogin.fkEmpresa;
-    sessionStorage.ID_CARGO = jsonLogin.fkCargo;
-
-    div_mensagem.innerHTML = "Login realizado com sucesso..."
+    div_mensagem.innerHTML = "Login realizado com sucesso...";
+    
     setTimeout(function () {
       window.location = "./dashboard.html";
     }, 800);

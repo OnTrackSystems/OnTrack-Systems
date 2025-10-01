@@ -195,15 +195,8 @@
 <script>
     const linkUsuarios = document.querySelector(".admin");
     const acessoCliente = document.querySelector(".cliente")
-    if (sessionStorage.ACESSO !== "Administrador") {
-        linkUsuarios.style.display = "none";
-    }
-    if (sessionStorage.ACESSO !== "Usuário") {
-        acessoCliente.style.display = "none";
-        console.log("aura")
-    }
 
-    const idEmpresa = sessionStorage.getItem("ID_EMPRESA");
+    const idEmpresa = sessionStorage.ID_EMPRESA;
 
     function listarMaquinasPorEmpresas() {
         fetch(`/maquina?idEmpresa=${idEmpresa}`)

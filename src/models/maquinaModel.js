@@ -3,24 +3,46 @@ var database = require("../database/config");
 function listarPorEmpresa(idEmpresa) {
     var instrucaoSql = `
         SELECT m.idMaquina,
-            e.nome AS empresa,
-            p.idParametros,
-            ch.idComponenteHardware,
-            ch.nomeComponente,
-            ch.unidadeMedida,        
-            p.parametroMax,
-            p.parametroMin
-        FROM maquinas m
-        JOIN empresas e 
+            e.nome AS empresa
+        FROM Maquina m
+        INNER JOIN Empresa e 
             ON m.fkEmpresa = e.idEmpresa
-        LEFT JOIN parametros p 
-            ON p.fkMaquina = m.idMaquina
-        LEFT JOIN componentesHardware ch 
-            ON ch.idComponenteHardware = p.fkComponenteHardware
         WHERE m.fkEmpresa = ${idEmpresa};
     `;
     
     console.log("Executando SQL: \n" + instrucaoSql);
+    return database.executar(instrucaoSql);
+}
+
+function adicionarServidor(uuid, idEmpresa) {
+    let nome = `Servidor ${uuid.substring(0, 8)}`;
+    let instrucaoSql = `
+        INSERT INTO Maquina (uuid, nome, fkEmpresa) VALUES
+            ('${uuid}', '${nome}', '${idEmpresa}');
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
+function buscarServidorUUID(uuid) {
+    let instrucaoSql = `
+        SELECT * FROM Maquina
+        WHERE uuid = '${uuid}'
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
+function atualizarServidor(uuid, modeloCPU, qtdRam, qtdDisco, sistemaOperacional) {
+    let instrucaoSql = `
+        UPDATE Maquina
+        SET modeloCPU = '${modeloCPU}',
+            qtdRam = '${qtdRam}',
+            qtdDisco = '${qtdDisco}',
+            sistemaOperacional = '${sistemaOperacional}'
+        WHERE uuid = '${uuid}';
+    `;
+
     return database.executar(instrucaoSql);
 }
 
@@ -86,5 +108,8 @@ module.exports = {
     editarParametro,
     excluirMaquina,
     listar,
-    excluirParametro
+    excluirParametro,
+    adicionarServidor,
+    buscarServidorUUID,
+    atualizarServidor
 };
