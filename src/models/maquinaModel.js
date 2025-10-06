@@ -46,15 +46,6 @@ function atualizarServidor(uuid, modeloCPU, qtdRam, qtdDisco, sistemaOperacional
     return database.executar(instrucaoSql);
 }
 
-function cadastrarMaquina(idMaquina, idEmpresa) {
-    var instrucaoSql = `
-        INSERT INTO maquinas (idMaquina, fkEmpresa)
-        VALUES (${idMaquina}, ${idEmpresa});
-    `;
-
-    return database.executar(instrucaoSql);
-}
-
 function cadastrarParametro(idMaquina, idComponente, parametroMin, parametroMax) {
     var instrucaoSql = `
         INSERT INTO parametros (fkMaquina, fkComponenteHardware, parametroMin, parametroMax)
@@ -63,10 +54,10 @@ function cadastrarParametro(idMaquina, idComponente, parametroMin, parametroMax)
     return database.executar(instrucaoSql);
 }
 
-function listar() {
+function listarComponentes() {
     var instrucaoSql = `
         SELECT idComponenteHardware, nomeComponente, unidadeMedida
-        FROM componentesHardware;
+        FROM ComponenteHardware;
     `;
 
     return database.executar(instrucaoSql);
@@ -74,7 +65,7 @@ function listar() {
 
 function editarParametro(antigoId, novoId, parametroMin, parametroMax) {
   const instrucaoSql = `
-    UPDATE parametros
+    UPDATE Parametro
     SET parametroMin = '${parametroMin}', 
         parametroMax = '${parametroMax}', 
         fkComponenteHardware = '${novoId}'
@@ -87,7 +78,7 @@ function editarParametro(antigoId, novoId, parametroMin, parametroMax) {
 
 function excluirParametro(idMaquina, idComponente) {
     const sql = `
-        DELETE FROM parametros
+        DELETE FROM Parametro
         WHERE fkMaquina = ${idMaquina} AND fkComponenteHardware = ${idComponente};
     `;
     return database.executar(sql);
@@ -107,7 +98,7 @@ module.exports = {
     cadastrarParametro,
     editarParametro,
     excluirMaquina,
-    listar,
+    listarComponentes,
     excluirParametro,
     adicionarServidor,
     buscarServidorUUID,

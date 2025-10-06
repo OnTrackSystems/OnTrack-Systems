@@ -10,7 +10,7 @@ router.get("/", function (req, res) {
 
 // Listar todos os componentes cadastrados
 router.get("/listar", function (req, res) {
-    maquinaController.listar(req, res);
+    maquinaController.listarComponentes(req, res);
 });
 
 router.post("/adicionarServidor", function(req, res) {

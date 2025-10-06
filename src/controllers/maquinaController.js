@@ -116,9 +116,9 @@ async function excluirComponente(req, res) {
     }
 }
 
-async function listar(req, res) {
+async function listarComponentes(req, res) {
     try {
-        const componentes = await maquinaModel.listar();
+        const componentes = await maquinaModel.listarComponentes();
         res.json(componentes);
     } catch (erro) {
         console.log("Erro ao listar componentes:", erro);
@@ -160,7 +160,7 @@ async function excluir(req, res) {
 
 module.exports = {
     listarPorEmpresa,
-    listar,
+    listarComponentes,
     editar,
     excluir,
     adicionarComponente,

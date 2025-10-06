@@ -1,8 +1,6 @@
 CREATE DATABASE IF NOT EXISTS OnTrackSystems;
 USE OnTrackSystems;
 
-DROP DATABASE OnTrackSystems;
-
 CREATE TABLE Empresa (
 	idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
 	nome VARCHAR(45) NOT NULL,
@@ -56,6 +54,17 @@ CONSTRAINT fkUsuarioCargo
     REFERENCES Cargo(idCargo, fkEmpresa)
 );
 
+CREATE TABLE Garagem (
+	idGaragem INT PRIMARY KEY,
+    nome VARCHAR(50),
+    latitude DECIMAL,
+    longitude DECIMAL,
+    fkEmpresa INT,
+CONSTRAINT fkGaragemEmpresa
+	FOREIGN KEY (fkEmpresa)
+    REFERENCES Empresa(idEmpresa)
+);
+
 CREATE TABLE Maquina (
 	idMaquina INT PRIMARY KEY AUTO_INCREMENT,
 	fkEmpresa INT NOT NULL,
@@ -98,3 +107,5 @@ CONSTRAINT fkParametroComponente
 SELECT * FROM Cargo;
 SELECT * FROM Empresa;
 SELECT * FROM Usuario;
+SELECT * FROM Maquina;
+SELECT * FROM Parametro;
