@@ -94,7 +94,6 @@ async function excluirMaquina(idMaquina) {
 
 module.exports = {
     listarPorEmpresa,
-    cadastrarMaquina,
     cadastrarParametro,
     editarParametro,
     excluirMaquina,
