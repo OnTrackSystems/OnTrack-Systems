@@ -43,8 +43,9 @@ function listarPorEmpresa(req, res) {
 function adicionarServidor(req, res) {
     let uuid = req.body.uuid;
     let idEmpresa = req.body.idEmpresa;
+    let idGaragem = req.body.idGaragem;
 
-    maquinaModel.adicionarServidor(uuid, idEmpresa).then((resultado) => {
+    maquinaModel.adicionarServidor(uuid, idEmpresa, idGaragem).then((resultado) => {
         res.status(200).send("✅ Servidor cadastrado com sucesso!");
     });
 }

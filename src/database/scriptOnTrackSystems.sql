@@ -55,25 +55,26 @@ CONSTRAINT fkUsuarioCargo
 );
 
 CREATE TABLE Garagem (
-	idGaragem INT PRIMARY KEY,
-    nome VARCHAR(50),
-    latitude DECIMAL,
-    longitude DECIMAL,
-    fkEmpresa INT,
+	idGaragem INT AUTO_INCREMENT,
+    nome VARCHAR(50) NOT NULL,
+    latitude DECIMAL NOT NULL,
+    longitude DECIMAL NOT NULL,
+    fkEmpresa INT NOT NULL,
 CONSTRAINT fkGaragemEmpresa
 	FOREIGN KEY (fkEmpresa)
-    REFERENCES Empresa(idEmpresa)
+    REFERENCES Empresa(idEmpresa),
+PRIMARY KEY(idGaragem, fkEmpresa)
 );
 
 CREATE TABLE Maquina (
 	idMaquina INT PRIMARY KEY AUTO_INCREMENT,
+    fkGaragem INT NOT NULL,
 	fkEmpresa INT NOT NULL,
-    nome VARCHAR(50) NOT NULL,
     uuid CHAR(36) NOT NULL,
     dataCadastro DATE NOT NULL DEFAULT (CURRENT_DATE()),
-CONSTRAINT fkMaquinaEmpresa
-	FOREIGN KEY (fkEmpresa) 
-    REFERENCES Empresa(idEmpresa)
+CONSTRAINT fkMaquinaGaragem
+	FOREIGN KEY(fkGaragem, fkEmpresa)
+    REFERENCES Garagem(idGaragem, fkEmpresa)
 );
 
 CREATE TABLE ComponenteHardware (
@@ -109,3 +110,4 @@ SELECT * FROM Empresa;
 SELECT * FROM Usuario;
 SELECT * FROM Maquina;
 SELECT * FROM Parametro;
+SELECT * FROM Garagem;	

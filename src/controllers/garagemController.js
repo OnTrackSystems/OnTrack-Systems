@@ -12,19 +12,19 @@ function adicionarGaragem(req, res) {
     });
 }
 
-function verificarGaragemNome(req, res) {
-    let nomeGaragem = req.params.nome;
+function verificarGaragemId(req, res) {
+    let idGaragem = req.params.idGaragem;
 
-    garagemModel.verificarGaragemNome(nomeGaragem).then((resultado) => {
+    garagemModel.verificarGaragemId(idGaragem).then((resultado) => {
         if(resultado.length > 0) {
-            return false;
+            res.status(200).send("true");
+        } else {
+            res.status(400).send("false");
         }
-
-        return true;
     });
 }
 
 module.exports = {
     adicionarGaragem,
-    verificarGaragemNome
+    verificarGaragemId
 }

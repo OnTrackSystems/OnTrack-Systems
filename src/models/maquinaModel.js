@@ -14,11 +14,10 @@ function listarPorEmpresa(idEmpresa) {
     return database.executar(instrucaoSql);
 }
 
-function adicionarServidor(uuid, idEmpresa) {
-    let nome = `Servidor ${uuid.substring(0, 8)}`;
+function adicionarServidor(uuid, idEmpresa, idGaragem) {
     let instrucaoSql = `
-        INSERT INTO Maquina (uuid, nome, fkEmpresa) VALUES
-            ('${uuid}', '${nome}', '${idEmpresa}');
+        INSERT INTO Maquina (uuid, fkEmpresa, fkGaragem) VALUES
+            ('${uuid}', ${idEmpresa}, ${idGaragem});
     `;
 
     return database.executar(instrucaoSql);
