@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="style/navbar.css">
     <link href="https://cdn.jsdelivr.net/npm/fastbootstrap@2.2.0/dist/css/fastbootstrap.min.css" rel="stylesheet"
         integrity="sha256-V6lu+OdYNKTKTsVFBuQsyIlDiRWiOmtC8VQ8Lzdm2i4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/sidebar.css">
 </head>
 
 <style>
@@ -36,10 +37,12 @@
 
     <!-- BOTÃO ADICIONAR MÁQUINA -->
     <div class="container pt-5 d-flex justify-content-end">
-        <button class="button" type="button" data-bs-toggle="modal" data-bs-target="#addMaquinaModal">
-            <span class="button_text">Adicionar</span>
-            <span class="button_icon">+</span>
-        </button>
+        <a href="./softwareDonwload/execSoftware.jar" download>
+            <button class="button" type="button" data-bs-toggle="modal" data-bs-target="#addMaquinaModal">
+                <span class="button_text">Adicionar</span>
+                <span class="button_icon">+</span>
+            </button>
+        </a>
     </div>
 
 
@@ -220,7 +223,7 @@
         const lista = document.getElementById("listaMaquinas");
         lista.innerHTML = "";
 
-        for(maquina of jsonMaquinas) { 
+        for (maquina of jsonMaquinas) {
             let respostaGaragens = await fetch(`/garagens/buscarGaragem/${maquina.fkGaragem}`, {
                 method: 'GET',
                 headers: {
@@ -228,7 +231,7 @@
                 }
             });
 
-            if(!respostaGaragens.ok) {
+            if (!respostaGaragens.ok) {
                 respostaGaragens.text().then((texto) => {
                     console.log(texto);
                 });
@@ -238,7 +241,7 @@
 
             let status = "estavel";
             let cor = status === "estavel" ? "green" :
-            status === "alerta" ? "yellow" : "red";
+                status === "alerta" ? "yellow" : "red";
 
             const card = document.createElement("div");
             card.className = "maquina-card";
