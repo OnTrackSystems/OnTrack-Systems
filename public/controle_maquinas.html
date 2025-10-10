@@ -1,67 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
     <title>OnTrack | Máquinas</title>
-    <script src="https://kit.fontawesome.com/adb04f503a.js" crossorigin="anonymous"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="./css/maquina.css">
-    <link rel="stylesheet" href="style/navbar.css">
-    <link href="https://cdn.jsdelivr.net/npm/fastbootstrap@2.2.0/dist/css/fastbootstrap.min.css" rel="stylesheet"
-        integrity="sha256-V6lu+OdYNKTKTsVFBuQsyIlDiRWiOmtC8VQ8Lzdm2i4=" crossorigin="anonymous">
-    <link rel="stylesheet" href="./css/sidebar.css">
+
+    <style>
+        :root {
+            /* NOVA PALETA DE CORES */
+            --primary-red: #dc3545;
+            --primary-red-darker: #b02a37;
+            --body-bg: #ffffff;
+            --sidebar-text: #ffffff;
+            
+            --card-bg: #ffffff;
+            --card-border: #f0f0f0;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 0.8rem;
+
+            /* LARGURAS DA SIDEBAR PARA ANIMAÇÃO */
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
+
+            --status-stable: #28a745;
+            --status-warning: #ffc107;
+            --status-error: #dc3545;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-color);
+        }
+
+        /* --- SIDEBAR COM ANIMAÇÃO DE EXPANDIR/RECOLHER --- */
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--primary-red); /* Cor atualizada */
+            color: var(--sidebar-text);
+            padding: 1.5rem 1rem;
+            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            z-index: 1031;
+            overflow-x: hidden;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 2rem;
+            cursor: pointer; /* Indica que é clicável para expandir/recolher */
+        }
+
+        .sidebar-header .logo {
+            color: var(--sidebar-text);
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            padding-left: 0.5rem;
+        }
+
+        .logo-text {
+            margin-left: 0.75rem;
+            white-space: nowrap;
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+        
+        .sidebar-nav .nav-link {
+            color: var(--sidebar-text);
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            background-color: var(--primary-red-darker); /* Cor atualizada */
+            color: var(--sidebar-text);
+        }
+
+        .nav-link-text {
+             white-space: nowrap;
+             opacity: 1;
+             transition: opacity 0.2s ease;
+        }
+
+        .sidebar-nav .nav-link i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* --- ESTADO ENCOLHIDO DA SIDEBAR (PARA DESKTOP) --- */
+        body.sidebar-collapsed #sidebar {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        body.sidebar-collapsed .logo-text,
+        body.sidebar-collapsed .nav-link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        .navbar {
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow);
+            padding: 1rem 1.5rem;
+            z-index: 1030;
+        }
+        
+        #sidebar-toggle {
+            display: none;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        
+        /* --- LAYOUT PRINCIPAL --- */
+        #main-content {
+            padding-left: var(--sidebar-width);
+            transition: padding-left 0.3s ease-in-out;
+        }
+        
+        body.sidebar-collapsed #main-content {
+            padding-left: var(--sidebar-collapsed-width);
+        }
+        
+        .main-container {
+            padding-top: 90px;
+        }
+        
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+        }
+        
+        /* --- LISTA DE MÁQUINAS --- */
+        .machine-item { border: 1px solid var(--card-border); border-radius: var(--radius); margin-bottom: 1rem; box-shadow: none; transition: box-shadow 0.2s ease-in-out; }
+        .machine-item:hover { box-shadow: var(--shadow); }
+        .machine-header {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 2rem;      /* Menor que antes */
+            min-height: 80px;          /* Altura mínima reduzida */
+            cursor: pointer;
+        }
+        .machine-image {
+            width: 65px;               /* Imagem menor */
+            height: 65px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-right: 2rem;
+        }
+        .machine-info { flex-grow: 1; }
+        .machine-info strong {
+            display: block;
+            font-size: 1.25rem;        /* Nome menor */
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .machine-info span { color: var(--text-muted); font-size: 0.9rem; }
+        .status-badge { padding: 0.4em 0.8em; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: #fff; margin: 0 1rem; min-width: 80px; text-align: center; }
+        .status-stable { background-color: var(--status-stable); }
+        .status-warning { background-color: var(--status-warning); }
+        .status-error { background-color: var(--status-error); }
+        .chevron-icon { color: var(--text-muted); transition: transform 0.3s ease; }
+        .machine-header[aria-expanded="true"] .chevron-icon { transform: rotate(180deg); }
+        .machine-details { padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--card-border); }
+        .details-actions { margin-top: 1.5rem; display: flex; gap: 0.5rem; }
+        .btn-edit, .btn-delete { border: none; padding: 0.5rem 1rem; border-radius: 5px; font-weight: 500; }
+        .btn-edit { background-color: var(--primary-red); color: white; } /* Cor atualizada */
+        .btn-delete { background-color: var(--text-muted); color: white; }
+
+
+        /* --- RESPONSIVIDADE PARA MOBILE --- */
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(-100%);
+                width: var(--sidebar-width);
+            }
+            
+            body.sidebar-open #sidebar {
+                transform: translateX(0);
+            }
+            
+            #main-content,
+            body.sidebar-collapsed #main-content {
+                padding-left: 0;
+            }
+            
+            #sidebar-toggle {
+                display: block;
+            }
+        }
+    </style>
 </head>
 
-<style>
-    .admin {
-        display: flex;
+<body onload="listarMaquinasPorEmpresas()" class="sidebar-collapsed">
 
-    }
-
-    .cliente {
-        display: flex;
-    }
-</style>
-
-<body onload="listarMaquinasPorEmpresas()">
-    <!-- NAVBAR -->
-    <nav class="navbar bg-body-tertiary fixed-top" id="nav">
-
-    </nav>
-
-    <!-- BOTÃO ADICIONAR MÁQUINA -->
-    <div class="container pt-5 d-flex justify-content-end">
-        <a href="./softwareDownload/softwareOnTrack.jar" download>
-            <button class="button" type="button" data-bs-toggle="modal" data-bs-target="#addMaquinaModal">
-                <span class="button_text">Adicionar</span>
-                <span class="button_icon">+</span>
-            </button>
-        </a>
-    </div>
-
-
-    <div id="listaMaquinas" class="container mt-3"></div>
-
-    <!-- MODAL DETALHES DA MÁQUINA -->
-    <div class="modal fade" id="maquinaModal">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="maquinaModalLabel">Detalhes da Máquina</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="modalConteudo"></div>
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-cogs"></i>
+                <span class="logo-text">OnTrack Systems</span>
             </div>
         </div>
-    </div>
+        
+        <ul class="nav flex-column sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="dashboard.html">
+                    <i class="fas fa-tachometer-alt"></i><span class="nav-link-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="controle_usuarios.html">
+                    <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="index.html">
+                    <i class="fas fa-users"></i><span class="nav-link-text">Desconectar</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-    <!-- MODAL ADICIONAR MÁQUINA -->
+    <div id="main-content">
+        <nav class="navbar fixed-top">
+            <div class="container-fluid">
+                <button class="btn" type="button" id="sidebar-toggle">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                
+                <div class="d-flex align-items-center ms-auto">
+                    <ul class="navbar-nav flex-row">
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="#"><i class="fas fa-bell fa-lg"></i></a>
+                        </li>
+                        <li class="nav-item">
+                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="container main-container">
+            <div class="page-header">
+                <h1>Máquinas que precisam de atenção</h1>
+                <div class="d-flex gap-2 justify-content-end mb-3">
+                    <button class="btn btn-outline-secondary">Todos os Status</button>
+                    <button class="btn btn-outline-secondary">Todas as Garagens</button>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#addMaquinaModal">
+                        <i class="fas fa-plus me-2"></i>Adicionar Garagem
+                    </button>
+                </div>
+            </div>
+            <div id="listaMaquinas"></div>
+        </div>
+    </div>
+    
     <div class="modal fade" id="addMaquinaModal">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -70,49 +294,37 @@
                         <h5 class="modal-title">Cadastrar Nova Máquina</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body" style="border-bottom: 1px solid black;">
+                    <div class="modal-body">
                         <input type="hidden" id="empresaId" value="">
-
                         <div class="mb-3">
                             <label for="idMaquina" class="form-label">ID da Máquina</label>
                             <input type="text" class="form-control" id="idMaquina" name="idMaquina" required>
                         </div>
-
                         <h6>Componentes</h6>
                         <div id="componentesContainer"></div>
-
-
-                        <div class="btn btn-sm btn-addcomp mt-2" style="border: none;" onclick="adicionarComponente()">
-                            <button class="button" type="button">
-                                <span class="button_text" style="margin-top: -1px;">Adicionar</span>
-                                <span class="button_icon">+</span>
-                            </button>
-                        </div>
+                        <button class="btn btn-danger mt-2" type="button" onclick="adicionarComponente()">
+                            <i class="fas fa-plus me-2"></i>Adicionar Componente
+                        </button>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn botaoadd">Salvar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Salvar</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- MODAL: EDITAR MÁQUINA -->
-    <div class="modal fade" id="editMaquinaModal" tabindex="-1" aria-labelledby="editMaquinaModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="editMaquinaModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <form id="formEditMaquina" onsubmit="salvarEdicao(event)">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editMaquinaModalLabel">Editar Máquina</h5>
+                        <h5 class="modal-title">Editar Máquina</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
-
-                    <div class="modal-body" style="border-bottom: 1px solid black;">
-
+                    <div class="modal-body">
                         <input type="hidden" id="editOldIdMaquina">
-
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">ID atual da máquina</label>
@@ -120,255 +332,203 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Novo ID da máquina (opcional)</label>
-                                <input type="number" id="editNovoIdMaquina" class="form-control"
-                                    placeholder="Deixe igual para não alterar">
+                                <input type="number" id="editNovoIdMaquina" class="form-control" placeholder="Deixe igual para não alterar">
                             </div>
                         </div>
-
                         <hr class="my-3">
-
                         <h6>Componentes</h6>
                         <div id="editComponentesWrap"></div>
-
-                        <h6 style="margin-top: 15px; margin-left: 1px;">Adicionar Componentes</h6>
-                        <div style="margin-top: 5px;" id="adicionarComponente"></div>
-
-                        <div class="btn btn-sm btn-addcomp" style="border: none;" onclick="adicionarComponenteEditar()">
-                            <button class="button" type="button">
-                                <span class="button_text" style="margin-top: -1px;">Adicionar</span>
-                                <span class="button_icon">+</span>
-                            </button>
-                        </div>
+                        <h6 class="mt-3">Adicionar Componentes</h6>
+                        <div id="adicionarComponente"></div>
+                        <button class="btn btn-info mt-2" type="button" onclick="adicionarComponenteEditar()">
+                            <i class="fas fa-plus me-2"></i>Adicionar Novo Componente
+                        </button>
                     </div>
-
                     <div class="modal-footer">
-                        <button type="submit" class="btn botaoadd">Salvar</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Salvar Alterações</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAR EXCLUSÃO DE COMPONENTE -->
-    <div class="modal fade" id="confirmDeleteCompModal" tabindex="-1" aria-labelledby="confirmDeleteCompModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="confirmDeleteCompModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title" id="confirmDeleteCompModalLabel">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    <h5 class="modal-title">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     Tem certeza que deseja excluir este componente?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="confirmDeleteCompBtn">Excluir</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteCompBtn">Excluir</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL CONFIRMAR EXCLUSÃO -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel">
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="border: none;">
+            <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Confirmar Exclusão</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     Tem certeza que deseja excluir esta máquina?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Excluir</button>
                 </div>
             </div>
         </div>
     </div>
-
+    
 </body>
 
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-<script src="./js/navbar.js"></script>
-
 <script>
-    const linkUsuarios = document.querySelector(".admin");
-    const acessoCliente = document.querySelector(".cliente")
-
     const idEmpresa = sessionStorage.ID_EMPRESA;
-
+    
+    // --- FUNÇÃO PRINCIPAL PARA CRIAR O LAYOUT ---
     async function listarMaquinasPorEmpresas() {
-        let respostaMaquinas = await fetch(`/maquina?idEmpresa=${idEmpresa}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!respostaMaquinas.ok) {
-            respostaMaquinas.text().then((texto) => {
-                console.log(texto);
-            });
-        }
-
-        let jsonMaquinas = await respostaMaquinas.json();
-
-        const lista = document.getElementById("listaMaquinas");
-        lista.innerHTML = "";
-
-        for (maquina of jsonMaquinas) {
-            let respostaGaragens = await fetch(`/garagens/buscarGaragem/${maquina.fkGaragem}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!respostaGaragens.ok) {
-                respostaGaragens.text().then((texto) => {
-                    console.log(texto);
-                });
-            }
-
-            let jsonGaragem = await respostaGaragens.json();
-
-            let status = "estavel";
-            let cor = status === "estavel" ? "green" :
-                status === "alerta" ? "yellow" : "red";
-
-            const card = document.createElement("div");
-            card.className = "maquina-card";
-            card.innerHTML = `
-                <h4>Máquina ${jsonGaragem[0].nome}</h4>
-                <span class="badge" style="background:${cor}; font-size:14px;">
-                    ${status.toUpperCase()}
-                </span>
-            `;
-
-            card.onclick = () => abrirModal(maquina, status);
-            lista.appendChild(card);
+        const mockData = {
+            statuses: ['stable', 'warning', 'error', 'stable', 'stable', 'stable'],
+            images: ['https://i.imgur.com/gV51y6d.jpeg', 'https://i.imgur.com/uPfeV4y.jpeg', 'https://i.imgur.com/4a09jcf.jpeg', 'https://i.imgur.com/uPfeV4y.jpeg', 'https://i.imgur.com/4a09jcf.jpeg', 'https://i.imgur.com/gV51y6d.jpeg'],
+            names: ['Zeta', 'Epsilon', 'Alpha', 'Beta', 'Gamma', 'Delta']
         };
-    }
+        let mockIndex = 0;
 
-    function abrirModal(maquina, status) {
-        let html = `
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div style="display:flex; align-items:flex-start; flex-direction:column; margin-top: 2.1vh">
-                <h5>Máquina ${maquina.idMaquina}</h5>
-                <p>Status: 
-                    <span class="badge" style="background:${status === 'estavel' ? 'green' : status === 'alerta' ? 'yellow' : 'red'}; font-size: 14px;">
-                    ${status.toUpperCase()}
-                    </span>
-                </p>
-            </div>
-            <div class="d-flex flex-column gap-2">
-                <button class="btn-edit" onclick='abrirModalEdicao(${JSON.stringify(maquina)})'>
-                    <span class="btn-text">Editar</span>
-                    <i class="fa-regular fa-pen-to-square"></i>
-                </button>
-                <button class="btn-delete" onclick='abrirModalExclusao(${JSON.stringify(maquina)})'>
-                    <span class="text">Excluir</span>
-                    <i class="fa-solid fa-trash icon"></i>
-                </button>
-            </div>
-        </div>
-        <hr>
-        <h6>Componentes</h6>
-        <ul>
-            ${maquina.componentes.map(c => `
-                <li><strong>${c.componente}</strong> (${c.unidade}): Min: ${c.parametroMin}, Max: ${c.parametroMax}</li>
-            `).join("")}
-        </ul>
-        `;
+        try {
+            let respostaMaquinas = await fetch(`/maquina?idEmpresa=${idEmpresa}`);
+            if (!respostaMaquinas.ok) throw new Error('Falha ao buscar máquinas');
+            let jsonMaquinas = await respostaMaquinas.json();
 
-        console.log("Maquina detalhes:", JSON.stringify(maquina));
+            const lista = document.getElementById("listaMaquinas");
+            lista.innerHTML = "";
 
-        document.getElementById("modalConteudo").innerHTML = html;
-        new bootstrap.Modal(document.getElementById("maquinaModal")).show();
+            for (const maquina of jsonMaquinas) {
+                let respostaGaragens = await fetch(`/garagens/buscarGaragem/${maquina.fkGaragem}`);
+                if (!respostaGaragens.ok) throw new Error('Falha ao buscar garagem');
+                let jsonGaragem = await respostaGaragens.json();
+                const nomeGaragem = jsonGaragem.length > 0 ? jsonGaragem[0].nome : 'Garagem não encontrada';
+                
+                const status = mockData.statuses[mockIndex % mockData.statuses.length] || 'stable';
+                const statusInfo = {
+                    'stable': { text: 'STABLE', class: 'status-stable' },
+                    'warning': { text: 'WARNING', class: 'status-warning' },
+                    'error': { text: 'ERROR', class: 'status-error' }
+                };
+                const imageUrl = mockData.images[mockIndex % mockData.images.length];
+                const machineName = mockData.names[mockIndex % mockData.names.length];
+
+                const machineItem = document.createElement("div");
+                machineItem.className = "machine-item";
+                machineItem.innerHTML = `
+                    <div class="machine-header" data-bs-toggle="collapse" href="#collapse-${maquina.idMaquina}" role="button" aria-expanded="false" aria-controls="collapse-${maquina.idMaquina}">
+                        <img src="${imageUrl}" alt="Imagem da Máquina" class="machine-image">
+                        <div class="machine-info">
+                            <strong>Máquina ${nomeGaragem}</strong>
+                            
+                        </div>
+                        <span class="status-badge ${statusInfo[status].class}">${statusInfo[status].text}</span>
+                        <i class="fas fa-chevron-down chevron-icon"></i>
+                    </div>
+
+                    <div class="collapse" id="collapse-${maquina.idMaquina}">
+                        <div class="machine-details">
+                            <h6>Componentes e Parâmetros</h6>
+                            ${maquina.componentes && maquina.componentes.length > 0 ? `
+                                <ul>
+                                    ${maquina.componentes.map(c => `
+                                        <li><strong>${c.componente}</strong> (${c.unidade}): Mín: ${c.parametroMin}, Máx: ${c.parametroMax}</li>
+                                    `).join("")}
+                                </ul>
+                            ` : '<p>Nenhum componente cadastrado.</p>'}
+                            
+                            <div class="details-actions">
+                                <button class="btn-edit" onclick='abrirModalEdicao(${JSON.stringify(maquina)})'>
+                                    <i class="fas fa-pencil-alt me-1"></i> Editar
+                                </button>
+                                <button class="btn-delete" onclick='abrirModalExclusao(${JSON.stringify(maquina)})'>
+                                    <i class="fas fa-trash-alt me-1"></i> Excluir
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                lista.appendChild(machineItem);
+                mockIndex++;
+            }
+        } catch (error) {
+            console.error("Erro ao listar máquinas:", error);
+            document.getElementById("listaMaquinas").innerHTML = `<div class="alert alert-danger">Não foi possível carregar as máquinas. Tente novamente mais tarde.</div>`;
+        }
     }
 
     async function adicionarComponente() {
         const container = document.getElementById("componentesContainer");
-
-        // Busca os componentes do banco
         const resp = await fetch("/maquina/listar");
         const componentes = await resp.json();
-
         const div = document.createElement("div");
-        div.className = "comp-row mb-3";
-
+        div.className = "comp-row mb-3 border p-2 rounded";
         let options = `<option value="">Selecione um Componente</option>`;
-        // Monta o select com os dados vindos do banco
         componentes.forEach(c => {
-            options += `<option value="${c.idComponenteHardware}">
-                        ${c.nomeComponente} (${c.unidadeMedida})
-                    </option>`;
+            options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
         });
-
         div.innerHTML = `
-        <select class="form-control mb-2" name="idComponente[]">
-            ${options}
-        </select>
-        <input type="number" class="form-control mb-2" name="parametroMin[]" placeholder="Parâmetro Mínimo">
-        <input type="number" class="form-control mb-2" name="parametroMax[]" placeholder="Parâmetro Máximo">
-    `;
+            <select class="form-select mb-2" name="idComponente[]">${options}</select>
+            <div class="d-flex gap-2">
+                <input type="number" class="form-control" name="parametroMin[]" placeholder="Parâmetro Mínimo">
+                <input type="number" class="form-control" name="parametroMax[]" placeholder="Parâmetro Máximo">
+            </div>
+        `;
         container.appendChild(div);
     }
 
     async function adicionarComponenteEditar() {
         const container = document.getElementById("adicionarComponente");
-
-        // Busca os componentes do banco
         const resp = await fetch("/maquina/listar");
         const componentes = await resp.json();
-
         const div = document.createElement("div");
-        div.className = "comp-roww";
-
+        div.className = "comp-roww border p-2 rounded mb-2";
         let options = `<option value="">Selecione um Componente</option>`;
-        // Monta o select com os dados vindos do banco
         componentes.forEach(c => {
-            options += `<option value="${c.idComponenteHardware}">
-                        ${c.nomeComponente} (${c.unidadeMedida})
-                    </option>`;
+            options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
         });
-
         div.innerHTML = `
-        <select class="form-control mb-2" name="idComponenteNovo[]">
-            ${options}
-        </select>
-        <input type="number" class="form-control mb-2" name="parametroMinNovo[]" placeholder="Parâmetro Mínimo">
-        <input type="number" class="form-control mb-2" name="parametroMaxNovo[]" placeholder="Parâmetro Máximo">
-    `;
+            <select class="form-select mb-2" name="idComponenteNovo[]">${options}</select>
+            <div class="d-flex gap-2">
+                <input type="number" class="form-control" name="parametroMinNovo[]" placeholder="Parâmetro Mínimo">
+                <input type="number" class="form-control" name="parametroMaxNovo[]" placeholder="Parâmetro Máximo">
+            </div>
+        `;
         container.appendChild(div);
     }
 
     async function salvarMaquina(event) {
         event.preventDefault();
-
         const form = document.getElementById("formAddMaquina");
         const formData = new FormData(form);
-
         const idMaquina = formData.get("idMaquina");
         const idsComponentes = formData.getAll("idComponente[]");
         const minimos = formData.getAll("parametroMin[]");
         const maximos = formData.getAll("parametroMax[]");
+        const componentes = idsComponentes.map((id, i) => ({
+            idComponente: id,
+            parametroMin: minimos[i],
+            parametroMax: maximos[i]
+        })).filter(c => c.idComponente);
 
-        const componentes = [];
-        for (let i = 0; i < idsComponentes.length; i++) {
-            if (!idsComponentes[i]) continue;
-            componentes.push({
-                idComponente: idsComponentes[i],
-                parametroMin: minimos[i],
-                parametroMax: maximos[i]
-            });
+        if (componentes.length === 0) {
+            Swal.fire({ icon: "warning", title: "Atenção", text: "Adicione pelo menos um componente." });
+            return;
         }
 
         const maquina = { idMaquina, idEmpresa, componentes };
@@ -379,85 +539,53 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(maquina)
             });
-
             if (!response.ok) {
                 const err = await response.json();
-                Swal.fire({ icon: "error", title: "Erro", text: err.message, backdrop: false });
-                return;
+                throw new Error(err.message);
             }
-
-            Swal.fire({ icon: "success", title: "Máquina cadastrada!", backdrop: false });
+            Swal.fire({ icon: "success", title: "Sucesso!", text: "Máquina cadastrada com sucesso." });
             form.reset();
             listarMaquinasPorEmpresas();
             bootstrap.Modal.getInstance(document.getElementById("addMaquinaModal")).hide();
-
         } catch (err) {
-            console.error("Erro de conexão:", err);
-            Swal.fire({ icon: "error", title: "Erro de conexão" });
+            Swal.fire({ icon: "error", title: "Erro", text: err.message || "Não foi possível cadastrar a máquina." });
         }
     }
 
     let maquinaEmEdicao = null;
 
-    // Abre o modal de edição preenchendo os campos
     async function abrirModalEdicao(maquina) {
-        document.getElementById("adicionarComponente").innerHTML = "";
         maquinaEmEdicao = maquina;
-
-        // IDs
+        document.getElementById("adicionarComponente").innerHTML = "";
         document.getElementById("editOldIdMaquina").value = maquina.idMaquina;
         document.getElementById("editIdMaquinaView").value = maquina.idMaquina;
         document.getElementById("editNovoIdMaquina").value = maquina.idMaquina;
 
-        // Componentes
         const wrap = document.getElementById("editComponentesWrap");
         wrap.innerHTML = "";
-
-        // Busca os componentes do banco
         const resp = await fetch("/maquina/listar");
         const componentes = await resp.json();
 
-        // Para cada componente da máquina, cria uma linha
         (maquina.componentes || []).forEach((c) => {
             const row = document.createElement("div");
             row.className = "comp-row mb-2";
-
-            // Monta as opções
-            let options = `<option value="">Selecione um Componente</option>`;
+            let options = `<option value="">Selecione</option>`;
             componentes.forEach(comp => {
                 const isSelected = comp.idComponenteHardware == c.idComponenteHardware ? "selected" : "";
-                options += `<option value="${comp.idComponenteHardware}" ${isSelected}>
-                        ${comp.nomeComponente} (${comp.unidadeMedida})
-                    </option>`;
+                options += `<option value="${comp.idComponenteHardware}" ${isSelected}>${comp.nomeComponente} (${comp.unidadeMedida})</option>`;
             });
-
-            // Linha com inputs e botão excluir
             row.innerHTML = `
                 <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
                 <div class="row g-2 align-items-center">
-                <div class="col-md-4">
-                    <select class="form-control" name="idComponente[]">
-                        ${options}
-                    </select>
+                    <div class="col-md-5"><select class="form-select" name="idComponente[]">${options}</select></div>
+                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}"></div>
+                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}"></div>
+                    <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})"><i class="fa-solid fa-trash"></i></button></div>
                 </div>
-                <div class="col-md-3">
-                    <input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}">
-                </div>
-                <div class="col-md-3">
-                    <input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}">
-                </div>
-                <div class="col-md-2 d-flex justify-content-end">
-                    <button style="width:auto;" class="btn-deletee" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})">
-                        <i class="fa-solid fa-trash icon"></i>
-                    </button>
-                </div>
-                </div>
-        `;
-
+            `;
             wrap.appendChild(row);
         });
 
-        // Mostra o modal
         new bootstrap.Modal(document.getElementById("editMaquinaModal")).show();
     }
 
@@ -465,203 +593,116 @@
 
     function abrirModalExcluirComponente(idMaquina, idComponente) {
         componenteParaExcluir = { idMaquina, idComponente };
-
-        // Fecha o modal de edição
-        bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
-        bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
-
-        const modal = new bootstrap.Modal(document.getElementById("confirmDeleteCompModal"));
-        modal.show();
+        bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal"))?.hide();
+        new bootstrap.Modal(document.getElementById("confirmDeleteCompModal")).show();
     }
 
     document.getElementById("confirmDeleteCompBtn").addEventListener("click", async () => {
         if (!componenteParaExcluir) return;
-
         const { idMaquina, idComponente } = componenteParaExcluir;
-
         try {
-            const res = await fetch(`/maquina/excluirComponente/${idMaquina}/${idComponente}`, {
-                method: "DELETE"
-            });
-
+            const res = await fetch(`/maquina/excluirComponente/${idMaquina}/${idComponente}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Erro ao excluir componente");
-
-            // Fecha o modal de confirmação
             bootstrap.Modal.getInstance(document.getElementById("confirmDeleteCompModal")).hide();
-
-            listarMaquinasPorEmpresas()
-
-            Swal.fire({
-                icon: "success",
-                title: "Componente excluído",
-                text: "O componente foi removido com sucesso.",
-                backdrop: false
-            });
-
+            listarMaquinasPorEmpresas();
+            Swal.fire({ icon: "success", title: "Excluído", text: "O componente foi removido." });
         } catch (err) {
-            console.error(err);
-            Swal.fire({
-                icon: "error",
-                title: "Erro",
-                text: "Não foi possível excluir o componente.",
-                backdrop: false
-            });
+            Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir o componente." });
         }
     });
 
     async function salvarEdicao(event) {
         event.preventDefault();
-
         const rows = document.querySelectorAll("#editComponentesWrap .comp-row");
-        const updates = [];
+        const updates = Array.from(rows).map(row => ({
+            antigoId: row.querySelector("input[name='idComponenteHardware[]']").value,
+            novoId: row.querySelector("select[name='idComponente[]']").value,
+            parametroMin: row.querySelector("input[name='parametroMin[]']").value.trim(),
+            parametroMax: row.querySelector("input[name='parametroMax[]']").value.trim()
+        }));
 
-        rows.forEach(row => {
-            const antigoId = row.querySelector("input[name='idComponenteHardware[]']").value;
-            const novoId = row.querySelector("select[name='idComponente[]']").value;
-            const parametroMin = row.querySelector("input[name='parametroMin[]']").value.trim();
-            const parametroMax = row.querySelector("input[name='parametroMax[]']").value.trim();
+        if (updates.some(u => !u.parametroMin || !u.parametroMax || !u.novoId)) {
+            return Swal.fire({ icon: "error", title: "Campos obrigatórios", text: "Preencha todos os campos dos componentes existentes." });
+        }
 
-            if (!parametroMin || !parametroMax || !novoId) {
-                return Swal.fire({
-                    icon: "error",
-                    title: "Campos obrigatórios",
-                    text: "Preencha todos os campos antes de salvar!",
-                    backdrop: false
-                });
-            }
-
-            updates.push({
-                antigoId,
-                novoId,
-                parametroMin,
-                parametroMax
-            });
-        });
+        const form = document.getElementById("formEditMaquina");
+        const formData = new FormData(form);
+        const novosComponentes = formData.getAll("idComponenteNovo[]")
+            .map((id, i) => ({
+                idComponente: id,
+                parametroMin: formData.getAll("parametroMinNovo[]")[i],
+                parametroMax: formData.getAll("parametroMaxNovo[]")[i]
+            }))
+            .filter(c => c.idComponente && c.parametroMin && c.parametroMax);
 
         try {
-            // Atualiza os componentes existentes
-            const resEditar = await fetch("/maquina/editar", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ updates })
-            });
-
-            if (!resEditar.ok) throw new Error("Erro ao editar componente");
-            await resEditar.json(); // pode ignorar o retorno se não for usado
-
-            // Prepara novos componentes (se houver)
-            const form = document.getElementById("formEditMaquina");
-            const formData = new FormData(form);
-
-            const idsComponentes = formData.getAll("idComponenteNovo[]");
-            const minimos = formData.getAll("parametroMinNovo[]");
-            const maximos = formData.getAll("parametroMaxNovo[]");
-
-            const novosComponentes = [];
-            for (let i = 0; i < idsComponentes.length; i++) {
-                if (!idsComponentes[i]) continue;
-                novosComponentes.push({
-                    idComponente: idsComponentes[i],
-                    parametroMin: minimos[i],
-                    parametroMax: maximos[i]
+            if (updates.length > 0) {
+                const resEditar = await fetch("/maquina/editar", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ updates })
                 });
+                if (!resEditar.ok) throw new Error("Erro ao editar componentes existentes");
             }
 
-            const idMaquina = document.getElementById("editIdMaquinaView").value;
-
             if (novosComponentes.length > 0) {
-                // Adiciona novos componentes
+                const idMaquina = document.getElementById("editIdMaquinaView").value;
                 const resAdd = await fetch("/maquina/adicionarComponente", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ idMaquina, componentes: novosComponentes })
                 });
-
-                if (!resAdd.ok) throw new Error("Erro ao adicionar novo componente");
-                const msg = await resAdd.text();
-
-                Swal.fire({
-                    icon: "success",
-                    title: "Edição concluída",
-                    text: msg,
-                    backdrop: false
-                }).then(() => {
-                    bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
-                    bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
-                    listarMaquinasPorEmpresas();
-                });
-            } else {
-                // Apenas edição de componentes existentes
-                Swal.fire({
-                    icon: "success",
-                    title: "Edição concluída",
-                    text: "Componentes editados com sucesso!",
-                    backdrop: false
-                }).then(() => {
-                    bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
-                    bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
-                    listarMaquinasPorEmpresas();
-                });
+                if (!resAdd.ok) throw new Error("Erro ao adicionar novos componentes");
             }
+
+            Swal.fire({ icon: "success", title: "Sucesso", text: "Máquina atualizada com sucesso!" });
+            bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
+            listarMaquinasPorEmpresas();
 
         } catch (err) {
-            console.error("Erro na edição:", err);
-            Swal.fire({
-                icon: "error",
-                title: "Erro na edição",
-                text: "Não foi possível editar os componentes.",
-                backdrop: false
-            });
+            Swal.fire({ icon: "error", title: "Erro na edição", text: err.message });
         }
     }
 
-    // Abrir modal de exclusão
+    let maquinaSelecionada = null;
+
     function abrirModalExclusao(maquina) {
         maquinaSelecionada = maquina;
-
-        console.log("Máquina selecionada para exclusão:", maquinaSelecionada);
-
-        // Fecha o modal de detalhes (se estiver aberto)
-        const modalMaquina = bootstrap.Modal.getInstance(document.getElementById("maquinaModal"));
-        if (modalMaquina) {
-            modalMaquina.hide();
-        }
-
-        // Abre o modal de exclusão
-        const modalDelete = bootstrap.Modal.getOrCreateInstance(document.getElementById("deleteConfirmModal"));
-        modalDelete.show();
+        new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
     }
 
-    // Confirmar exclusão (DELETE)
     document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
         if (!maquinaSelecionada) return;
-
         try {
-            const response = await fetch(`/maquina/excluir/${maquinaSelecionada.idMaquina}`, {
-                method: "DELETE"
-            });
-
-            if (!response.ok) {
-                throw new Error("Erro ao excluir máquina");
-            }
-
-            Swal.fire({
-                icon: "success",
-                title: "Máquina excluída",
-                text: "Máquina excluída com sucesso!",
-                backdrop: false
-            });
-
+            const response = await fetch(`/maquina/excluir/${maquinaSelecionada.idMaquina}`, { method: "DELETE" });
+            if (!response.ok) throw new Error("Erro ao excluir máquina");
+            Swal.fire({ icon: "success", title: "Excluído!", text: "A máquina foi excluída com sucesso." });
             listarMaquinasPorEmpresas();
             bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal")).hide();
-            bootstrap.Modal.getInstance(document.getElementById("maquinaModal")).hide();
         } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: "error",
-                title: "Erro",
-                text: "Erro ao excluir máquina",
-                backdrop: false
+            Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir a máquina." });
+        }
+    });
+
+    // --- SCRIPT PARA CONTROLE DA SIDEBAR (ATUALIZADO) ---
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebarHeader = document.querySelector('.sidebar-header');
+
+        // Controlador para abrir/fechar a sidebar inteira no MOBILE
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                document.body.classList.toggle('sidebar-open');
+            });
+        }
+        
+        // Controlador para expandir/encolher a sidebar no DESKTOP
+        if (sidebarHeader) {
+            sidebarHeader.addEventListener('click', function() {
+                // Só executa essa função em telas de computador (maiores que 992px)
+                if (window.innerWidth > 992) {
+                    document.body.classList.toggle('sidebar-collapsed');
+                }
             });
         }
     });
