@@ -16,7 +16,8 @@ function listarPorEmpresa(req, res) {
                     maquina = {
                         idMaquina: row.idMaquina,
                         empresa: row.empresa,
-                        componentes: []
+                        componentes: [],
+                        fkGaragem: row.fkGaragem
                     };
                     maquinas.push(maquina);
                 }

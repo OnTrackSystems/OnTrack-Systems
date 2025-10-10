@@ -1,3 +1,4 @@
+const { bus } = require("nodemon/lib/utils");
 var garagemModel = require("../models/garagemModel");
 
 function adicionarGaragem(req, res) {
@@ -15,7 +16,7 @@ function adicionarGaragem(req, res) {
 function verificarGaragemId(req, res) {
     let idGaragem = req.params.idGaragem;
 
-    garagemModel.verificarGaragemId(idGaragem).then((resultado) => {
+    garagemModel.buscarGaragem(idGaragem).then((resultado) => {
         if(resultado.length > 0) {
             res.status(200).send("true");
         } else {
@@ -24,7 +25,16 @@ function verificarGaragemId(req, res) {
     });
 }
 
+function buscarGaragem(req, res) {
+    let idGaragem = req.params.idGaragem;
+
+    garagemModel.buscarGaragem(idGaragem).then((resultado) => {
+        res.status(200).json(resultado);
+    });
+}
+
 module.exports = {
     adicionarGaragem,
-    verificarGaragemId
+    verificarGaragemId,
+    buscarGaragem
 }

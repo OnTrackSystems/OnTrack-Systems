@@ -3,7 +3,8 @@ var database = require("../database/config");
 function listarPorEmpresa(idEmpresa) {
     var instrucaoSql = `
         SELECT m.idMaquina,
-            e.nome AS empresa
+            e.nome AS empresa,
+            m.fkGaragem
         FROM Maquina m
         INNER JOIN Empresa e 
             ON m.fkEmpresa = e.idEmpresa

@@ -9,7 +9,7 @@ function adicionarGaragem(idGaragem, nomeGaragem, latitudeGaragem, longitudeGara
     return database.executar(instrucaoSql);
 }
 
-function verificarGaragemId(idGaragem) {
+function buscarGaragem(idGaragem) {
     let instrucaoSql = `
         SELECT * FROM Garagem
         WHERE idGaragem = ${idGaragem};
@@ -20,5 +20,5 @@ function verificarGaragemId(idGaragem) {
 
 module.exports = {
     adicionarGaragem,
-    verificarGaragemId
+    buscarGaragem
 }
