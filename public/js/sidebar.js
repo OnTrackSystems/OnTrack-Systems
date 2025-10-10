@@ -2,9 +2,10 @@
 
 side.innerHTML = `<div id="SideNav" class="sideBar">
   <a href="javascript:void(0)" class="botaoFechar" onclick="fecharNav()">&times;</a>
-  <a href="#">Dashboard</a>
-  <a href="#">Controle de Usuários</a>
-  <a href="#">Controle de Máquinas</a>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="controle_usuarios.html">Controle de Usuários</a>
+  <a href="controle_maquinas.html">Controle de Máquinas</a>
+  <a onclick="desconectar()" id="textoSide">Desconectar</a>
 </div>
 
 <div id="main">
@@ -19,4 +20,10 @@ function abrirNav() {
 function fecharNav() {
   document.getElementById("SideNav").style.width = "0";
   document.getElementById("main").style.marginLeft= "0";
+}
+
+function desconectar() {
+    sessionStorage.clear();
+
+    window.location = "index.html";
 }
