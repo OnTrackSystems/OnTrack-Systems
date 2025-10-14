@@ -1,121 +1,94 @@
-nav.innerHTML = `
-    <div class="container-fluid ">
-       <div id="SideNav" class="sideBar">
-  <a href="javascript:void(0)" class="botaoFechar" onclick="fecharNav()">&times;</a>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="controle_usuarios.html">Controle de Usuários</a>
-  <a href="controle_maquinas.html">Controle de Máquinas</a>
-  <a onclick="desconectar()" id="textoSide">Desconectar</a>
-</div>
-
-<div id="main">
-  <span style="font-size:30px;cursor:pointer" onclick="abrirNav()">&#9776; </span>
-</div>
-        <a href="index.html"><img src="./assets/imgs/logo_BG_escuro.png" alt="Logo"
-                style="width: 150px; height: auto; margin-left: 10px;"></a>
-        <div class="ms-auto d-flex align-items-center justify-content-center">
-            <i class="fa-regular fa-bell " style="font-size: 25px;"></i>
-            <div class=" rounded-circle overflow-hidden d-flex align-items-center justify-content-center m-3"
-                style="width: 50px; height: 50px;">
-                <img src="./assets/imgs/usuarioicon.png" alt="Perfil" style="width: auto; height: 50px; ">
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebarHTML = `
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cogs"></i>
+                    <span class="logo-text">OnTrack Systems</span>
+                </div>
             </div>
-        </div>
 
-
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar">
-            
-        </div>
-    </div>
-`;
-
-// offcanvasNavbar.innerHTML = `
-//     <div class="categoriaSection">
-//         <h1>Navegação</h1>
-//         <div class="collapseOptions">
-//             <div class="collapseSection">
-//                 <div onclick="virarSeta(setaDashboard)" class="collapseTitulo" data-bs-toggle="collapse" href="#collapseDashboards" role="button" aria-expanded="false" aria-controls="collapseDashboards">
-//                     <img src="../Images/home.svg">
-//                     <h2>Dashboards</h2>
-//                     <img src="../Images/chevron_right.svg" class="setaBaixo" id="setaDashboard">
-//                 </div>
-//                 <div class="collapse" id="collapseDashboards">
-//                     <div class="collapsePages">
-//                         <a href="dashboard.html" class="link-underline link-underline-opacity-0"><h3 role="button">Estatísticas</h3></a>
-//                         <h3 role="button">Gráficos</h3>
-//                     </div>
-//                 </div>
-//             </div>
-//             <div class="collapseSection">
-//                 <div onclick="virarSeta(setaServers)" class="collapseTitulo" data-bs-toggle="collapse" href="#collapseServers" role="button" aria-expanded="false" aria-controls="collapseServers">
-//                     <img src="../Images/serverIcon.svg">
-//                     <h2>Servidores</h2>
-//                     <img src="../Images/chevron_right.svg" class="setaBaixo" id="setaServers">
-//                 </div>
-//                 <div class="collapse" id="collapseServers">
-//                     <div class="collapsePages">
-//                         <h3 role="button">Informações Gerais</h3>
-//                         <a href="servidores.html" class="link-underline link-underline-opacity-0"><h3 role="button">Configurar Servidores</h3></a>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     </div>
-//     <h1>Configurações</h1>
-// `;
-
-if (sessionStorage.ID_EMPRESA == 1) {
-    offcanvasNavbar.innerHTML += `
-        <div class="collapseSection">
-            <div class="collapseTitulo" role="button" aria-expanded="false">
-                <img src="../Images/empresaIcon.svg">
-                <a href="empresas.html" class="link-underline link-underline-opacity-0"><h2>Empresas</h2></a>
-            </div>
-        </div>
+            <ul class="nav flex-column sidebar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard.html">
+                        <i class="fas fa-tachometer-alt"></i><span class="nav-link-text">Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="maquinas.html">
+                        <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="controle_usuarios.html">
+                        <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">
+                        <i class="fas fa-users"></i><span class="nav-link-text">Desconectar</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     `;
-}
 
-// offcanvasNavbar.innerHTML += `
-//     <div class="collapseSection">
-//         <div onclick="virarSeta(setaUsuarios)" class="collapseTitulo" data-bs-toggle="collapse" href="#collapseUsuarios" role="button" aria-expanded="false" aria-controls="collapseUsuarios">
-//             <img src="../Images/userIcon.svg">
-//             <h2>Usuários</h2>
-//             <img src="../Images/chevron_right.svg" class="setaBaixo" id="setaUsuarios">
-//         </div>
-//         <div class="collapse" id="collapseUsuarios">
-//             <div class="collapsePages">
-//                 <a href="usuarios.html" class="link-underline link-underline-opacity-0"><h3 role="button">Usuários</h3></a>
-//                 <a href="cargos.html" class="link-underline link-underline-opacity-0"><h3 role="button">Cargos</h3></a>
-//             </div>
-//         </div>
-//     </div>
-//     <div class="collapseSection logout" onclick="desconectar()">
-//         <div class="collapseTitulo" role="button" aria-expanded="false">
-//             <img src="../Images/logoutIcon.svg">
-//             <h2>Desconectar</h2>
-//         </div>
-//     </div>
-// `;
-
-function virarSeta(idSeta) {
-    if (idSeta.classList.contains('rotate-90')) {
-        idSeta.classList.remove('rotate-90');
-    } else {
-        idSeta.classList.add('rotate-90')
+    const sidebarContainer = document.getElementById("sidebar-container");
+    if (sidebarContainer) {
+        sidebarContainer.innerHTML = sidebarHTML;
     }
-}
 
-function desconectar() {
-    sessionStorage.clear();
+    const sidebarHeader = document.querySelector('.sidebar-header');
+    if (sidebarHeader) {
+        sidebarHeader.addEventListener('click', function () {
+            if (window.innerWidth > 992) {
+                document.body.classList.toggle('sidebar-collapsed');
+            }
+        });
+    }
 
-    window.location = "index.html";
-}
+    const currentPage = window.location.pathname.split("/").pop();
+    const navLinks = document.querySelectorAll("#sidebar .nav-link");
 
-function abrirNav() {
-  document.getElementById("SideNav").style.width = "250px";
-  document.getElementById("main").style.marginLeft = "250px";
-}
+    navLinks.forEach(link => {
+        const linkPage = link.getAttribute("href");
+        if (linkPage === currentPage) {
+            link.classList.add("active");
+        }
+    });
+});
 
-function fecharNav() {
-  document.getElementById("SideNav").style.width = "0";
-  document.getElementById("main").style.marginLeft= "0";
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const navbarHTML = `
+        <nav class="navbar fixed-top">
+            <div class="container-fluid">
+                <button class="btn" type="button" id="sidebar-toggle">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+                
+                <div class="d-flex align-items-center ms-auto">
+                    <ul class="navbar-nav flex-row">
+                        <li class="nav-item me-3">
+                            <a class="nav-link" href="#"><i class="fas fa-bell fa-lg"></i></a>
+                        </li>
+                        <li class="nav-item">
+                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    `;
+
+    const navbarContainer = document.getElementById("navbar-container");
+    if (navbarContainer) {
+        navbarContainer.innerHTML = navbarHTML;
+    }
+
+    const sidebarToggleMobile = document.getElementById('sidebar-toggle');
+    if (sidebarToggleMobile) {
+        sidebarToggleMobile.addEventListener('click', function () {
+            document.body.classList.toggle('sidebar-open');
+        });
+    }
+});

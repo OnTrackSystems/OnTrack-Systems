@@ -8,272 +8,43 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
+    <link rel="stylesheet" href="./css/navbar.css">
+    
     <style>
-        :root {
-            /* NOVA PALETA DE CORES */
-            --primary-red: #dc3545;
-            --primary-red-darker: #b02a37;
-            --body-bg: #ffffff;
-            --sidebar-text: #ffffff;
-            
-            --card-bg: #ffffff;
-            --card-border: #f0f0f0;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --radius: 0.8rem;
-
-            /* LARGURAS DA SIDEBAR PARA ANIMAÇÃO */
-            --sidebar-width: 260px;
-            --sidebar-collapsed-width: 80px;
-
-            --status-stable: #28a745;
-            --status-warning: #ffc107;
-            --status-error: #dc3545;
-        }
-
-        body {
-            background-color: var(--body-bg);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-color);
-        }
-
-        /* --- SIDEBAR COM ANIMAÇÃO DE EXPANDIR/RECOLHER --- */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background-color: var(--primary-red); /* Cor atualizada */
-            color: var(--sidebar-text);
-            padding: 1.5rem 1rem;
-            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
-            z-index: 1031;
-            overflow-x: hidden;
-        }
-        
-        .sidebar-header {
-            margin-bottom: 2rem;
-            cursor: pointer; /* Indica que é clicável para expandir/recolher */
-        }
-
-        .sidebar-header .logo {
-            color: var(--sidebar-text);
-            font-size: 1.5rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            padding-left: 0.5rem;
-        }
-
-        .logo-text {
-            margin-left: 0.75rem;
-            white-space: nowrap;
-            opacity: 1;
-            transition: opacity 0.2s ease;
-        }
-        
-        .sidebar-nav .nav-link {
-            color: var(--sidebar-text);
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            white-space: nowrap;
-        }
-
-        .sidebar-nav .nav-link:hover,
-        .sidebar-nav .nav-link.active {
-            background-color: var(--primary-red-darker); /* Cor atualizada */
-            color: var(--sidebar-text);
-        }
-
-        .nav-link-text {
-             white-space: nowrap;
-             opacity: 1;
-             transition: opacity 0.2s ease;
-        }
-
-        .sidebar-nav .nav-link i {
-            width: 20px;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-        
-        /* --- ESTADO ENCOLHIDO DA SIDEBAR (PARA DESKTOP) --- */
-        body.sidebar-collapsed #sidebar {
-            width: var(--sidebar-collapsed-width);
-        }
-
-        body.sidebar-collapsed .logo-text,
-        body.sidebar-collapsed .nav-link-text {
-            opacity: 0;
-            width: 0;
-            overflow: hidden;
-        }
-
-        /* --- NAVBAR --- */
-        .navbar {
-            background-color: var(--card-bg);
-            box-shadow: var(--shadow);
-            padding: 1rem 1.5rem;
-            z-index: 1030;
-        }
-        
-        #sidebar-toggle {
-            display: none;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        }
-        
-        /* --- LAYOUT PRINCIPAL --- */
-        #main-content {
-            padding-left: var(--sidebar-width);
-            transition: padding-left 0.3s ease-in-out;
-        }
-        
-        body.sidebar-collapsed #main-content {
-            padding-left: var(--sidebar-collapsed-width);
-        }
-        
-        .main-container {
-            padding-top: 90px;
-        }
-        
-        .page-header h1 {
-            font-size: 1.75rem;
-            font-weight: 600;
-        }
-        
-        /* --- LISTA DE MÁQUINAS --- */
-        .machine-item { border: 1px solid var(--card-border); border-radius: var(--radius); margin-bottom: 1rem; box-shadow: none; transition: box-shadow 0.2s ease-in-out; }
-        .machine-item:hover { box-shadow: var(--shadow); }
-        .machine-header {
-            display: flex;
-            align-items: center;
-            padding: 1.2rem 2rem;      /* Menor que antes */
-            min-height: 80px;          /* Altura mínima reduzida */
-            cursor: pointer;
-        }
-        .machine-image {
-            width: 65px;               /* Imagem menor */
-            height: 65px;
-            border-radius: 12px;
-            object-fit: cover;
-            margin-right: 2rem;
-        }
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+        .main-container { padding-top: 90px; }
+        .page-header h1 { font-size: 1.75rem; font-weight: 600; }
+        .machine-item { border: 1px solid #f0f0f0; border-radius: 0.8rem; margin-bottom: 1rem; background-color: #fff; box-shadow: none; transition: box-shadow 0.2s ease-in-out; }
+        .machine-item:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .machine-header { display: flex; align-items: center; padding: 1.2rem 2rem; min-height: 80px; cursor: pointer; }
+        .machine-image { width: 65px; height: 65px; border-radius: 12px; object-fit: cover; margin-right: 2rem; }
         .machine-info { flex-grow: 1; }
-        .machine-info strong {
-            display: block;
-            font-size: 1.25rem;        /* Nome menor */
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .machine-info span { color: var(--text-muted); font-size: 0.9rem; }
+        .machine-info strong { display: block; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
         .status-badge { padding: 0.4em 0.8em; border-radius: 20px; font-size: 0.75rem; font-weight: 700; color: #fff; margin: 0 1rem; min-width: 80px; text-align: center; }
-        .status-stable { background-color: var(--status-stable); }
-        .status-warning { background-color: var(--status-warning); }
-        .status-error { background-color: var(--status-error); }
-        .chevron-icon { color: var(--text-muted); transition: transform 0.3s ease; }
+        .status-stable { background-color: #28a745; }
+        .status-warning { background-color: #ffc107; }
+        .status-error { background-color: #dc3545; }
+        .chevron-icon { color: #6c757d; transition: transform 0.3s ease; }
         .machine-header[aria-expanded="true"] .chevron-icon { transform: rotate(180deg); }
-        .machine-details { padding: 0 1.5rem 1.5rem 1.5rem; border-top: 1px solid var(--card-border); }
-        .details-actions { margin-top: 1.5rem; display: flex; gap: 0.5rem; }
-        .btn-edit, .btn-delete { border: none; padding: 0.5rem 1rem; border-radius: 5px; font-weight: 500; }
-        .btn-edit { background-color: var(--primary-red); color: white; } /* Cor atualizada */
-        .btn-delete { background-color: var(--text-muted); color: white; }
-
-
-        /* --- RESPONSIVIDADE PARA MOBILE --- */
-        @media (max-width: 992px) {
-            #sidebar {
-                transform: translateX(-100%);
-                width: var(--sidebar-width);
-            }
-            
-            body.sidebar-open #sidebar {
-                transform: translateX(0);
-            }
-            
-            #main-content,
-            body.sidebar-collapsed #main-content {
-                padding-left: 0;
-            }
-            
-            #sidebar-toggle {
-                display: block;
-            }
-        }
+        .machine-details { padding: 1.5rem; border-top: 1px solid #f0f0f0; }
+        .details-actions { margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: flex-end; }
+        .btn-action-save { background-color: #dc3545; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-weight: 500; }
+        .btn-delete { background-color: #6c757d; color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 5px; font-weight: 500; }
+        .btn-add-component { background-color: #17a2b8; color: white; }
     </style>
 </head>
 
 <body onload="listarMaquinasPorEmpresas()" class="sidebar-collapsed">
 
-    <nav id="sidebar">
-        <div class="sidebar-header">
-            <div class="logo">
-                <i class="fas fa-cogs"></i>
-                <span class="logo-text">OnTrack Systems</span>
-            </div>
-        </div>
-        
-        <ul class="nav flex-column sidebar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="dashboard.html">
-                    <i class="fas fa-tachometer-alt"></i><span class="nav-link-text">Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="#">
-                    <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="controle_usuarios.html">
-                    <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="index.html">
-                    <i class="fas fa-users"></i><span class="nav-link-text">Desconectar</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-
+    <div id="sidebar-container"></div>
+    
     <div id="main-content">
-        <nav class="navbar fixed-top">
-            <div class="container-fluid">
-                <button class="btn" type="button" id="sidebar-toggle">
-                    <i class="fas fa-bars fa-lg"></i>
-                </button>
-                
-                <div class="d-flex align-items-center ms-auto">
-                    <ul class="navbar-nav flex-row">
-                        <li class="nav-item me-3">
-                            <a class="nav-link" href="#"><i class="fas fa-bell fa-lg"></i></a>
-                        </li>
-                        <li class="nav-item">
-                            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar">
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+        <div id="navbar-container"></div>
         
         <div class="container main-container">
             <div class="page-header">
-                <h1>Máquinas que precisam de atenção</h1>
+                <h1>Máquinas</h1>
                 <div class="d-flex gap-2 justify-content-end mb-3">
                     <button class="btn btn-outline-secondary">Todos os Status</button>
                     <button class="btn btn-outline-secondary">Todas as Garagens</button>
@@ -315,44 +86,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="editMaquinaModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <form id="formEditMaquina" onsubmit="salvarEdicao(event)">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Máquina</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" id="editOldIdMaquina">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">ID atual da máquina</label>
-                                <input type="text" id="editIdMaquinaView" class="form-control" disabled>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Novo ID da máquina (opcional)</label>
-                                <input type="number" id="editNovoIdMaquina" class="form-control" placeholder="Deixe igual para não alterar">
-                            </div>
-                        </div>
-                        <hr class="my-3">
-                        <h6>Componentes</h6>
-                        <div id="editComponentesWrap"></div>
-                        <h6 class="mt-3">Adicionar Componentes</h6>
-                        <div id="adicionarComponente"></div>
-                        <button class="btn btn-info mt-2" type="button" onclick="adicionarComponenteEditar()">
-                            <i class="fas fa-plus me-2"></i>Adicionar Novo Componente
-                        </button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-danger">Salvar Alterações</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="confirmDeleteCompModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -388,322 +121,311 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-</body>
-
-</html>
-<script>
-    const idEmpresa = sessionStorage.ID_EMPRESA;
+    <script src="./js/navbar.js"></script>
     
-    // --- FUNÇÃO PRINCIPAL PARA CRIAR O LAYOUT ---
-    async function listarMaquinasPorEmpresas() {
-        const mockData = {
-            statuses: ['stable', 'warning', 'error', 'stable', 'stable', 'stable'],
-            images: ['https://i.imgur.com/gV51y6d.jpeg', 'https://i.imgur.com/uPfeV4y.jpeg', 'https://i.imgur.com/4a09jcf.jpeg', 'https://i.imgur.com/uPfeV4y.jpeg', 'https://i.imgur.com/4a09jcf.jpeg', 'https://i.imgur.com/gV51y6d.jpeg'],
-            names: ['Zeta', 'Epsilon', 'Alpha', 'Beta', 'Gamma', 'Delta']
-        };
-        let mockIndex = 0;
+    <script>
+        const idEmpresa = sessionStorage.ID_EMPRESA;
+        let listaDeComponentesHardware = [];
 
-        try {
-            let respostaMaquinas = await fetch(`/maquina?idEmpresa=${idEmpresa}`);
-            if (!respostaMaquinas.ok) throw new Error('Falha ao buscar máquinas');
-            let jsonMaquinas = await respostaMaquinas.json();
+        async function listarMaquinasPorEmpresas() {
+            try {
+                const resp = await fetch("/maquina/listar");
+                listaDeComponentesHardware = await resp.json();
+            } catch (error) {
+                console.error("Erro ao carregar lista de componentes de hardware:", error);
+            }
 
-            const lista = document.getElementById("listaMaquinas");
-            lista.innerHTML = "";
+            const mockData = {
+                statuses: ['stable', 'warning', 'error', 'stable', 'stable', 'stable'],
+            };
+            let mockIndex = 0;
 
-            for (const maquina of jsonMaquinas) {
-                let respostaGaragens = await fetch(`/garagens/buscarGaragem/${maquina.fkGaragem}`);
-                if (!respostaGaragens.ok) throw new Error('Falha ao buscar garagem');
-                let jsonGaragem = await respostaGaragens.json();
-                const nomeGaragem = jsonGaragem.length > 0 ? jsonGaragem[0].nome : 'Garagem não encontrada';
-                
-                const status = mockData.statuses[mockIndex % mockData.statuses.length] || 'stable';
-                const statusInfo = {
-                    'stable': { text: 'STABLE', class: 'status-stable' },
-                    'warning': { text: 'WARNING', class: 'status-warning' },
-                    'error': { text: 'ERROR', class: 'status-error' }
-                };
-                const imageUrl = mockData.images[mockIndex % mockData.images.length];
-                const machineName = mockData.names[mockIndex % mockData.names.length];
+            try {
+                let respostaMaquinas = await fetch(`/maquina?idEmpresa=${idEmpresa}`);
+                if (!respostaMaquinas.ok) throw new Error('Falha ao buscar máquinas');
+                let jsonMaquinas = await respostaMaquinas.json();
 
-                const machineItem = document.createElement("div");
-                machineItem.className = "machine-item";
-                machineItem.innerHTML = `
-                    <div class="machine-header" data-bs-toggle="collapse" href="#collapse-${maquina.idMaquina}" role="button" aria-expanded="false" aria-controls="collapse-${maquina.idMaquina}">
-                        <img src="${imageUrl}" alt="Imagem da Máquina" class="machine-image">
-                        <div class="machine-info">
-                            <strong>Máquina ${nomeGaragem}</strong>
-                            
+                const lista = document.getElementById("listaMaquinas");
+                lista.innerHTML = "";
+
+                for (const maquina of jsonMaquinas) {
+                    let respostaGaragens = await fetch(`/garagens/buscarGaragem/${maquina.fkGaragem}`);
+                    if (!respostaGaragens.ok) throw new Error('Falha ao buscar garagem');
+                    let jsonGaragem = await respostaGaragens.json();
+                    const nomeGaragem = jsonGaragem.length > 0 ? jsonGaragem[0].nome : 'Garagem não encontrada';
+
+                    const status = mockData.statuses[mockIndex % mockData.statuses.length] || 'stable';
+                    const statusInfo = {
+                        'stable': { text: 'STABLE', class: 'status-stable' },
+                        'warning': { text: 'WARNING', class: 'status-warning' },
+                        'error': { text: 'ERROR', class: 'status-error' }
+                    };
+
+                    let componentesHtml = (maquina.componentes || []).map(c => {
+                        let options = `<option value="">Selecione</option>`;
+                        listaDeComponentesHardware.forEach(comp => {
+                            const isSelected = comp.idComponenteHardware == c.idComponenteHardware ? "selected" : "";
+                            options += `<option value="${comp.idComponenteHardware}" ${isSelected}>${comp.nomeComponente} (${comp.unidadeMedida})</option>`;
+                        });
+
+                        return `
+                            <div class="comp-row mb-2">
+                                <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-5"><select class="form-select" name="idComponente[]">${options}</select></div>
+                                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}"></div>
+                                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}"></div>
+                                    <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})"><i class="fa-solid fa-trash"></i></button></div>
+                                </div>
+                            </div>`;
+                    }).join("");
+
+                    const machineItem = document.createElement("div");
+                    machineItem.className = "machine-item";
+                    machineItem.innerHTML = `
+                        <div class="machine-header" data-bs-toggle="collapse" href="#collapse-${maquina.idMaquina}" role="button" aria-expanded="false" aria-controls="collapse-${maquina.idMaquina}">
+                            <img src="./Images/garagem.svg" alt="Imagem da Máquina" class="machine-image">
+                            <div class="machine-info">
+                                <strong>Máquina ${nomeGaragem}</strong>
+                            </div>
+                            <span class="status-badge ${statusInfo[status].class}">${statusInfo[status].text}</span>
+                            <i class="fas fa-chevron-down chevron-icon"></i>
                         </div>
-                        <span class="status-badge ${statusInfo[status].class}">${statusInfo[status].text}</span>
-                        <i class="fas fa-chevron-down chevron-icon"></i>
-                    </div>
 
-                    <div class="collapse" id="collapse-${maquina.idMaquina}">
-                        <div class="machine-details">
-                            <h6>Componentes e Parâmetros</h6>
-                            ${maquina.componentes && maquina.componentes.length > 0 ? `
-                                <ul>
-                                    ${maquina.componentes.map(c => `
-                                        <li><strong>${c.componente}</strong> (${c.unidade}): Mín: ${c.parametroMin}, Máx: ${c.parametroMax}</li>
-                                    `).join("")}
-                                </ul>
-                            ` : '<p>Nenhum componente cadastrado.</p>'}
-                            
-                            <div class="details-actions">
-                                <button class="btn-edit" onclick='abrirModalEdicao(${JSON.stringify(maquina)})'>
-                                    <i class="fas fa-pencil-alt me-1"></i> Editar
-                                </button>
-                                <button class="btn-delete" onclick='abrirModalExclusao(${JSON.stringify(maquina)})'>
-                                    <i class="fas fa-trash-alt me-1"></i> Excluir
-                                </button>
+                        <div class="collapse" id="collapse-${maquina.idMaquina}">
+                            <div class="machine-details">
+                                <form id="form-edit-maquina-${maquina.idMaquina}" onsubmit="salvarAlteracoesCard(event, ${maquina.idMaquina})">
+                                    <h6>Componentes e Parâmetros</h6>
+                                    ${maquina.componentes && maquina.componentes.length > 0 ? componentesHtml : '<p>Nenhum componente cadastrado.</p>'}
+                                    
+                                    <div id="novos-componentes-${maquina.idMaquina}" class="mt-3"></div>
+                                    
+                                    <button type="button" class="btn btn-sm btn-add-component mt-2" onclick="adicionarComponenteNoCard(${maquina.idMaquina})">
+                                        <i class="fas fa-plus me-1"></i> Adicionar Componente
+                                    </button>
+                                    
+                                    <div class="details-actions">
+                                        <button type="button" class="btn-delete" onclick='abrirModalExclusao(${JSON.stringify(maquina)})'>
+                                            <i class="fas fa-trash-alt me-1"></i> Excluir Máquina
+                                        </button>
+                                        <button type="submit" class="btn-action-save" id="btn-salvar-${maquina.idMaquina}" style="display: none;">
+                                            <i class="fas fa-save me-1"></i> Salvar Alterações
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
-                    </div>
-                `;
+                    `;
 
-                lista.appendChild(machineItem);
-                mockIndex++;
+                    lista.appendChild(machineItem);
+                    mockIndex++;
+
+                    const form = document.getElementById(`form-edit-maquina-${maquina.idMaquina}`);
+                    const campos = form.querySelectorAll('input, select');
+                    campos.forEach(campo => {
+                        campo.addEventListener('input', () => mostrarBotaoSalvar(maquina.idMaquina));
+                    });
+                }
+            } catch (error) {
+                console.error("Erro ao listar máquinas:", error);
+                document.getElementById("listaMaquinas").innerHTML = `<div class="alert alert-danger">Não foi possível carregar as máquinas. Tente novamente mais tarde.</div>`;
             }
-        } catch (error) {
-            console.error("Erro ao listar máquinas:", error);
-            document.getElementById("listaMaquinas").innerHTML = `<div class="alert alert-danger">Não foi possível carregar as máquinas. Tente novamente mais tarde.</div>`;
-        }
-    }
-
-    async function adicionarComponente() {
-        const container = document.getElementById("componentesContainer");
-        const resp = await fetch("/maquina/listar");
-        const componentes = await resp.json();
-        const div = document.createElement("div");
-        div.className = "comp-row mb-3 border p-2 rounded";
-        let options = `<option value="">Selecione um Componente</option>`;
-        componentes.forEach(c => {
-            options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
-        });
-        div.innerHTML = `
-            <select class="form-select mb-2" name="idComponente[]">${options}</select>
-            <div class="d-flex gap-2">
-                <input type="number" class="form-control" name="parametroMin[]" placeholder="Parâmetro Mínimo">
-                <input type="number" class="form-control" name="parametroMax[]" placeholder="Parâmetro Máximo">
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    async function adicionarComponenteEditar() {
-        const container = document.getElementById("adicionarComponente");
-        const resp = await fetch("/maquina/listar");
-        const componentes = await resp.json();
-        const div = document.createElement("div");
-        div.className = "comp-roww border p-2 rounded mb-2";
-        let options = `<option value="">Selecione um Componente</option>`;
-        componentes.forEach(c => {
-            options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
-        });
-        div.innerHTML = `
-            <select class="form-select mb-2" name="idComponenteNovo[]">${options}</select>
-            <div class="d-flex gap-2">
-                <input type="number" class="form-control" name="parametroMinNovo[]" placeholder="Parâmetro Mínimo">
-                <input type="number" class="form-control" name="parametroMaxNovo[]" placeholder="Parâmetro Máximo">
-            </div>
-        `;
-        container.appendChild(div);
-    }
-
-    async function salvarMaquina(event) {
-        event.preventDefault();
-        const form = document.getElementById("formAddMaquina");
-        const formData = new FormData(form);
-        const idMaquina = formData.get("idMaquina");
-        const idsComponentes = formData.getAll("idComponente[]");
-        const minimos = formData.getAll("parametroMin[]");
-        const maximos = formData.getAll("parametroMax[]");
-        const componentes = idsComponentes.map((id, i) => ({
-            idComponente: id,
-            parametroMin: minimos[i],
-            parametroMax: maximos[i]
-        })).filter(c => c.idComponente);
-
-        if (componentes.length === 0) {
-            Swal.fire({ icon: "warning", title: "Atenção", text: "Adicione pelo menos um componente." });
-            return;
         }
 
-        const maquina = { idMaquina, idEmpresa, componentes };
-
-        try {
-            const response = await fetch("/maquina/adicionar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(maquina)
-            });
-            if (!response.ok) {
-                const err = await response.json();
-                throw new Error(err.message);
+        function mostrarBotaoSalvar(maquinaId) {
+            const botao = document.getElementById(`btn-salvar-${maquinaId}`);
+            if (botao) {
+                botao.style.display = 'inline-block';
             }
-            Swal.fire({ icon: "success", title: "Sucesso!", text: "Máquina cadastrada com sucesso." });
-            form.reset();
-            listarMaquinasPorEmpresas();
-            bootstrap.Modal.getInstance(document.getElementById("addMaquinaModal")).hide();
-        } catch (err) {
-            Swal.fire({ icon: "error", title: "Erro", text: err.message || "Não foi possível cadastrar a máquina." });
         }
-    }
 
-    let maquinaEmEdicao = null;
-
-    async function abrirModalEdicao(maquina) {
-        maquinaEmEdicao = maquina;
-        document.getElementById("adicionarComponente").innerHTML = "";
-        document.getElementById("editOldIdMaquina").value = maquina.idMaquina;
-        document.getElementById("editIdMaquinaView").value = maquina.idMaquina;
-        document.getElementById("editNovoIdMaquina").value = maquina.idMaquina;
-
-        const wrap = document.getElementById("editComponentesWrap");
-        wrap.innerHTML = "";
-        const resp = await fetch("/maquina/listar");
-        const componentes = await resp.json();
-
-        (maquina.componentes || []).forEach((c) => {
-            const row = document.createElement("div");
-            row.className = "comp-row mb-2";
-            let options = `<option value="">Selecione</option>`;
-            componentes.forEach(comp => {
-                const isSelected = comp.idComponenteHardware == c.idComponenteHardware ? "selected" : "";
-                options += `<option value="${comp.idComponenteHardware}" ${isSelected}>${comp.nomeComponente} (${comp.unidadeMedida})</option>`;
+        async function adicionarComponente() {
+            const container = document.getElementById("componentesContainer");
+            const div = document.createElement("div");
+            div.className = "comp-row mb-3 border p-2 rounded";
+            let options = `<option value="">Selecione um Componente</option>`;
+            listaDeComponentesHardware.forEach(c => {
+                options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
             });
-            row.innerHTML = `
-                <input type="hidden" name="idComponenteHardware[]" value="${c.idComponenteHardware}">
-                <div class="row g-2 align-items-center">
-                    <div class="col-md-5"><select class="form-select" name="idComponente[]">${options}</select></div>
-                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMin[]" placeholder="Mínimo" value="${c.parametroMin}"></div>
-                    <div class="col-md-3"><input type="number" step="any" class="form-control" name="parametroMax[]" placeholder="Máximo" value="${c.parametroMax}"></div>
-                    <div class="col-md-1"><button type="button" class="btn btn-sm btn-outline-danger" onclick="abrirModalExcluirComponente(${maquina.idMaquina}, ${c.idComponenteHardware})"><i class="fa-solid fa-trash"></i></button></div>
+            div.innerHTML = `
+                <select class="form-select mb-2" name="idComponente[]">${options}</select>
+                <div class="d-flex gap-2">
+                    <input type="number" class="form-control" name="parametroMin[]" placeholder="Parâmetro Mínimo">
+                    <input type="number" class="form-control" name="parametroMax[]" placeholder="Parâmetro Máximo">
                 </div>
             `;
-            wrap.appendChild(row);
-        });
-
-        new bootstrap.Modal(document.getElementById("editMaquinaModal")).show();
-    }
-
-    let componenteParaExcluir = null;
-
-    function abrirModalExcluirComponente(idMaquina, idComponente) {
-        componenteParaExcluir = { idMaquina, idComponente };
-        bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal"))?.hide();
-        new bootstrap.Modal(document.getElementById("confirmDeleteCompModal")).show();
-    }
-
-    document.getElementById("confirmDeleteCompBtn").addEventListener("click", async () => {
-        if (!componenteParaExcluir) return;
-        const { idMaquina, idComponente } = componenteParaExcluir;
-        try {
-            const res = await fetch(`/maquina/excluirComponente/${idMaquina}/${idComponente}`, { method: "DELETE" });
-            if (!res.ok) throw new Error("Erro ao excluir componente");
-            bootstrap.Modal.getInstance(document.getElementById("confirmDeleteCompModal")).hide();
-            listarMaquinasPorEmpresas();
-            Swal.fire({ icon: "success", title: "Excluído", text: "O componente foi removido." });
-        } catch (err) {
-            Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir o componente." });
-        }
-    });
-
-    async function salvarEdicao(event) {
-        event.preventDefault();
-        const rows = document.querySelectorAll("#editComponentesWrap .comp-row");
-        const updates = Array.from(rows).map(row => ({
-            antigoId: row.querySelector("input[name='idComponenteHardware[]']").value,
-            novoId: row.querySelector("select[name='idComponente[]']").value,
-            parametroMin: row.querySelector("input[name='parametroMin[]']").value.trim(),
-            parametroMax: row.querySelector("input[name='parametroMax[]']").value.trim()
-        }));
-
-        if (updates.some(u => !u.parametroMin || !u.parametroMax || !u.novoId)) {
-            return Swal.fire({ icon: "error", title: "Campos obrigatórios", text: "Preencha todos os campos dos componentes existentes." });
+            container.appendChild(div);
         }
 
-        const form = document.getElementById("formEditMaquina");
-        const formData = new FormData(form);
-        const novosComponentes = formData.getAll("idComponenteNovo[]")
-            .map((id, i) => ({
+        function adicionarComponenteNoCard(maquinaId) {
+            const container = document.getElementById(`novos-componentes-${maquinaId}`);
+            const div = document.createElement("div");
+            div.className = "comp-roww border p-2 rounded mb-2";
+
+            let options = `<option value="">Selecione um Componente</option>`;
+            listaDeComponentesHardware.forEach(c => {
+                options += `<option value="${c.idComponenteHardware}">${c.nomeComponente} (${c.unidadeMedida})</option>`;
+            });
+
+            div.innerHTML = `
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                    <select class="form-select" name="idComponenteNovo[]" required>${options}</select>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" step="any" class="form-control" name="parametroMinNovo[]" placeholder="Mínimo" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" step="any" class="form-control" name="parametroMaxNovo[]" placeholder="Máximo" required>
+                </div>
+                <div class="col-md-1 text-center">
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="this.closest('.comp-roww').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>`;
+            container.appendChild(div);
+            mostrarBotaoSalvar(maquinaId);
+        }
+
+        async function salvarMaquina(event) {
+            event.preventDefault();
+            const form = document.getElementById("formAddMaquina");
+            const formData = new FormData(form);
+            const idMaquina = formData.get("idMaquina");
+            const idsComponentes = formData.getAll("idComponente[]");
+            const minimos = formData.getAll("parametroMin[]");
+            const maximos = formData.getAll("parametroMax[]");
+            const componentes = idsComponentes.map((id, i) => ({
                 idComponente: id,
-                parametroMin: formData.getAll("parametroMinNovo[]")[i],
-                parametroMax: formData.getAll("parametroMaxNovo[]")[i]
-            }))
-            .filter(c => c.idComponente && c.parametroMin && c.parametroMax);
+                parametroMin: minimos[i],
+                parametroMax: maximos[i]
+            })).filter(c => c.idComponente);
 
-        try {
-            if (updates.length > 0) {
-                const resEditar = await fetch("/maquina/editar", {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ updates })
-                });
-                if (!resEditar.ok) throw new Error("Erro ao editar componentes existentes");
+            if (componentes.length === 0) {
+                Swal.fire({ icon: "warning", title: "Atenção", text: "Adicione pelo menos um componente." });
+                return;
             }
 
-            if (novosComponentes.length > 0) {
-                const idMaquina = document.getElementById("editIdMaquinaView").value;
-                const resAdd = await fetch("/maquina/adicionarComponente", {
+            const maquina = { idMaquina, idEmpresa, componentes };
+
+            try {
+                const response = await fetch("/maquina/adicionar", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ idMaquina, componentes: novosComponentes })
+                    body: JSON.stringify(maquina)
                 });
-                if (!resAdd.ok) throw new Error("Erro ao adicionar novos componentes");
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.message);
+                }
+                Swal.fire({ icon: "success", title: "Sucesso!", text: "Máquina cadastrada com sucesso." });
+                form.reset();
+                listarMaquinasPorEmpresas();
+                bootstrap.Modal.getInstance(document.getElementById("addMaquinaModal")).hide();
+            } catch (err) {
+                Swal.fire({ icon: "error", title: "Erro", text: err.message || "Não foi possível cadastrar a máquina." });
+            }
+        }
+
+        let componenteParaExcluir = null;
+
+        function abrirModalExcluirComponente(idMaquina, idComponente) {
+            componenteParaExcluir = { idMaquina, idComponente };
+            new bootstrap.Modal(document.getElementById("confirmDeleteCompModal")).show();
+        }
+
+        document.getElementById("confirmDeleteCompBtn").addEventListener("click", async () => {
+            if (!componenteParaExcluir) return;
+            const { idMaquina, idComponente } = componenteParaExcluir;
+            try {
+                const res = await fetch(`/maquina/excluirComponente/${idMaquina}/${idComponente}`, { method: "DELETE" });
+                if (!res.ok) throw new Error("Erro ao excluir componente");
+                bootstrap.Modal.getInstance(document.getElementById("confirmDeleteCompModal")).hide();
+                listarMaquinasPorEmpresas();
+                Swal.fire({ icon: "success", title: "Excluído", text: "O componente foi removido." });
+            } catch (err) {
+                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir o componente." });
+            }
+        });
+
+        async function salvarAlteracoesCard(event, maquinaId) {
+            event.preventDefault();
+            const form = document.getElementById(`form-edit-maquina-${maquinaId}`);
+            if (!form) return;
+
+            const rowsExistentes = form.querySelectorAll(".comp-row");
+            const updates = Array.from(rowsExistentes).map(row => ({
+                antigoId: row.querySelector("input[name='idComponenteHardware[]']").value,
+                novoId: row.querySelector("select[name='idComponente[]']").value,
+                parametroMin: row.querySelector("input[name='parametroMin[]']").value.trim(),
+                parametroMax: row.querySelector("input[name='parametroMax[]']").value.trim()
+            }));
+
+            if (updates.some(u => !u.parametroMin || !u.parametroMax || !u.novoId)) {
+                return Swal.fire({ icon: "error", title: "Campos obrigatórios", text: "Preencha todos os campos dos componentes existentes." });
             }
 
-            Swal.fire({ icon: "success", title: "Sucesso", text: "Máquina atualizada com sucesso!" });
-            bootstrap.Modal.getInstance(document.getElementById("editMaquinaModal")).hide();
-            listarMaquinasPorEmpresas();
+            const formData = new FormData(form);
+            const novosComponentes = formData.getAll("idComponenteNovo[]")
+                .map((id, i) => ({
+                    idComponente: id,
+                    parametroMin: formData.getAll("parametroMinNovo[]")[i],
+                    parametroMax: formData.getAll("parametroMaxNovo[]")[i]
+                }))
+                .filter(c => c.idComponente && c.parametroMin && c.parametroMax);
 
-        } catch (err) {
-            Swal.fire({ icon: "error", title: "Erro na edição", text: err.message });
-        }
-    }
-
-    let maquinaSelecionada = null;
-
-    function abrirModalExclusao(maquina) {
-        maquinaSelecionada = maquina;
-        new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
-    }
-
-    document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
-        if (!maquinaSelecionada) return;
-        try {
-            const response = await fetch(`/maquina/excluir/${maquinaSelecionada.idMaquina}`, { method: "DELETE" });
-            if (!response.ok) throw new Error("Erro ao excluir máquina");
-            Swal.fire({ icon: "success", title: "Excluído!", text: "A máquina foi excluída com sucesso." });
-            listarMaquinasPorEmpresas();
-            bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal")).hide();
-        } catch (error) {
-            Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir a máquina." });
-        }
-    });
-
-    // --- SCRIPT PARA CONTROLE DA SIDEBAR (ATUALIZADO) ---
-    document.addEventListener("DOMContentLoaded", function() {
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        const sidebarHeader = document.querySelector('.sidebar-header');
-
-        // Controlador para abrir/fechar a sidebar inteira no MOBILE
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function() {
-                document.body.classList.toggle('sidebar-open');
-            });
-        }
-        
-        // Controlador para expandir/encolher a sidebar no DESKTOP
-        if (sidebarHeader) {
-            sidebarHeader.addEventListener('click', function() {
-                // Só executa essa função em telas de computador (maiores que 992px)
-                if (window.innerWidth > 992) {
-                    document.body.classList.toggle('sidebar-collapsed');
+            try {
+                if (updates.length > 0) {
+                    const resEditar = await fetch("/maquina/editar", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ updates })
+                    });
+                    if (!resEditar.ok) throw new Error("Erro ao editar componentes existentes");
                 }
-            });
+
+                if (novosComponentes.length > 0) {
+                    const resAdd = await fetch("/maquina/adicionarComponente", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ idMaquina, componentes: novosComponentes })
+                    });
+                    if (!resAdd.ok) throw new Error("Erro ao adicionar novos componentes");
+                }
+
+                Swal.fire({ icon: "success", title: "Sucesso", text: "Máquina atualizada com sucesso!" });
+                listarMaquinasPorEmpresas();
+
+            } catch (err) {
+                Swal.fire({ icon: "error", title: "Erro na edição", text: err.message });
+            }
         }
-    });
-</script>
+
+        let maquinaSelecionada = null;
+
+        function abrirModalExclusao(maquina) {
+            maquinaSelecionada = maquina;
+            new bootstrap.Modal(document.getElementById("deleteConfirmModal")).show();
+        }
+
+        document.getElementById("confirmDeleteBtn").addEventListener("click", async () => {
+            if (!maquinaSelecionada) return;
+            try {
+                const response = await fetch(`/maquina/excluir/${maquinaSelecionada.idMaquina}`, { method: "DELETE" });
+                if (!response.ok) throw new Error("Erro ao excluir máquina");
+                Swal.fire({ icon: "success", title: "Excluído!", text: "A máquina foi excluída com sucesso." });
+                listarMaquinasPorEmpresas();
+                bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal")).hide();
+            } catch (error) {
+                Swal.fire({ icon: "error", title: "Erro", text: "Não foi possível excluir a máquina." });
+            }
+        });
+    </script>
+
+</body>
+</html>
