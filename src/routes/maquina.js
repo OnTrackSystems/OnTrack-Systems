@@ -4,9 +4,13 @@ var router = express.Router();
 var maquinaController = require("../controllers/maquinaController");
 
 // Listar máquinas de uma empresa
-router.get("/", function (req, res) {
-    maquinaController.listarPorEmpresa(req, res);
+router.get("/listarMaquinas/:idEmpresa", function (req, res) {
+    maquinaController.listarMaquinas(req, res);
 });
+
+router.get("/", function(req, res) {
+    maquinaController.listarPorEmpresa(req, res);
+})
 
 // Listar todos os componentes cadastrados
 router.get("/listar", function (req, res) {

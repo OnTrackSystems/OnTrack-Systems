@@ -10,22 +10,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
             <ul class="nav flex-column sidebar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="dashboard.html">
+                    <a class="nav-link" href="../dashboard.html">
                         <i class="fas fa-tachometer-alt"></i><span class="nav-link-text">Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="maquinas.html">
+                    <a class="nav-link" href="../controle_maquinas.html">
                         <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="controle_usuarios.html">
+                    <a class="nav-link" href="../maquinas.html">
                         <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">
+                    <a class="nav-link" onclick="desconectar()">
                         <i class="fas fa-users"></i><span class="nav-link-text">Desconectar</span>
                     </a>
                 </li>
@@ -38,11 +38,21 @@ document.addEventListener("DOMContentLoaded", function () {
         sidebarContainer.innerHTML = sidebarHTML;
     }
 
-    const sidebarHeader = document.querySelector('.sidebar-header');
-    if (sidebarHeader) {
-        sidebarHeader.addEventListener('click', function () {
+    if (window.innerWidth > 992) {
+        document.body.classList.add('sidebar-collapsed');
+    }
+
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('mouseenter', function () {
             if (window.innerWidth > 992) {
-                document.body.classList.toggle('sidebar-collapsed');
+                document.body.classList.remove('sidebar-collapsed');
+            }
+        });
+
+        sidebar.addEventListener('mouseleave', function () {
+            if (window.innerWidth > 992) {
+                document.body.classList.add('sidebar-collapsed');
             }
         });
     }
@@ -91,4 +101,16 @@ document.addEventListener("DOMContentLoaded", function () {
             document.body.classList.toggle('sidebar-open');
         });
     }
+
+    
 });
+
+if(!sessionStorage.ID_EMPRESA) {
+    window.location = "index.html";
+}
+
+function desconectar() {
+    sessionStorage.clear();
+
+    window.location = "index.html";
+}

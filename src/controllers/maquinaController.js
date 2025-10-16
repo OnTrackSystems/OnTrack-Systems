@@ -41,6 +41,14 @@ function listarPorEmpresa(req, res) {
         });
 }
 
+function listarMaquinas(req, res) {
+    let idEmpresa = req.params.idEmpresa;
+
+    maquinaModel.listarMaquinas(idEmpresa).then((resultado) => {
+        res.status(200).json(resultado);
+    })
+}
+
 function adicionarServidor(req, res) {
     let uuid = req.body.uuid;
     let idEmpresa = req.body.idEmpresa;
@@ -161,7 +169,7 @@ async function excluir(req, res) {
 }
 
 module.exports = {
-    listarPorEmpresa,
+    listarMaquinas,
     listarComponentes,
     editar,
     excluir,
@@ -169,5 +177,6 @@ module.exports = {
     excluirComponente,
     adicionarServidor,
     buscarServidorUUID,
-    atualizarServidor
+    atualizarServidor,
+    listarPorEmpresa
 };

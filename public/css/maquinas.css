@@ -1,0 +1,191 @@
+.page-content {
+    width: 100 - 12.5vw;
+    height: 100vh;
+    margin-left: 5vw;
+    margin-top: 5vh;
+    padding: 40px;
+    background-color: #f8f9fd;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.headers {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.body-card {
+    width: 360px;
+    height: 200px;
+    border-width: 2px;
+    border-color: black;
+    background-color: #ffffff;
+    border-radius: 5px;
+}
+
+.add-server-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.add-server-card h1 {
+    font-size: 30px;
+    color: #8d989d;
+}
+
+.info-card {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info-card .title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.info-card .title img {
+    width: 50px;
+}
+
+.info-card .title h2{
+    color: #6c757d;
+    font-size: 20px;
+    font-weight: 500;
+    align-self: flex-end;
+}
+
+.info-card h1 {
+    color: #6c757d;
+    font-size: 60px;
+    font-weight: 600;
+}
+
+.new-servers {
+    width: 92%;
+    height: 90%;
+    border-style: dashed;
+    border-color: #e5e8eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.new-servers img {
+    width: 25%;
+}
+
+.input-group {
+    width: 30%;
+    height: 50px;
+    border: none;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    border-radius: 4px;
+}
+
+form #server-search {
+    border: none;
+    color: #8d989d;
+}
+
+form #server-search:hover {
+    background-color: #ffffff;
+}
+
+.ri-search-line {
+    color: #8d989d;
+    font-size: 20px;
+}
+
+.dropdown-toggle {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
+
+.dropdown-toggle:focus {
+    background-color: inherit;
+}
+
+.uil {
+  font-size: 18px;
+  color: white; 
+}
+
+#cardsServers {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.card-server {
+    width: 49%;
+    background-color: #ffffff;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.crud-buttons {
+    position: absolute;
+    top: 30px;
+    right: 30px; 
+    display: flex;
+    gap: 8px; 
+}
+
+.crud-buttons img {
+    width: 30px;
+}
+
+.deletar-server-btn {
+    background-color: rgb(240, 86, 86);
+}
+
+.btn-negar {
+    font-size: 30px;
+}
+
+#lista-empresas, #empresas-nao-aprovadas {
+    margin-right: 17%;
+}
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-body .opcoes {
+    display: flex;
+}
+
+.modal-body .opcoes .opcao {
+    padding: 0px 5px 0px 5px;
+}
+
+.modal-body .opcoes .ativo {
+    font-weight: 600;
+    border-bottom: 2px solid #0c66e4;
+}
+
+.hide {
+    display: none;
+}
+

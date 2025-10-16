@@ -15,6 +15,20 @@ function listarPorEmpresa(idEmpresa) {
     return database.executar(instrucaoSql);
 }
 
+function listarMaquinas(idEmpresa) {
+    let instrucaoSql = `
+        SELECT g.idGaragem,
+            g.nome,
+            m.uuid
+        FROM Garagem g
+        INNER JOIN Maquina m
+            ON g.idGaragem = m.fkGaragem
+        WHERE g.fkEmpresa = ${idEmpresa};
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
 function adicionarServidor(uuid, idEmpresa, idGaragem) {
     let instrucaoSql = `
         INSERT INTO Maquina (uuid, fkEmpresa, fkGaragem) VALUES
@@ -93,7 +107,7 @@ async function excluirMaquina(idMaquina) {
 }
 
 module.exports = {
-    listarPorEmpresa,
+    listarMaquinas,
     cadastrarParametro,
     editarParametro,
     excluirMaquina,
@@ -101,5 +115,6 @@ module.exports = {
     excluirParametro,
     adicionarServidor,
     buscarServidorUUID,
-    atualizarServidor
+    atualizarServidor,
+    listarPorEmpresa
 };
