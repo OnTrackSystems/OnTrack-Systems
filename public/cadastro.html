@@ -1,1 +1,238 @@
-D:\SPTECH\2 SEMESTRE\monitora\MonitoraProjeto\public\testegin.html
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
+    <title>OnTrack | Cadastro</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('./assets/imgs/Rectangle\ 4.png');
+            background-size: cover;
+            background-position: center;
+
+        }
+
+        .login-container {
+            max-width: 900px;
+        }
+
+        .form-control {
+            border-radius: 30px;
+            padding: 12px 20px;
+        }
+
+        .btn-custom {
+            color: white;
+            border-radius: 30px;
+            padding: 12px;
+            font-weight: bold;
+            background: #d62a2a;
+            border: none;
+        }
+
+        .btn-custom:hover {
+            background: #8E0000;
+            color: white;
+
+        }
+
+        .texto {
+            color: #8E0000;
+        }
+    </style>
+</head>
+
+<body onload="buscarUsuarios()" class="d-flex align-items-center justify-content-center ">
+
+    <div class="container login-container m-3">
+        <div class="row shadow-lg rounded overflow-hidden bg-white d-flex align-items-center justify-content-center">
+
+
+            <div class="col-12 col-md-10 p-5 d-flex flex-column justify-content-center">
+                <img src="./assets/imgs/logo_BG_escuro.png" alt="Logo" class="mb-4 mx-auto" style="width: 150px;">
+                <h2 class="mb-4 text-center fw-bold texto">Cadastro de usuários</h2>
+                
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome:</label>
+                        <input type="text" id="ipt_nome" class="form-control" placeholder="Digite o nome do usuário...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cpf" class="form-label">CPF:</label>
+                        <input type="text" id="ipt_cpf" class="form-control" placeholder="___.___.___-__">
+                    </div> 
+                   <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="email" id="ipt_email" class="form-control" placeholder="exemplo@exemplo
+.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone:</label>
+                        <input type="text" id="ipt_telefone" class="form-control" placeholder="(99) 99999-9999">
+                    </div>
+                    <div class="mb-3">
+                        <label for="senha" class="form-label">Senha:</label>
+                        <input type="password" id="ipt_senha" class="form-control" placeholder="*********">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmar-senha" class="form-label">Confirmar Senha:</label>
+                        <input type="password" id="ipt_senha_confirma" class="form-control" placeholder="*********">
+                    </div>
+                    <div>
+
+                    </div>
+                    <div class="mb-3 ">
+                        <label for="tipo-usuario" class="form-label">Tipo de Usuário:</label>
+                        <select class="form-select" id="tipo_usuario">
+                          <option value="Administrador">Administrador</option>
+                          <option value="Usuário">Usuário</option>
+                    
+                        </select>
+                    </div>
+
+
+                    <button type="submit" onclick="cadastrar()" class="btn btn-custom w-100">Cadastrar</button>
+                    <div class="text-center -flex align-items-center" id="div_validacao"></div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
+<script>
+  // Listando os usuarios existentes para futura validação:
+    
+    async function buscarUsuarios(){
+    idEmpresa = sessionStorage.ID_EMPRESA
+    resposta = await fetch(`/usuarios/buscarUsuarios/${idEmpresa}`)
+    listaUsuarios = await resposta.json()
+    }
+ function cadastrar() {
+    // Variaveis:
+      div_validacao.innerHTML = ""
+      const nomeVar = ipt_nome.value;
+      const emailVar = ipt_email.value;
+      const senhaVar = ipt_senha.value;
+      const cpfVar=ipt_cpf.value;
+      const telefoneVar=ipt_telefone.value;
+      const acessoVar = tipo_usuario.value;
+      const senha_confirmaVar = ipt_senha_confirma.value;
+      const id_empresaVar = sessionStorage.ID_EMPRESA;
+
+      // Validações:
+
+      if (
+        nomeVar == "" ||
+        emailVar == "" ||
+        senhaVar == "" ||
+        cpfVar == "" ||
+        telefoneVar==""||
+        acessoVar==""||
+        senha_confirmaVar == ""
+
+      ) {
+        Swal.fire({
+              title: "Não deixe nenhum campo em branco",
+               icon: "error",
+            });
+        return
+      }
+      else if (senhaVar != senha_confirmaVar) {
+        Swal.fire({
+            title: "Senhas diferentes",
+            text: "Confirme a senha corretamente",
+            icon: "error",
+          });
+        return
+      }
+
+      let emailigual = false
+      let cpfigual = false
+
+      for (let i = 0; i < listaUsuarios.length; i++) {
+        if (listaUsuarios[i].email == emailVar) {
+          emailigual=true
+          break
+        }
+        if (listaUsuarios[i].cpf == cpfVar) {
+          cpfigual = true
+          break
+        }
+      }
+
+      if (emailigual) {
+            Swal.fire({
+            title: "Esse email já está em uso",
+            text: "Altere o email para efetuar o cadastro",
+            icon: "error",
+          });
+          return;
+      }       
+      else if (cpfigual) {
+        Swal.fire({
+            title: "Esse CPF já está em uso",
+            text: "Já existe um usuário com este CPF",
+            icon: "error",
+          });
+        return;
+      }
+
+      //Cadastrando no banco de dados:
+
+      fetch("/usuarios/cadastrar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nomeServer: nomeVar,
+          emailServer: emailVar,
+          senhaServer: senhaVar,
+          cpfServer: cpfVar,
+          telefoneServer: telefoneVar,
+          acessoServer: acessoVar,
+          empresaServer: id_empresaVar
+          
+        }),
+      })
+        
+      .then(function (resposta) {
+          console.log("resposta: ", resposta);
+
+          if (resposta.ok) {
+            
+            Swal.fire({
+              title: "Cadastro concluído",
+              text: "Seu cadastro foi realizado com sucesso.",
+              icon: "success",
+
+            }); setTimeout(() => {
+              window.location = "./controle_usuarios.html"
+
+            }, "2000");
+
+            limparFormulario();
+            finalizarAguardar()
+
+              ;
+          } else {
+            throw "Houve um erro ao tentar realizar o cadastro!";
+          }
+        })
+
+        .catch(function (resposta) {
+          console.log(`#ERRO: ${resposta}`);
+          ;
+        });
+
+      return false;
+    }
+
+</script>
+
+   

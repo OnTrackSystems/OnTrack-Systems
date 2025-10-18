@@ -47,7 +47,7 @@ body {
 }
 
 .container button {
-    background-image: url('./assets/imgs/Design sem nome.png');
+    background-image: "./assets/imgs/Design sem nome.png";
     color: #fff;
     font-size: 12px;
     padding: 10px 45px;
@@ -151,7 +151,7 @@ body {
 }
 
 .toggle {
-    background-image: url('./assets/imgs/Design sem nome.png');
+background-image: url('./assets/imgs/Design sem nome.png');
     height: 100%;
     /*ckground-color: #070063;
     background: linear-gradient(155deg, rgba(7, 0, 99, 1) 0%, rgba(9, 9, 121, 1) 56%, rgba(11, 0, 227, 1) 100%);*/
@@ -169,7 +169,7 @@ body {
 }
 
 .toggle-panel {
-    background-image: url('./assets/imgs/Design sem nome.png');
+    background-image: "./assets/imgs/Design sem nome.png";
     position: absolute;
     width: 50%;
     height: 100%;
