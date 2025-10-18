@@ -8,13 +8,16 @@
 }
 
 body {
-    background-color: #c9d6ff;
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+    background-image: url('../assets/imgs/Rectangle\ 4.png');
+    background-repeat: no-repeat;
+    background-size: cover;         
+    background-position: center;    
+    height: 100vh;
+
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    height: 100vh;
 }
 
 .container {
@@ -47,7 +50,7 @@ body {
 }
 
 .container button {
-    background-image: "./assets/imgs/Design sem nome.png";
+    background-color: rgb(1, 1, 117);
     color: #fff;
     font-size: 12px;
     padding: 10px 45px;
@@ -151,25 +154,30 @@ body {
 }
 
 .toggle {
-background-image: url('./assets/imgs/Design sem nome.png');
-    height: 100%;
-    /*ckground-color: #070063;
-    background: linear-gradient(155deg, rgba(7, 0, 99, 1) 0%, rgba(9, 9, 121, 1) 56%, rgba(11, 0, 227, 1) 100%);*/
-    color: #fff;
-    position: relative;
-    left: -100%;
     height: 100%;
     width: 200%;
+    position: relative;
+    left: -100%;
     transform: translateX(0);
     transition: all 0.6s ease-in-out;
+    background-color: transparent; 
 }
+
+.toggle-left, .toggle-right {
+    background-image: url('../assets/imgs/capalogin.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 110% auto; 
+    background-position: center 20%;
+}
+
 
 .container.active .toggle {
     transform: translateX(50%);
 }
 
 .toggle-panel {
-    background-image: "./assets/imgs/Design sem nome.png";
     position: absolute;
     width: 50%;
     height: 100%;
