@@ -134,13 +134,16 @@ form #server-search:hover {
 }
 
 .card-server {
-    width: 49%;
+    width: 100%;
     background-color: #ffffff;
     padding: 20px;
-    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
+}
+
+.card-server img {
+    height: 50px;
 }
 
 .crud-buttons {
@@ -189,3 +192,26 @@ form #server-search:hover {
     display: none;
 }
 
+.card-title {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.card-server-content {
+    border-top: 1px solid #c9c4c4;
+    padding-top: 20px;
+}
+
+#adicionarComponenteButton {
+    color: #FFFFFF;
+    background-color: #dc3545;
+    font-weight: 600;
+    padding: 10px;
+    width: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
