@@ -215,3 +215,46 @@ form #server-search:hover {
     border-radius: 5px;
     cursor: pointer;
 }
+
+.divFormAddComp {
+    width: 100%;
+    border: 0.5px solid #8d989d;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 6px;
+}
+
+.divFormAddComp .formularios {
+    width: 100%;
+
+}
+
+.divFormAddComp .formularios select, input {
+    width: 30%;
+    height: 100%;
+    background-color: #FFFFFF;
+    border: 0.5px solid #8d989d;
+    border-radius: 5px;
+    color: #353738;
+}
+
+.divFormAddComp .buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.divFormAddComp .buttons div {
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.divFormAddComp .buttons img {
+    height: 40px;
+}
+
+.formsAdicionarComponente {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}

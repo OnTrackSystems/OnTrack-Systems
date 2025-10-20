@@ -84,28 +84,14 @@ function atualizarServidor(req, res) {
 }
 
 async function adicionarComponente(req, res) {
-    try {
-        const { idMaquina, componentes } = req.body;
+    let idMaquina = req.body.idMaquina;
+    let idComponente = req.body.idComponente;
+    let min = req.body.minimo;
+    let max = req.body.maximo;
 
-        if (!idMaquina || !componentes) {
-            return res.status(400).send("Dados inválidos");
-        }
-
-        // Inserir parâmetros
-        for (const c of componentes) {
-            await maquinaModel.cadastrarParametro(
-                idMaquina,
-                c.idComponente,
-                c.parametroMin,
-                c.parametroMax
-            );
-        }
-
-        res.status(201).send("Máquina cadastrada com sucesso!");
-    } catch (erro) {
-        console.log(erro);
-        res.status(500).json(erro.sqlMessage);
-    }
+    maquinaModel.cadastrarParametro(idMaquina, idComponente, min, max).then((resultado) => {
+        res.json(resultado);
+    });
 }
 
 async function excluirComponente(req, res) {
@@ -168,6 +154,14 @@ async function excluir(req, res) {
     }
 }
 
+function listarParametros(req, res) {
+    let idMaquina = req.params.idMaquina;
+
+    maquinaModel.listarParametros(idMaquina).then((resultado => {
+        res.json(resultado);
+    }));
+}
+
 module.exports = {
     listarMaquinas,
     listarComponentes,
@@ -178,5 +172,6 @@ module.exports = {
     adicionarServidor,
     buscarServidorUUID,
     atualizarServidor,
-    listarPorEmpresa
+    listarPorEmpresa,
+    listarParametros
 };

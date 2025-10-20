@@ -15,11 +15,11 @@ const voltarIcon = document.querySelector('.voltar-icon-img');
 registerBtn.addEventListener('click', () => {
     container.classList.add('active');
     voltarLink.style.color = '#fff';
-    voltarIcon.src = '../public/assets/imgs/voltar-branco.svg'; 
+    voltarIcon.src = './assets/imgs/voltar-branco.svg'; 
 });
 
 loginBtn.addEventListener('click', () => {
     container.classList.remove('active');
     voltarLink.style.color = '#333';
-    voltarIcon.src = '../public/assets/imgs/voltar.svg'; 
+    voltarIcon.src = './assets/imgs/voltar.svg'; 
 });

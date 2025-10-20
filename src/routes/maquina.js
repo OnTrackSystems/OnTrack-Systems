@@ -49,4 +49,8 @@ router.delete("/excluir/:idMaquina", function (req, res) {
     maquinaController.excluir(req, res);
 });
 
+router.get("/listarParametros/:idMaquina", function(req, res) {
+    maquinaController.listarParametros(req, res);
+})
+
 module.exports = router;

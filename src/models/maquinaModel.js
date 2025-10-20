@@ -19,7 +19,8 @@ function listarMaquinas(idEmpresa) {
     let instrucaoSql = `
         SELECT g.idGaragem,
             g.nome,
-            m.uuid
+            m.uuid,
+            m.idMaquina
         FROM Garagem g
         INNER JOIN Maquina m
             ON g.idGaragem = m.fkGaragem
@@ -65,6 +66,7 @@ function cadastrarParametro(idMaquina, idComponente, parametroMin, parametroMax)
         INSERT INTO parametros (fkMaquina, fkComponenteHardware, parametroMin, parametroMax)
         VALUES (${idMaquina}, ${idComponente}, ${parametroMin}, ${parametroMax});
     `;
+
     return database.executar(instrucaoSql);
 }
 
@@ -106,6 +108,21 @@ async function excluirMaquina(idMaquina) {
     return database.executar(deleteMaquina);
 }
 
+function listarParametros(idMaquina) {
+    let instrucaoSql = `
+        SELECT p.parametroMax,
+            p.parametroMin,
+            c.nomeComponente,
+            c.unidadeMedida
+        FROM Parametro p
+        INNER JOIN ComponenteHardware c
+            ON p.fkComponenteHardware = c.idComponenteHardware
+        WHERE p.fkMaquina = ${idMaquina};
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
 module.exports = {
     listarMaquinas,
     cadastrarParametro,
@@ -116,5 +133,6 @@ module.exports = {
     adicionarServidor,
     buscarServidorUUID,
     atualizarServidor,
-    listarPorEmpresa
+    listarPorEmpresa,
+    listarParametros
 };
