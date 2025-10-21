@@ -29,7 +29,6 @@ router.put("/atualizarServidor", function(req, res) {
     maquinaController.atualizarServidor(req, res);
 });
 
-// Cadastrar nova máquina
 router.post("/adicionarComponente", function (req, res) {
     maquinaController.adicionarComponente(req, res);
 });

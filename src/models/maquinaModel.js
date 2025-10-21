@@ -63,7 +63,7 @@ function atualizarServidor(uuid, modeloCPU, qtdRam, qtdDisco, sistemaOperacional
 
 function cadastrarParametro(idMaquina, idComponente, parametroMin, parametroMax) {
     var instrucaoSql = `
-        INSERT INTO parametros (fkMaquina, fkComponenteHardware, parametroMin, parametroMax)
+        INSERT INTO Parametro(fkMaquina, fkComponenteHardware, parametroMin, parametroMax)
         VALUES (${idMaquina}, ${idComponente}, ${parametroMin}, ${parametroMax});
     `;
 

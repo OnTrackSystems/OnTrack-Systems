@@ -151,29 +151,29 @@
         let jsonServidores = await respostaServidores.json();
 
         for (servidor of jsonServidores)  {
-            let idGaragem = servidor.idGaragem;
+            let idMaquina = servidor.idMaquina;
 
             cardsServers.innerHTML += `
                 <div class="card-server">
-                    <div class="card-title" onclick="controleCard(${idGaragem})">
+                    <div class="card-title" onclick="controleCard(${idMaquina})">
                         <img src="./Images/serverIcon.svg" alt="">
                         <h3>${servidor.nome}</h3>
                     </div>
-                    <div id="cardServer${idGaragem}" class="card-server-content hide"">
+                    <div id="cardServer${idMaquina}" class="card-server-content hide"">
                         <h4>Componentes e Parâmetros</h4>
-                        <div id="componentes${idGaragem}">
+                        <div id="componentes${idMaquina}">
                             <h6>Nenhum componente cadastrado</h6>
                         </div>
-                        <div id="formsAdicionarComponente${idGaragem}" class="formsAdicionarComponente">
+                        <div id="formsAdicionarComponente${idMaquina}" class="formsAdicionarComponente">
                         </div>
-                        <div id="adicionarComponenteButton" onclick="formAdicionarComponente(${idGaragem})">
+                        <div id="adicionarComponenteButton" onclick="formAdicionarComponente(${idMaquina})">
                             Adicionar Componente
                         </div>
                     </div>
                 <div>
             `;
 
-            let respostaParametros = await fetch(`/maquina/listarParametros/${servidor.idMaquina}`, {
+            let respostaParametros = await fetch(`/maquina/listarParametros/${idMaquina}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -189,7 +189,7 @@
             let jsonParametros = await respostaParametros.json();
 
             if(jsonParametros.length > 0) {
-                let parametrosDiv = document.getElementById(`componentes${idGaragem}`);
+                let parametrosDiv = document.getElementById(`componentes${idMaquina}`);
                 parametrosDiv.innerHTML = "";
 
                 jsonParametros.forEach((parametro) => {
@@ -199,13 +199,13 @@
         };
     }
 
-    async function formAdicionarComponente(idGaragem) {
-        let divFormularios = document.getElementById(`formsAdicionarComponente${idGaragem}`);
+    async function formAdicionarComponente(idMaquina) {
+        let divFormularios = document.getElementById(`formsAdicionarComponente${idMaquina}`);
 
         let divForm = `
-            <div id="divForm${idGaragem}" class="divFormAddComp">
+            <div id="divForm${idMaquina}" class="divFormAddComp">
                 <div class="formularios">
-                    <select>
+                    <select id="parametroSelect${idMaquina}">
                         <option value="null">Selecione um Componente</option>
         `;
 
@@ -225,19 +225,19 @@
         let jsonComponentes = await respostaComponentes.json();
 
         jsonComponentes.forEach((componente) => {
-            divForm +=  `<option value="${componente.nomeComponente}">${componente.nomeComponente} (${componente.unidadeMedida})</option>`;
+            divForm +=  `<option value="${componente.idComponenteHardware}">${componente.nomeComponente} (${componente.unidadeMedida})</option>`;
         });
 
         divForm +=  `
                     </select>
-                    <input type="number" placeholder="Mínimo">
-                    <input type="number" placeholder="Máximo">
+                    <input type="number" placeholder="Mínimo" id="min${idMaquina}">
+                    <input type="number" placeholder="Máximo" id="max${idMaquina}">
                 </div>
                 <div class="buttons">
-                    <div style="border: 0.5px solid #78A75A">
+                    <div style="border: 0.5px solid #78A75A" onclick="processoParametro(${idMaquina}, 1)">
                         <img src="./Images/check.svg">
                     </div>
-                    <div style="border: 0.5px solid #c01c28">
+                    <div style="border: 0.5px solid #c01c28" onclick="processoParametro(${idMaquina}, 0)">
                         <img src="./Images/close.svg">
                     </div>
                 </div>
@@ -245,6 +245,35 @@
         `;
 
         divFormularios.innerHTML += divForm;
+    }
+
+    async function processoParametro(idMaquina, processo) {
+        if(processo == 1) {
+            let idComponente = document.getElementById(`parametroSelect${idMaquina}`).value;
+            let min = document.getElementById(`min${idMaquina}`).value;
+            let max = document.getElementById(`max${idMaquina}`).value;
+
+            let respostaAddParametro = await fetch(`/maquina/adicionarComponente`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    idMaquina: idMaquina,
+                    idComponente: idComponente,
+                    minimo: min,
+                    maximo: max 
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if(!respostaAddParametro.ok) {
+                respostaAddParametro.text().then((texto) => {
+                    console.error(texto);
+                });
+            }
+        }
+
+        document.getElementById(`divForm${idMaquina}`).remove();
     }
 
 </script>
