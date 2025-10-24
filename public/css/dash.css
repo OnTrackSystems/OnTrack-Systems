@@ -1,0 +1,150 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 2rem;
+  color: #111;
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.time-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.time-selector button {
+  background: #f1f1f1;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: #444;
+}
+
+.time-selector button.active {
+  background: #ea4335;
+  color: white;
+}
+
+.kpi-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.kpi-box {
+  flex: 1;
+  min-width: 200px;
+  border-radius: 10px;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #eee;
+  transition: 0.2s ease-in-out;
+}
+
+.kpi-box:hover {
+  transform: scale(1.02);
+}
+
+.kpi-box.red-tone {
+  background: linear-gradient(135deg, #ffe5e0, #ffc7c2);
+  border-color: #ffb3ab;
+}
+
+
+.kpi-box.amber-tone {
+  border-color: #111;
+}
+
+ .kpi-box.green-tone {
+  border-color: #111;
+}
+.kpi-box.amber-tone h2 {
+  color: #ff9800;
+} 
+
+.kpi-box.green-tone h2 {
+  color: #4CAF50;
+}
+
+.kpi-box.dark-red {
+    border-color: #111;
+}
+
+.kpi-box.dark-red h2 {
+  color: #ea4335;
+}
+
+.kpi-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: inherit;
+}
+
+.kpi-box h2 {
+  margin-top: 0.3rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.chart-header h3 {
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.change {
+  color: #d93025;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+canvas {
+  flex: 1;
+  height: 150px !important; 
+}
