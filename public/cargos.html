@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
  <link rel="stylesheet" href="./css/navbar.css">
   <style>
-    /* Estilos Gerais (Mantidos) */
     .btn.btn-primary {
       background-color: #c01c28;
       border: none;
@@ -30,7 +29,7 @@
       border-left: 5px solid #c01c28;
       border-radius: 6px;
       background-color: #fff;
-      padding: 15px; /* Adicionado um padding para melhorar a aparência */
+      padding: 15px; 
       min-width: 200px;
       transition: 0.2s;
     }
@@ -49,12 +48,10 @@
       padding: 8px 10px;
     }
 
-    /* ⚠️ CORREÇÃO PRINCIPAL AQUI: Mudando como o painel é escondido */
     .painel-permissoes {
-      /* display: none;  <-- REMOVIDO para permitir a transição */
-      width: 0; /* Começa com largura zero */
-      min-width: 0; /* Garante que não tenha largura mínima */
-      padding: 0; /* Remove padding inicial */
+      width: 0; 
+      min-width: 0; 
+      padding: 0; 
       background-color: #fff;
       border-left: 2px solid #ddd;
       
@@ -62,25 +59,23 @@
       overflow-x: hidden; 
       transition: width 0.3s, min-width 0.3s, padding 0.3s, border-left 0.3s;
       
-      /* Oculta o conteúdo interno enquanto estiver fechado */
       opacity: 0; 
-      pointer-events: none; /* Impede cliques quando fechado */
+      pointer-events: none; 
     }
 
-    /* Estilo do painel quando ATIVO */
     .painel-permissoes.ativo {
       width: 30vw; 
       min-width: 300px; 
       padding: 20px; 
-      opacity: 1; /* Torna visível */
-      pointer-events: all; /* Permite cliques */
+      opacity: 1; 
+      pointer-events: all; 
     }
 
     .painel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px; /* Adicionado espaço abaixo do header */
+      margin-bottom: 20px;
     }
 
     .permissao-item {
@@ -88,7 +83,6 @@
       border-bottom: 1px solid #eee;
     }
 
-    /* Estilos Toggle (Mantidos e OK) */
     .toggle {
       width: 45px;
       height: 24px;
