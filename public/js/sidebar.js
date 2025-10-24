@@ -5,6 +5,7 @@ side.innerHTML = `<div id="SideNav" class="sideBar">
   <a href="dashboard.html">Dashboard</a>
   <a href="controle_usuarios.html">Controle de Usuários</a>
   <a href="controle_maquinas.html">Controle de Máquinas</a>
+  <a href="controle_maquinas.html">Cargos</a>
   <a onclick="desconectar()" id="textoSide">Desconectar</a>
 </div>
 
