@@ -4,11 +4,45 @@ function cadastrarCargo(req, res) {
     let fkEmpresa = req.body.fkEmpresaServer;
     let nome = req.body.nomeCargoServer;
 
-    usuarioModel.cadastrarCargo(fkEmpresa, nome).then((resultado) => {
-        res.json(resultado);
-    });
+    usuarioModel.cadastrarCargo(fkEmpresa, nome)
+        .then((resultado) => {
+            res.json({ mensagem: "Cargo cadastrado com sucesso!", resultado });
+        })
+        .catch((erro) => {
+            console.error(erro);
+            res.status(500).json({ erro: erro.sqlMessage });
+        });
+}
+
+function listarCargos(req, res) {
+    let fkEmpresa = req.params.fkEmpresa; 
+
+    usuarioModel.listarCargos(fkEmpresa)
+        .then((resultado) => {
+            res.json(resultado);
+        })
+        .catch((erro) => {
+            console.error(erro);
+            res.status(500).json({ erro: erro.sqlMessage });
+        });
+}
+
+function removerCargo(req, res) {
+    let idCargo = req.params.idCargo;
+    let fkEmpresa = req.params.fkEmpresa; 
+
+    usuarioModel.excluirCargo(idCargo, fkEmpresa)
+        .then(() => {
+            res.status(200).json({ mensagem: "Cargo removido com sucesso!" });
+        })
+        .catch((erro) => {
+            console.error(erro);
+            res.status(500).json({ erro: erro.sqlMessage });
+        });
 }
 
 module.exports = {
-    cadastrarCargo
-}
+    cadastrarCargo,
+    listarCargos,
+    removerCargo
+};
