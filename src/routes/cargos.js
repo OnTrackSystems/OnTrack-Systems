@@ -11,7 +11,7 @@ router.get("/listarCargos/:fkEmpresa", function(req, res) {
     cargoController.listarCargos(req, res);
 });
 
-router.delete("/removerCargo/:idCargo/:fkEmpresa", function(req, res) {
+router.delete("/removerCargo/:idCargo", function(req, res) {
     cargoController.removerCargo(req, res);
 });
 

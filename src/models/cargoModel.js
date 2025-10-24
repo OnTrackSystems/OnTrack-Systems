@@ -5,25 +5,25 @@ function cadastrarCargo(fkEmpresa, nome) {
         INSERT INTO Cargo (nome, fkEmpresa) VALUES ('${nome}', ${fkEmpresa});
     `;
 
-    return database.executar(instrucao, [nome, fkEmpresa]);
+    return database.executar(instrucao);
 }
 
 function listarCargos(fkEmpresa) {
     let instrucao = `
-        SELECT * FROM Cargo WHERE fkEmpresa = ?;
+        SELECT * FROM Cargo WHERE fkEmpresa = '${fkEmpresa}';
     `;
-    return database.executar(instrucao, [fkEmpresa]);
+    return database.executar(instrucao);
 }
 
-function excluirCargo(idCargo, fkEmpresa) {
+function removerCargo(idCargo) {
     let instrucao = `
-        DELETE FROM Cargo WHERE idCargo = ? AND fkEmpresa = ?;
+        DELETE FROM Cargo WHERE idCargo = '${idCargo}';
     `;
-    return database.executar(instrucao, [idCargo, fkEmpresa]);
+    return database.executar(instrucao);
 }
 
 module.exports = {
     cadastrarCargo,
     listarCargos,
-    excluirCargo
+    removerCargo
 };
