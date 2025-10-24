@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
+    
     const sidebarHTML = `
         <nav id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-cogs"></i>
-                    <span class="logo-text">OnTrack Systems</span>
+                    <img src="./assets/imgs/mini_logo_icon.png" alt="OnTrack Systems" width="50" height="50">
+                     <span class="logo-text">OnTrack Systems</span>
                 </div>
             </div>
 
@@ -22,6 +23,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 <li class="nav-item">
                     <a class="nav-link" href="../maquinas.html">
                         <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a class="nav-link" href="../cargos.html">
+                        <i class="fa-solid fa-briefcase"></i><span class="nav-link-text">Cargos</span>
                     </a>
                 </li>
                 <li class="nav-item">
