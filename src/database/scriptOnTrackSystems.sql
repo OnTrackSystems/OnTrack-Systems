@@ -105,9 +105,29 @@ CONSTRAINT fkParametroComponente
     REFERENCES ComponenteHardware(idComponenteHardware)
 );
 
+INSERT INTO Parametro(idParametro, fkMaquina, fkComponenteHardware, parametroMax, parametroMin) VALUES
+(1, 1, 1, 20, 30);
+
 SELECT * FROM Cargo;
 SELECT * FROM Empresa;
 SELECT * FROM Usuario;
 SELECT * FROM Maquina;
 SELECT * FROM Parametro;
-SELECT * FROM Garagem;	
+SELECT * FROM Garagem;
+
+SELECT g.idGaragem,
+	g.nome,
+	m.uuid
+FROM Garagem g
+INNER JOIN Maquina m
+	ON g.idGaragem = m.fkGaragem
+WHERE g.fkEmpresa = 1;
+
+SELECT p.parametroMax,
+            p.parametroMin,
+            c.nomeComponente,
+            c.unidadeMedida
+        FROM Parametro p
+        INNER JOIN ComponenteHardware c
+            ON p.fkComponenteHardware = c.idComponenteHardware
+        WHERE p.fkMaquina = 1;

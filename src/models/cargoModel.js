@@ -2,8 +2,9 @@ var database = require("../database/config");
 
 function cadastrarCargo(fkEmpresa, nome) {
     let instrucao = `
-        INSERT INTO Cargo (nome, fkEmpresa) VALUES (?, ?);
+        INSERT INTO Cargo (nome, fkEmpresa) VALUES ('${nome}', ${fkEmpresa});
     `;
+
     return database.executar(instrucao, [nome, fkEmpresa]);
 }
 
