@@ -112,9 +112,6 @@ CONSTRAINT fkParametroComponente
     REFERENCES ComponenteHardware(idComponenteHardware)
 );
 
-INSERT INTO Parametro(idParametro, fkMaquina, fkComponenteHardware, parametroMax, parametroMin) VALUES
-(1, 1, 1, 20, 30);
-
 SELECT * FROM Cargo;
 SELECT * FROM Empresa;
 SELECT * FROM Usuario;
