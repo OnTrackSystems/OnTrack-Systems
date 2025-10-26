@@ -82,8 +82,8 @@ function adicionarPermissaoCargo(req, res) {
 }
 
 function removerPermissaoCargo(req, res) {
-    const idCargo = req.query.idCargo;
-    const idPermissao = req.query.idPermissao;
+    const idCargo = req.params.idCargo; 
+    const idPermissao = req.params.idPermissao;
 
     cargoModel.removerPermissaoCargo(idCargo, idPermissao)
         .then(() => {

@@ -27,6 +27,13 @@ CREATE TABLE Permissao (
     descricao VARCHAR(200)
 );
 
+INSERT INTO Permissao (nome, descricao) VALUES
+('Visualizar máquinas', 'Permite visualizar dados'),
+('Editar usuários', 'Permite editar usuários'),
+('Excluir máquina', 'Permite excluir máquinas'),
+('Cadastrar usuários', 'Permite cadastrar novos usuários'),
+('Gerenciar usuários', 'Permite gerenciar usuários e permissões');
+
 CREATE TABLE CargoPermissao (
 	fkCargo INT,
     fkPermissao INT,

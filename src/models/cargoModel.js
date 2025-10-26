@@ -54,22 +54,11 @@ function adicionarPermissaoCargo(idCargo, idPermissao) {
 function removerPermissaoCargo(idCargo, idPermissao) {
     let instrucao = `
         DELETE FROM CargoPermissao
-        WHERE fkCargo = ${idCargo} AND fkPermissao = ${idPermissao};
+        WHERE fkCargo = '${idCargo}' AND fkPermissao = '${idPermissao}';
     `;
     return database.executar(instrucao);
 }
-async function removerCargoComPermissoes(idCargo) {
-    try {
-        await db.query('DELETE FROM PermissoesCargo WHERE fkCargo = ?', [idCargo]);
 
-        const resultado = await db.query('DELETE FROM Cargo WHERE idCargo = ?', [idCargo]);
-
-        return resultado;
-    } catch (err) {
-        console.error("Erro ao remover cargo com permissões:", err);
-        throw err;
-    }
-}
 
 module.exports = {
     cadastrarCargo,
@@ -78,6 +67,5 @@ module.exports = {
     listarPermissoes,
     listarPermissoesPorCargo,
     adicionarPermissaoCargo,
-    removerCargoComPermissoes,
     removerPermissaoCargo
 };
