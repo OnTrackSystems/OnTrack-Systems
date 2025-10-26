@@ -109,12 +109,23 @@
     .toggle.on .circle {
       left: 22px;
     }
+
+    /* NOVO: Container para os alertas */
+    .alert-container {
+      position: fixed;
+      top: 80px; /* Ajuste conforme a altura do seu navbar */
+      right: 20px;
+      z-index: 1056; /* Acima dos modais */
+      width: 350px;
+    }
   </style>
 </head>
 
 <body>
   <div id="sidebar-container"></div>
   <div id="navbar-container"></div>
+
+  <div class="alert-container" id="alertContainer"></div>
 
   <div class="page-content d-flex flex-column">
 
@@ -138,19 +149,16 @@
     <div class="modal fade" id="addCargoModal" tabindex="-1" aria-labelledby="addCargoModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-
           <div class="modal-header">
             <h5 class="modal-title" id="addCargoModalLabel">Adicionar Cargo</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
-
           <div class="modal-body">
             <div class="mb-3">
               <label for="inputCargo" class="form-label">Nome do Cargo</label>
               <input type="text" id="inputCargo" class="form-control" placeholder="Ex: Analista, Gestor, Técnico...">
             </div>
           </div>
-
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="button" class="btn btn-primary" onclick="adicionarCargo()">Adicionar</button>
@@ -158,6 +166,25 @@
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="confirmarRemocaoModal" tabindex="-1" aria-labelledby="confirmarRemocaoModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmarRemocaoModalLabel">Confirmar Remoção</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body" id="confirmarRemocaoModalBody">
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" id="btnConfirmarRemocao">Remover</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <form class="mt-4">
       <div class="input-group">
@@ -187,50 +214,84 @@
 <script src="./js/navbar.js"></script>
 
 <script>
-  let listaCargos = []; 
+  let listaCargos = [];
 
   document.addEventListener("DOMContentLoaded", () => {
     exibirCargos();
   });
+
+  function mostrarAlerta(mensagem, tipo = 'success') {
+    const container = document.getElementById('alertContainer');
+    const alertId = 'alert-' + Date.now(); 
+
+    const alertHtml = `
+      <div id="${alertId}" class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+        ${mensagem}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', alertHtml);
+
+    setTimeout(() => {
+      const alertElement = document.getElementById(alertId);
+      if (alertElement) {
+        const bsAlert = new bootstrap.Alert(alertElement);
+        bsAlert.close();
+      }
+    }, 5000);
+  }
 
   async function exibirCargos() {
     const container = document.getElementById("cardsCargos");
     container.innerHTML = "";
     const fkEmp = sessionStorage.ID_EMPRESA;
 
-    let resposta = await fetch(`/cargos/listarCargos/${fkEmp}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
+    try {
+      let resposta = await fetch(`/cargos/listarCargos/${fkEmp}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+      });
 
-    if (!resposta.ok) {
-      const texto = await resposta.text();
-      console.error("Erro ao listar cargos:", texto);
-      return;
+      if (!resposta.ok) {
+        const texto = await resposta.text();
+        console.error("Erro ao listar cargos:", texto);
+        mostrarAlerta(`Erro ao listar cargos: ${texto}`, 'danger');
+        return;
+      }
+
+      listaCargos = await resposta.json();
+
+      document.getElementById("totalCargos").innerText = listaCargos.length;
+
+      listaCargos.forEach((cargo, index) => {
+        const nomeCargoJS = cargo.nome.replace(/'/g, "\\'"); 
+        
+        const botaoRemover = cargo.nome.toLowerCase() === 'admin' 
+          ? '' // não renderiza se for 'admin'
+          : `<button class="btn btn-sm btn-danger" onclick="abrirModalConfirmarRemocao(${cargo.idCargo}, '${nomeCargoJS}', event)">Remover</button>`;
+
+        container.innerHTML += `
+          <div class="cargo-card" id="cargo${cargo.idCargo}" onclick="abrirPainelPermissoes(${index})">
+            <h5>${cargo.nome}</h5>
+            ${botaoRemover} 
+          </div>
+        `;
+      });
+
+    } catch (err) {
+      console.error("Erro na requisição:", err);
+      mostrarAlerta("Erro na requisição. Veja o console.", 'danger');
     }
-
-    listaCargos = await resposta.json();
-
-    document.getElementById("totalCargos").innerText = listaCargos.length;
-
-    listaCargos.forEach((cargo, index) => {
-      container.innerHTML += `
-        <div class="cargo-card" id="cargo${cargo.idCargo}" onclick="abrirPainelPermissoes(${index})">
-          <h5>${cargo.nome}</h5>
-          <button class="btn btn-sm btn-danger" onclick="removerCargo(${cargo.idCargo}, event)">Remover</button>
-        </div>
-      `;
-    });
   }
 
   async function adicionarCargo() {
     const fkEmp = sessionStorage.ID_EMPRESA;
     const input = document.getElementById("inputCargo");
     const nome = input.value.trim();
-    
 
     if (!nome) {
-      alert("Informe o nome do cargo!");
+      mostrarAlerta("Informe o nome do cargo!", 'warning');
       return;
     }
 
@@ -244,7 +305,7 @@
       if (!resposta.ok) {
         const texto = await resposta.text();
         console.error("Erro ao adicionar cargo:", texto);
-        alert("Erro ao adicionar cargo: " + texto);
+        mostrarAlerta(`Erro ao adicionar cargo: ${texto}`, 'danger'); 
         return;
       }
 
@@ -255,30 +316,60 @@
       const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
       modal.hide();
 
+      mostrarAlerta('Cargo adicionado com sucesso!', 'success');
+
     } catch (err) {
       console.error("Erro na requisição:", err);
-      alert("Erro na requisição. Veja o console.");
+      mostrarAlerta("Erro na requisição. Veja o console.", 'danger');
     }
   }
 
-  async function removerCargo(idCargo, event) {
+  function abrirModalConfirmarRemocao(idCargo, nomeCargo, event) {
     event.stopPropagation();
-    if (!confirm("Deseja realmente remover este cargo?")) return;
 
-    let resposta = await fetch(`/cargos/removerCargo/${idCargo}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" }
-    });
+    const modalBody = document.getElementById('confirmarRemocaoModalBody');
+    modalBody.innerText = `Tem certeza que deseja remover o cargo "${nomeCargo}"?`;
 
-    if (!resposta.ok) {
-      const texto = await resposta.text();
-      console.error("Erro ao remover cargo:", texto);
-      return;
-    }
+    const btnConfirmar = document.getElementById('btnConfirmarRemocao');
+    btnConfirmar.setAttribute('onclick', `removerCargo(${idCargo})`);
 
-    document.getElementById(`cargo${idCargo}`).remove();
-    document.getElementById("totalCargos").innerText = document.querySelectorAll(".cargo-card").length;
+    const modal = new bootstrap.Modal(document.getElementById('confirmarRemocaoModal'));
+    modal.show();
   }
+
+  async function removerCargo(idCargo) {
+    const modalEl = document.getElementById('confirmarRemocaoModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal.hide();
+
+    try {
+      let resposta = await fetch(`/cargos/removerCargo/${idCargo}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+      });
+
+      if (resposta.ok) {
+        document.getElementById(`cargo${idCargo}`).remove();
+        document.getElementById("totalCargos").innerText = document.querySelectorAll(".cargo-card").length;
+        mostrarAlerta('Cargo removido com sucesso.', 'success');
+      } 
+      else if (resposta.status === 409) {
+        const erro = await resposta.json();
+        console.error("Erro 409:", erro.mensagem);
+        mostrarAlerta(erro.mensagem, 'danger'); 
+      } 
+      else {
+        const texto = await resposta.text();
+        console.error("Erro ao remover cargo:", texto);
+        mostrarAlerta(`Erro ao remover cargo: ${texto}`, 'danger');
+      }
+
+    } catch (err) {
+      console.error("Erro na requisição:", err);
+      mostrarAlerta("Erro na requisição. Veja o console.", 'danger');
+    }
+  }
+
 
   function filtrarCargos() {
     const termo = document.getElementById("cargo-search").value.toLowerCase();
@@ -292,43 +383,46 @@
     });
   }
 
-async function abrirPainelPermissoes(index) {
-  const cargo = listaCargos[index];
-  const painel = document.getElementById("painelPermissoes");
-  painel.classList.add("ativo");
-  document.getElementById("cargoSelecionadoTitulo").innerText = cargo.nome;
+  async function abrirPainelPermissoes(index) {
+    const cargo = listaCargos[index];
+    const painel = document.getElementById("painelPermissoes");
+    painel.classList.add("ativo");
+    document.getElementById("cargoSelecionadoTitulo").innerText = cargo.nome;
 
-  const lista = document.getElementById("listaPermissoes");
-  lista.innerHTML = ""; 
+    const lista = document.getElementById("listaPermissoes");
+    lista.innerHTML = ""; 
 
-  try {
-    const resposta = await fetch(`/cargos/listarPermissoesPorCargo/${cargo.idCargo}`);
-    if (!resposta.ok) throw new Error("Erro ao buscar permissões");
+    try {
+      const resposta = await fetch(`/cargos/listarPermissoesPorCargo/${cargo.idCargo}`);
+      if (!resposta.ok) {
+        mostrarAlerta("Erro ao buscar permissões.", 'danger');
+        throw new Error("Erro ao buscar permissões");
+      }
 
-    const permissoesCargo = await resposta.json();
+      const permissoesCargo = await resposta.json();
 
-    if (!permissoesCargo || permissoesCargo.length === 0) {
-      lista.innerHTML = "<p>Nenhuma permissão cadastrada.</p>";
-      return;
+      if (!permissoesCargo || permissoesCargo.length === 0) {
+        lista.innerHTML = "<p>Nenhuma permissão cadastrada.</p>";
+        return;
+      }
+
+      permissoesCargo.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "permissao-item d-flex justify-content-between align-items-center";
+        div.innerHTML = `
+          <label>${p.nome}</label>
+          <div class="toggle ${p.ativo ? "on" : ""}" onclick="alternarPermissao(${cargo.idCargo}, ${p.idPermissao}, this)">
+            <div class="circle"></div>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+
+    } catch (err) {
+      console.error(err);
+      mostrarAlerta("Erro ao carregar permissões. Veja o console.", 'danger');
     }
-
-    permissoesCargo.forEach(p => {
-      const div = document.createElement("div");
-      div.className = "permissao-item d-flex justify-content-between align-items-center";
-      div.innerHTML = `
-        <label>${p.nome}</label>
-        <div class="toggle ${p.ativo ? "on" : ""}" onclick="alternarPermissao(${cargo.idCargo}, ${p.idPermissao}, this)">
-          <div class="circle"></div>
-        </div>
-      `;
-      lista.appendChild(div);
-    });
-
-  } catch (err) {
-    console.error(err);
-    alert("Erro ao carregar permissões. Veja o console.");
   }
-}
 
 
   async function alternarPermissao(idCargo, idPermissao, element) {
@@ -336,23 +430,26 @@ async function abrirPainelPermissoes(index) {
 
     try {
       if (isAtivo) {
-        await fetch("/cargos/removerPermissaoCargo", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idCargo, idPermissao })
+        const res = await fetch(`/cargos/removerPermissaoCargo/${idCargo}/${idPermissao}`, {
+          method: "DELETE"
         });
+        if (!res.ok) throw new Error("Erro ao remover permissão");
         element.classList.remove("on");
+
       } else {
-        await fetch("/cargos/adicionarPermissaoCargo", {
+        const res = await fetch("/cargos/adicionarPermissaoCargo", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ idCargo, idPermissao })
         });
+        if (!res.ok) throw new Error("Erro ao adicionar permissão");
         element.classList.add("on");
       }
     } catch (err) {
       console.error("Erro ao alterar permissão:", err);
-      alert("Erro ao alterar permissão. Veja o console.");
+      mostrarAlerta("Erro ao alterar permissão. Veja o console.", 'danger');
+      if(isAtivo) element.classList.add("on");
+      else element.classList.remove("on");
     }
   }
 

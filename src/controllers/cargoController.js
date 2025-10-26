@@ -36,7 +36,7 @@ function removerCargo(req, res) {
         })
         .catch((erro) => {
             console.error(erro);
-            res.status(409).json({ mensagem: "Erro ao remover cargo: Existe um funcionário com este cargo" });
+            res.status(409).json({ mensagem: "Erro ao remover cargo: Existe um funcionário com permissões." });
         });
 }
 function listarPermissoes(req, res) {
@@ -82,11 +82,13 @@ function adicionarPermissaoCargo(req, res) {
 }
 
 function removerPermissaoCargo(req, res) {
-    const idCargo = req.params.idCargo;
-    const idPermissao = req.params.idPermissao;
+    const idCargo = req.query.idCargo;
+    const idPermissao = req.query.idPermissao;
 
     cargoModel.removerPermissaoCargo(idCargo, idPermissao)
-        .then(() => res.status(200).json({ mensagem: "Permissão removida com sucesso!" }))
+        .then(() => {
+            res.status(200).json({ mensagem: "Permissão removida com sucesso!" });
+        })
         .catch((erro) => {
             console.error("Erro ao remover permissão do cargo:", erro);
             res.status(500).json({ erro: erro.sqlMessage });
