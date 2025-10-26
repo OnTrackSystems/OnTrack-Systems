@@ -15,6 +15,7 @@ h1 {
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 8vh;
 }
 
 header {
@@ -22,6 +23,7 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  overflow: 100;
 }
 
 .time-selector {
