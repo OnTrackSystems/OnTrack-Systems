@@ -16,13 +16,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../controle_maquinas.html">
+                    <a class="nav-link" href="../maquinas.html">
                         <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../maquinas.html">
-                        <i class="fas fa-chart-bar"></i><span class="nav-link-text">Controle de Usuários</span>
+                    <a class="nav-link" href="../controle_usuarios.html">
+                        <i class="fas fa-chart-bar"></i><span class="nav-link-text">Usuários</span>
                     </a>
                 </li>
                  <li class="nav-item">

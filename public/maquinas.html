@@ -148,6 +148,7 @@
         }
 
         let jsonServidores = await respostaServidores.json();
+        totalServidores.innerHTML = jsonServidores.length;
 
         for (servidor of jsonServidores)  {
             let idMaquina = servidor.idMaquina;
