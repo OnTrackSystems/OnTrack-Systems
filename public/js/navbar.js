@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="sidebar-header">
                 <div class="logo">
                     <img src="./assets/imgs/mini_logo_icon.png" alt="OnTrack Systems" width="50" height="50">
-                     <span class="logo-text">OnTrack Systems</span>
+                     <span class="logo-text">OnTrack</span>
                 </div>
             </div>
 
