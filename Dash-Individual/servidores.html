@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Servidores Monitorados</title>
+
+<!-- Fontes e Tailwind -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        danger: "#DC2626",
+        textPrimary: "#111827",
+        textSecondary: "#6B7280",
+        border: "#E5E7EB",
+        success: "#16A34A",
+        warning: "#FACC15",
+        critical: "#DC2626",
+      },
+      fontFamily: { display: ["Inter", "sans-serif"] },
+    },
+  },
+};
+</script>
+
+<style>
+  .transition-height {
+    transition: max-height 0.3s ease;
+  }
+</style>
+</head>
+
+<body class="font-display bg-gray-100">
+<div class="flex h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 flex-shrink-0 bg-white flex flex-col shadow-lg">
+    <div class="p-6 text-2xl font-bold text-textPrimary border-b border-border">
+      Painel<span class="text-danger">.</span>
+    </div>
+
+    <nav class="flex-grow p-4 space-y-2">
+
+      <!-- Dashboard com submenu interno -->
+      <div>
+        <button id="dashboardBtn" class="w-full flex items-center justify-between gap-3 px-4 py-2 rounded-lg bg-danger/10 text-danger font-semibold hover:bg-danger/20 transition-colors">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined">apps</span>
+            Dashboard
+          </div>
+          <span id="dashboardArrow" class="material-symbols-outlined text-sm transition-transform duration-200">expand_more</span>
+        </button>
+
+        <!-- Submenu -->
+        <div id="dashboardMenu" class="overflow-hidden max-h-0 transition-height">
+          <a href="code.html" class="block px-8 py-2 text-sm text-textSecondary hover:text-danger transition-colors">Infra</a>
+          <a href="dashboard-sales.html" class="block px-8 py-2 text-sm text-textSecondary hover:text-danger transition-colors">Sales</a>
+          <a href="dashboard-reports.html" class="block px-8 py-2 text-sm text-textSecondary hover:text-danger transition-colors">Reports</a>
+        </div>
+      </div>
+
+      <!-- Outros links -->
+      <a class="flex items-center gap-3 px-4 py-2 rounded-lg bg-danger/10 text-danger font-semibold" href="servidores.html">
+        <span class="material-symbols-outlined">dvr</span> Servidores
+      </a>
+      <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-100 transition-colors" href="#">
+        <span class="material-symbols-outlined">warning</span> Alertas
+      </a>
+      <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-100 transition-colors" href="historico.html">
+        <span class="material-symbols-outlined">history</span> Histórico
+      </a>
+    </nav>
+
+    <div class="p-4 border-t border-border">
+      <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-100 transition-colors" href="#">
+        <span class="material-symbols-outlined">logout</span> Sair
+      </a>
+    </div>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="flex-1 p-8 overflow-y-auto">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-textPrimary">Servidores Monitorados</h1>
+      <p class="text-textSecondary text-sm">Visão geral do status de todos os servidores em tempo real.</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="flex flex-wrap gap-3 items-center mb-6">
+      <div class="flex items-center bg-white border border-border rounded-lg px-3 py-2 w-full sm:w-1/2 md:w-1/3">
+        <span class="material-symbols-outlined text-textSecondary mr-2">search</span>
+        <input type="text" placeholder="Buscar por nome do servidor..." class="flex-1 outline-none text-sm bg-transparent" />
+      </div>
+
+      <select class="border border-border rounded-lg px-3 py-2 text-sm bg-white text-textPrimary">
+        <option>Todos</option>
+        <option>Normal</option>
+        <option>Alerta</option>
+        <option>Crítico</option>
+      </select>
+    </div>
+
+    <!-- Grid de servidores -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+      <!-- Card de Servidor -->
+      <div class="bg-white border border-border rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-textPrimary">PROD-API-01</h2>
+          <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 font-medium">Normal</span>
+        </div>
+
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">memory</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[25%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">25%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">dns</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[48%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">48%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">storage</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-yellow-400 w-[65%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">65%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">network_check</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[15%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">15%</span>
+          </div>
+        </div>
+
+        <p class="text-xs text-textSecondary mt-3">Última atualização: 12/11/2025 14:32</p>
+      </div>
+
+      <!-- Repita para outros servidores -->
+      <div class="bg-white border border-border rounded-xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="font-semibold text-textPrimary">DEV-DB-MASTER</h2>
+          <span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700 font-medium">Alerta</span>
+        </div>
+        <div class="space-y-2 text-sm">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">memory</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-yellow-400 w-[85%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">85%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">dns</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[60%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">60%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">storage</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[33%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">33%</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-gray-400 text-base">network_check</span>
+            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-green-500 w-[22%]"></div>
+            </div>
+            <span class="text-textSecondary text-xs w-10 text-right">22%</span>
+          </div>
+        </div>
+        <p class="text-xs text-textSecondary mt-3">Última atualização: 12/11/2025 14:31</p>
+      </div>
+
+      <!-- Adicione outros cards conforme necessário -->
+
+    </div>
+  </main>
+</div>
+
+<!-- Script do submenu -->
+<script>
+  const dashboardBtn = document.getElementById('dashboardBtn');
+  const dashboardMenu = document.getElementById('dashboardMenu');
+  const dashboardArrow = document.getElementById('dashboardArrow');
+
+  let menuOpen = false;
+  dashboardBtn.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    dashboardMenu.style.maxHeight = menuOpen ? dashboardMenu.scrollHeight + 'px' : '0px';
+    dashboardArrow.classList.toggle('rotate-180', menuOpen);
+  });
+</script>
+
+</body>
+</html>

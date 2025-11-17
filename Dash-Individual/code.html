@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard de Monitoramento de Servidor</title>
+
+  <!-- Fontes e Tailwind -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.35s, stroke 0.35s;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .transition-height { transition: max-height 0.28s ease; }
+  </style>
+</head>
+
+<body class="font-display bg-gray-100">
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="w-64 flex-shrink-0 bg-white flex flex-col shadow-lg">
+      <div class="p-6 text-2xl font-bold text-textPrimary border-b border-border">
+        On Track<span class="text-danger">.</span>
+      </div>
+
+      <nav class="flex-grow p-4 space-y-2">
+
+        <!-- Dashboard com submenu (empurra itens) -->
+        <div>
+          <button id="dashboardBtn"
+            class="w-full flex items-center justify-between gap-3 px-4 py-2 rounded-lg bg-danger/10 text-danger font-semibold hover:bg-danger/20 transition-colors">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined">dashboard</span>
+              Dashboard
+            </div>
+            <span id="dashboardArrow" class="material-symbols-outlined text-sm transition-transform duration-200">expand_more</span>
+          </button>
+
+          <!-- submenu inline (inserido no fluxo, empurra itens de baixo) -->
+          <div id="dashboardMenu" class="overflow-hidden max-h-0 transition-height">
+            <a href="dashboard-analytics.html" class="block px-8 py-2 text-sm text-textSecondary hover:text-danger hover:bg-gray-50">Analytics</a>
+            <a href="dashboard-sales.html"     class="block px-8 py-2 text-sm text-textSecondary hover:text-danger hover:bg-gray-50">Sales</a>
+            <a href="dashboard-reports.html"   class="block px-8 py-2 text-sm text-textSecondary hover:text-danger hover:bg-gray-50">Reports</a>
+          </div>
+        </div>
+
+        <!-- Outros links -->
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-200 transition-colors" href="servidores.html">
+          <span class="material-symbols-outlined">dvr</span> Servidores
+        </a>
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-200 transition-colors" href="#">
+          <span class="material-symbols-outlined">warning</span> Alertas
+        </a>
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-200 transition-colors" href="historico.html">
+          <span class="material-symbols-outlined">history</span> Histórico
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-border">
+        <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-textSecondary hover:bg-gray-200 transition-colors" href="#">
+          <span class="material-symbols-outlined">logout</span> Sair
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold text-textPrimary">Dashboard de Monitoramento</h1>
+        <p class="text-textSecondary mt-1">Visão geral do estado dos seus componentes de servidor.</p>
+      </header>
+
+      <!-- KPIs -->
+      <div id="kpi-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"></div>
+
+      <!-- Modal Relatório -->
+<div id="report-modal" class="hidden modal">
+  <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-lg p-6">
+    <h3 id="modal-title" class="text-xl font-bold mb-4 text-textPrimary"></h3>
+    <table class="w-full border border-gray-200 rounded-lg mb-4">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="text-left px-4 py-2">Data/Hora</th>
+          <th class="text-left px-4 py-2">Uso (%)</th>
+          <th class="text-left px-4 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody id="modal-table-body"></tbody>
+    </table>
+    <button onclick="closeModal()" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Fechar</button>
+  </div>
+</div>
+
+      <!-- Controle de Grid -->
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold text-textPrimary">Gráficos de Monitoramento</h2>
+        <div class="space-x-2">
+          <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" onclick="setGridCount(1)">1 gráfico</button>
+          <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" onclick="setGridCount(2)">2 gráficos</button>
+          <button class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300" onclick="setGridCount(4)">4 gráficos</button>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
+      <div id="charts-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+    </main>
+  </div>
+
+  <!-- === TODOS OS SCRIPTS EM UM BLOCO === -->
+  <script>
+// ==========================
+// CONFIGURAÇÕES INICIAIS
+// ==========================
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        success: "#10B981",
+        warning: "#F59E0B",
+        danger: "#DC2626",
+        surface: "#FFFFFF",
+        border: "#E5E7EB",
+        textPrimary: "#111827",
+        textSecondary: "#6B7280",
+      },
+      fontFamily: { display: ["Inter", "sans-serif"] },
+    },
+  },
+};
+
+// ==========================
+// DADOS E VARIÁVEIS
+// ==========================
+const components = ["CPU", "RAM", "Disco", "Rede"];
+const history = { CPU: [], RAM: [], Disco: [], Rede: [] };
+const MOCK_HISTORY = {
+  CPU: [
+    { time: "2025-11-01 09:00", value: 28 },
+    { time: "2025-11-01 10:00", value: 35 },
+    { time: "2025-11-01 11:00", value: 42 },
+    { time: "2025-11-01 12:00", value: 50 },
+    { time: "2025-11-01 13:00", value: 47 },
+    { time: "2025-11-01 14:00", value: 93 },
+    { time: "2025-11-01 15:00", value: 70 },
+    { time: "2025-11-01 16:00", value: 77 },
+    { time: "2025-11-01 17:00", value: 80 },
+    { time: "2025-11-01 18:00", value: 46 },
+  ],
+  RAM: [
+    { time: "2025-11-01 09:00", value: 62 },
+    { time: "2025-11-01 10:00", value: 60 },
+    { time: "2025-11-01 11:00", value: 78 },
+    { time: "2025-11-01 12:00", value: 64 },
+    { time: "2025-11-01 13:00", value: 66 },
+    { time: "2025-11-01 14:00", value: 79 },
+    { time: "2025-11-01 15:00", value: 71 },
+    { time: "2025-11-01 16:00", value: 68 },
+    { time: "2025-11-01 17:00", value: 95 },
+    { time: "2025-11-01 18:00", value: 63 },
+  ],
+  Disco: [
+    { time: "2025-11-01 09:00", value: 22 },
+    { time: "2025-11-01 10:00", value: 25 },
+    { time: "2025-11-01 11:00", value: 28 },
+    { time: "2025-11-01 12:00", value: 30 },
+    { time: "2025-11-01 13:00", value: 33 },
+    { time: "2025-11-01 14:00", value: 91 },
+    { time: "2025-11-01 15:00", value: 89 },
+    { time: "2025-11-01 16:00", value: 34 },
+    { time: "2025-11-01 17:00", value: 76 },
+    { time: "2025-11-01 18:00", value: 38 },
+  ],
+  Rede: [
+    { time: "2025-11-01 09:00", value: 12 },
+    { time: "2025-11-01 10:00", value: 15 },
+    { time: "2025-11-01 11:00", value: 18 },
+    { time: "2025-11-01 12:00", value: 60 },
+    { time: "2025-11-01 13:00", value: 83 },
+    { time: "2025-11-01 14:00", value: 25 },
+    { time: "2025-11-01 15:00", value: 28 },
+    { time: "2025-11-01 16:00", value: 96 },
+    { time: "2025-11-01 17:00", value: 74 },
+    { time: "2025-11-01 18:00", value: 22 },
+  ],
+};
+
+const charts = [];
+let gridCount = 4;
+
+// ==========================
+// FUNÇÕES DE KPI
+// ==========================
+function generateUsage() {
+  return Math.floor(Math.random() * 100);
+}
+
+function getStatus(usage) {
+  if (usage < 70) return { text: "Normal", color: "success" };
+  if (usage < 90) return { text: "Alerta", color: "warning" };
+  return { text: "Crítico", color: "danger" };
+}
+
+function addHistory(name, value) {
+  const now = new Date();
+  const timestamp = now.toLocaleString();
+  history[name].push({ time: timestamp, value });
+  if (history[name].length > 10) history[name].shift();
+}
+
+function createKPI(name, usage) {
+  const status = getStatus(usage);
+  const dashArray = `${usage}, 100`;
+  const colorClasses = {
+    success: "bg-success text-white",
+    warning: "bg-warning text-white",
+    danger: "bg-danger text-white",
+  };
+  const lastUpdate = history[name].length
+    ? history[name][history[name].length - 1].time
+    : "—";
+
+  return `
+    <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md">
+      <div class="${colorClasses[status.color]} text-center py-2 font-semibold text-lg">${name}</div>
+      <div class="bg-white p-4 flex flex-col items-center justify-center">
+        <p class="text-lg font-semibold text-textPrimary mb-1">${status.text}</p>
+        <p class="text-sm text-textSecondary mb-4">Última atualização ${lastUpdate}</p>
+        <div class="relative w-24 h-24 mb-3">
+          <svg class="w-full h-full" viewBox="0 0 36 36">
+            <path class="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"/>
+            <path class="progress-ring__circle text-${status.color}" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="${dashArray}" stroke-linecap="round" stroke-width="3"/>
+          </svg>
+          <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+            <span class="text-2xl font-bold text-textPrimary">${usage}%</span>
+          </div>
+        </div>
+        <button onclick="showReport('${name}')" class="bg-${status.color} text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
+          Exibir Relatório
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function renderKPIs() {
+  const container = document.getElementById("kpi-container");
+  container.innerHTML = "";
+  components.forEach((c) => {
+    const usage = generateUsage();
+    addHistory(c, usage);
+    container.innerHTML += createKPI(c, usage);
+  });
+}
+
+// ==========================
+// MODAL DE RELATÓRIO
+// ==========================
+// ==========================
+// MODAL DE RELATÓRIO
+// ==========================
+function showReport(name) {
+  const modal = document.getElementById("report-modal");
+  const title = document.getElementById("modal-title");
+  const tbody = document.getElementById("modal-table-body");
+
+  title.textContent = `Relatório de ${name}`;
+
+  // Usa sempre os 10 dados MOCKADOS (não ligados às KPIs)
+  const rows = (MOCK_HISTORY[name] || []).slice().reverse(); // inverte para mostrar o mais recente em cima
+
+  tbody.innerHTML = rows
+    .map((h) => {
+      const status = getStatus(h.value);
+      return `
+        <tr>
+          <td class="px-4 py-2 border-b">${h.time}</td>
+          <td class="px-4 py-2 border-b">${h.value}%</td>
+          <td class="px-4 py-2 border-b font-semibold text-${status.color}">
+            ${status.text}
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  modal.classList.remove("hidden");
+  modal.addEventListener("click", handleOutsideClick);
+}
+
+
+function handleOutsideClick(event) {
+  const modalContent = event.target.closest(".bg-white");
+  const modal = document.getElementById("report-modal");
+  if (!modalContent) closeModal();
+}
+
+function closeModal() {
+  const modal = document.getElementById("report-modal");
+  modal.classList.add("hidden");
+  modal.removeEventListener("click", handleOutsideClick);
+}
+
+renderKPIs();
+
+// ==========================
+// GRÁFICOS
+// ==========================
+function randomData(points) {
+  return Array.from({ length: points }, () => Math.floor(Math.random() * 80) + 10);
+}
+
+function generateLabels(period) {
+  if (period === "dia") return Array.from({ length: 24 }, (_, i) => `${i}h`);
+  if (period === "semana") return ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+  return Array.from({ length: 30 }, (_, i) => `Dia ${i + 1}`);
+}
+
+function getColor(c) {
+  return {
+    CPU: "#10B981",
+    RAM: "#F59E0B",
+    Disco: "#3B82F6",
+    Rede: "#DC2626",
+  }[c] || "#6B7280";
+}
+
+function createChartElement(id) {
+  return `
+    <div class="bg-white p-6 rounded-xl border border-border">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-textPrimary">Gráfico ${id + 1}</h3>
+        <button class="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300" onclick="openChartConfig(${id})">
+          Configurar Gráfico
+        </button>
+      </div>
+      <div class="h-64"><canvas id="chart-${id}"></canvas></div>
+    </div>
+  `;
+}
+
+function countToGrid(count) {
+  if (count === 1) return "grid grid-cols-1 gap-6";
+  if (count === 2) return "grid grid-cols-1 md:grid-cols-2 gap-6";
+  if (count === 4) return "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6";
+  return "grid grid-cols-1 gap-6";
+}
+
+function setGridCount(count) {
+  gridCount = count;
+  renderCharts();
+}
+
+function initChart(canvasId, comps, period) {
+  const ctx = document.getElementById(canvasId).getContext("2d");
+  const labels = generateLabels(period);
+  const datasets = comps.map((c) => ({
+    label: c,
+    data: randomData(labels.length),
+    borderColor: getColor(c),
+    backgroundColor: getColor(c) + "33",
+    fill: true,
+    tension: 0.4,
+  }));
+
+  return new Chart(ctx, {
+    type: "line",
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { color: "#6B7280", callback: (v) => v + "%" },
+        },
+        x: { ticks: { color: "#6B7280" } },
+      },
+      plugins: { legend: { labels: { color: "#111827" } } },
+    },
+  });
+}
+
+function renderCharts() {
+  const container = document.getElementById("charts-container");
+  container.className = countToGrid(gridCount);
+  container.innerHTML = "";
+  charts.length = 0;
+
+  for (let i = 0; i < gridCount; i++) {
+    container.innerHTML += createChartElement(i);
+    charts.push(initChart(`chart-${i}`, ["CPU"], "mês"));
+  }
+}
+
+// ==========================
+// MODAL DE CONFIGURAÇÃO DE GRÁFICOS
+// ==========================
+function openChartConfig(id) {
+  const existing = document.getElementById(`chart-config-${id}`);
+  if (existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = `chart-config-${id}`;
+  modal.className = "modal";
+  modal.innerHTML = `
+    <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-md p-6">
+      <h3 class="text-xl font-semibold mb-4 text-textPrimary">Configurar Gráfico ${id + 1}</h3>
+      <div class="mb-4">
+        <p class="font-semibold text-textSecondary mb-2">Componentes</p>
+        ${components
+          .map(
+            (c) =>
+              `<label class="block"><input type="checkbox" value="${c}" class="mr-2"> ${c}</label>`
+          )
+          .join("")}
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold text-textSecondary mb-2">Período</p>
+        <select class="w-full border border-gray-300 rounded-lg p-2" id="period-${id}">
+          <option value="dia">Último dia</option>
+          <option value="semana">Última semana</option>
+          <option value="mês" selected>Último mês</option>
+        </select>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button onclick="applyChartConfig(${id})" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-700">Aplicar</button>
+        <button onclick="closeChartConfig(${id})" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700">Fechar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener("click", (e) => handleOutsideClickChart(e, id));
+}
+
+function handleOutsideClickChart(event, id) {
+  const modalContent = event.target.closest(".bg-white");
+  if (!modalContent) closeChartConfig(id);
+}
+
+function closeChartConfig(id) {
+  const modal = document.getElementById(`chart-config-${id}`);
+  if (modal) modal.remove();
+}
+
+function applyChartConfig(id) {
+  const modal = document.getElementById(`chart-config-${id}`);
+  const checked = Array.from(modal.querySelectorAll("input[type='checkbox']:checked")).map(
+    (i) => i.value
+  );
+  const period = modal.querySelector("select").value;
+  const ctx = document.getElementById(`chart-${id}`).getContext("2d");
+  charts[id].destroy();
+  charts[id] = initChart(`chart-${id}`, checked.length ? checked : ["CPU"], period);
+  closeChartConfig(id);
+}
+
+// ==========================
+// INICIALIZAÇÃO
+// ==========================
+renderCharts();
+
+// ==========================
+// MENU DE DASHBOARD EXPANSÍVEL (CORRIGIDO)
+// ==========================
+document.addEventListener("DOMContentLoaded", () => {
+  const dashboardBtn = document.getElementById("dashboardBtn");
+  const dashboardMenu = document.getElementById("dashboardMenu");
+  const dashboardArrow = document.getElementById("dashboardArrow");
+
+  if (dashboardBtn && dashboardMenu && dashboardArrow) {
+    let menuOpen = false;
+
+    dashboardBtn.addEventListener("click", () => {
+      menuOpen = !menuOpen;
+
+      // anima o abrir/fechar suavemente
+      dashboardMenu.style.maxHeight = menuOpen
+        ? dashboardMenu.scrollHeight + "px"
+        : "0px";
+
+      // gira a setinha
+      dashboardArrow.classList.toggle("rotate-180", menuOpen);
+    });
+  }
+});
+
+</script>
+
+</body>
+</html>
