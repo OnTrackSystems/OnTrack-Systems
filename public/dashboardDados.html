@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Controle - Armazenamento</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ApexCharts CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <!-- Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link href="https://cdn.jsdelivr.net/npm/fastbootstrap@2.2.0/dist/css/fastbootstrap.min.css" rel="stylesheet"
+        integrity="sha256-V6lu+OdYNKTKTsVFBuQsyIlDiRWiOmtC8VQ8Lzdm2i4=" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <lin k rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.8/css/line.css">
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=edit" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+        <style>
+            /* Estilos personalizados */
+            body {
+                font-family: 'Inter', sans-serif;
+                background-color: #F4F6F8;
+                /* Fundo cinza-claro da área principal */
+            }
+
+            /* Cor da barra lateral */
+            .brand-red {
+                background-color: #AE2A2F;
+                /* Vermelho/Bordô da sua marca */
+            }
+
+            /* Classes de status para a tabela */
+            .status-badge {
+                display: inline-block;
+                padding: 0.25rem 0.75rem;
+                border-radius: 9999px;
+                /* pill shape */
+                font-weight: 500;
+                font-size: 0.75rem;
+            }
+
+            .status-yellow {
+                background-color: #FEF3C7;
+                /* yellow-100 */
+                color: #92400E;
+                /* yellow-800 */
+            }
+
+            .status-green {
+                background-color: #D1FAE5;
+                /* green-100 */
+                color: #065F46;
+                /* green-800 */
+            }
+
+            .status-red {
+                background-color: #FEE2E2;
+                /* red-100 */
+                color: #991B1B;
+                /* red-800 */
+            }
+
+            /* Ajuste de ícones SVG */
+            .sidebar-icon {
+                width: 1.5rem;
+                /* 24px */
+                height: 1.5rem;
+                /* 24px */
+                color: white;
+                transition: all 0.2s;
+            }
+
+            .sidebar-icon:hover {
+                color: #FDE68A;
+                /* Um amarelo-claro para o hover */
+            }
+
+            .header-icon {
+                width: 1.5rem;
+                /* 24px */
+                height: 1.5rem;
+                /* 24px */
+                color: #4B5563;
+                /* gray-600 */
+            }
+        </style>
+</head>
+
+<body class="h-screen overflow-hidden">
+
+    <div id="sidebar-container"></div>
+
+    <!-- Área de Conteúdo Principal -->
+    <div id="main-content" class="flex flex-col h-full">
+
+        <!-- Cabeçalho (Header) -->
+        <header class="bg-white border-b border-gray-200 p-4 flex justify-between items-center flex-shrink-0">
+            <!-- Título e Seletor de Garagem -->
+            <div class="flex items-center space-x-4">
+                <h1 class="text-xl font-semibold text-gray-800">Painel de Controle</h1>
+                <div class="flex items-center space-x-2">
+                    <label for="garagem-select" class="text-sm font-medium text-gray-600">Garagem:</label>
+                    <select id="garagem-select"
+                        class="block w-full max-w-xs pl-3 pr-8 py-1.5 text-sm border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option>Todas as Garagens (Visão Geral)</option>
+                        <option selected>Garagem: Vila Sônia</option>
+                        <option>Garagem: Capão Redondo</option>
+                        <option>Garagem: Butantã</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Ícones do Header -->
+            <div class="flex items-center space-x-6 pr-4">
+                <button title="Notificações">
+                    <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341A6.002 6.002 0 006 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                </button>
+                <button title="Perfil">
+                    <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Conteúdo do Dashboard (Grid) -->
+        <main class="flex-1 overflow-y-auto p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                <!-- 1. Previsão de Armazenamento (Largo) -->
+                <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Previsão de Armazenamento</h2>
+                    <div class="flex items-start">
+                        <!-- KPI -->
+                        <div class="w-1/3 flex flex-col justify-center items-center text-center pr-4">
+                            <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <div class="text-5xl font-bold text-red-600 mt-2">14</div>
+                            <div class="text-sm font-medium text-gray-500">dias p/ disco cheio</div>
+                        </div>
+                        <!-- Gráfico de Barras -->
+                        <div class="w-2/3 h-40">
+                            <div id="previsao-chart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Uso de Disco Atual (Quadrado) -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-2">Uso de Disco Atual</h2>
+                    <div id="uso-disco-chart" class="flex-1"></div>
+                    <div class="text-center mt-2">
+                        <div class="text-sm text-gray-500">Usado: <span class="font-medium text-gray-700">8.5 TB</span>
+                        </div>
+                        <div class="text-sm text-gray-500">Livre: <span class="font-medium text-gray-700">1.5 TB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Status de Backup (Quadrado) -->
+                <div
+                    class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Status de Backup</h2>
+                    <svg class="w-16 h-16 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="text-2xl font-semibold text-green-600 mt-2">Sucesso</div>
+                    <div class="text-sm text-gray-500 mt-1">Realizado há 2h</div>
+                </div>
+
+                <!-- 4. Arquivos Corrompidos (Quadrado) -->
+                <div
+                    class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Arquivos Corrompidos</h2>
+                    <svg class="w-16 h-16 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <div class="text-3xl font-bold text-green-600 mt-2">0</div>
+                    <div class="text-sm text-gray-500 mt-1">Integridade verificada hoje</div>
+                </div>
+
+                <!-- 5. Progressão da Coleta (Quadrado) -->
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Progressão da Coleta (GB)</h2>
+                    <div id="progressao-chart" class="h-48"></div>
+                </div>
+
+                <!-- 6. Gerenciamento de Lotes (Largo) -->
+                <div class="md:col-span-3 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <h2 class="text-lg font-semibold text-gray-700 p-6">Gerenciamento de Lotes Mensais</h2>
+                    <table class="w-full min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Lote/Mês</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Coletado SPTrans?</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Mês Passado</th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Próxima Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
+                                    2024-09</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge status-yellow">Aguardando Coleta</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Não</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Enviar até 05/10</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
+                                    2024-08</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge status-green">Concluído</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Arquivado</td>
+                            </tr>
+                            <tr id="falha-coleta-row">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
+                                    2024-07</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge status-red">Falha na Coleta</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="status-badge status-red">Falha na Coleta</span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Não</td>
+                                <td
+                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center space-x-2">
+                                    <span>Reenviar</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+
+    <script src="./js/navbar.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // --- Renderização dos Gráficos (código original) ---
+
+            // 1. Gráfico de Previsão (Barras)
+            var previsaoOptions = {
+                series: [{
+                    name: 'GB Usado',
+                    data: [120, 130, 145, 170, 190, 220, 260] // Dados de exemplo
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 160,
+                    toolbar: { show: false },
+                },
+                colors: ['#3B82F6'], // Azul
+                plotOptions: {
+                    bar: {
+                        borderRadius: 4,
+                        horizontal: false,
+                        columnWidth: '60%',
+                    }
+                },
+                dataLabels: { enabled: false },
+                xaxis: {
+                    categories: ['-30d', '-25d', '-20d', '-15d', '-10d', '5d', 'Hoje'],
+                    labels: { show: true },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                },
+                yaxis: { show: false },
+                grid: { show: false },
+                legend: { show: false }
+            };
+            var previsaoChart = new ApexCharts(document.querySelector("#previsao-chart"), previsaoOptions);
+            previsaoChart.render();
+
+
+            // 2. Gráfico de Uso de Disco (Rosca/Radial)
+            var usoDiscoOptions = {
+                series: [85], // 85%
+                chart: {
+                    type: 'radialBar',
+                    height: 220,
+                },
+                colors: ['#3B82F6'], // Azul
+                plotOptions: {
+                    radialBar: {
+                        startAngle: -135,
+                        endAngle: 135,
+                        hollow: {
+                            margin: 0,
+                            size: '70%',
+                            background: '#fff',
+                        },
+                        dataLabels: {
+                            name: {
+                                show: true,
+                                fontSize: '14px',
+                                color: '#6B7280', // gray-500
+                                offsetY: 20
+                            },
+                            value: {
+                                offsetY: -10,
+                                fontSize: '30px',
+                                fontWeight: 'bold',
+                                color: '#1F2937', // gray-800
+                                formatter: function (val) {
+                                    return val + "%";
+                                }
+                            }
+                        }
+                    }
+                },
+                labels: ['Utilizado'],
+                stroke: { lineCap: 'round' }
+            };
+            var usoDiscoChart = new ApexCharts(document.querySelector("#uso-disco-chart"), usoDiscoOptions);
+            usoDiscoChart.render();
+
+
+            // 3. Gráfico de Progressão (Linha)
+            var progressaoOptions = {
+                series: [
+                    {
+                        name: 'Mês Atual',
+                        data: [1.2, 1.5, 2.0, 1.8, 2.5, 3.0, 2.8] // Dados de exemplo em GB
+                    },
+                    {
+                        name: 'Mês Passado',
+                        data: [1.0, 1.3, 1.8, 1.6, 2.2, 2.8, 2.7] // Dados de exemplo em GB
+                    }
+                ],
+                chart: {
+                    height: 192, // h-48
+                    type: 'line',
+                    toolbar: { show: false },
+                    zoom: { enabled: false }
+                },
+                colors: ['#3B82F6', '#EF4444'], // Azul e Vermelho
+                dataLabels: { enabled: false },
+                stroke: {
+                    curve: 'smooth',
+                    width: [3, 2], // Linha atual mais grossa, passada mais fina
+                    dashArray: [0, 5] // Linha passada tracejada
+                },
+                markers: {
+                    size: 4
+                },
+                xaxis: {
+                    categories: ['1', '5', '10', '16', '21', '26', '31'],
+                    title: { text: 'Dia do Mês', style: { fontSize: '10px', color: '#6B7280' } }
+                },
+                yaxis: {
+                    title: { text: 'GB', style: { fontSize: '10px', color: '#6B7280' } }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    fontSize: '12px',
+                    offsetY: -5
+                },
+                grid: {
+                    borderColor: '#E5E7EB', // gray-200
+                    strokeDashArray: 4
+                }
+            };
+            var progressaoChart = new ApexCharts(document.querySelector("#progressao-chart"), progressaoOptions);
+            progressaoChart.render();
+
+        });
+    </script>
+
+</body>
+
+</html>

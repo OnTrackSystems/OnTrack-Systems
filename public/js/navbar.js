@@ -16,6 +16,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="../dashboardDados.html">
+                        <i class="fas fa-tachometer-alt"></i><span class="nav-link-text">Dashboard Dados</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="../maquinas.html">
                         <i class="fas fa-robot"></i><span class="nav-link-text">Máquinas</span>
                     </a>
