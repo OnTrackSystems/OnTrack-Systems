@@ -21,6 +21,7 @@ var emailRouter = require("./src/routes/email");
 var empresaRouter = require("./src/routes/empresas");
 var cargoRouter = require("./src/routes/cargos");
 var garagemRouter = require("./src/routes/garagens");
+var dashDadosController = require("./src/routes/dashDados");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -34,6 +35,7 @@ app.use("/maquina", maquinaRouter);
 app.use("/empresas", empresaRouter);
 app.use("/cargos", cargoRouter);
 app.use("/garagens", garagemRouter);
+app.use("/dashDados", dashDadosController);
 
 app.listen(PORTA_APP, function () {
     console.log(`
