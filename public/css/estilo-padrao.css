@@ -1,0 +1,100 @@
+
+:root {
+    --brand-primary: #AE2A2F;
+    --brand-action: #3B82F6;
+
+    --status-success-bg: #D1FAE5;
+    --status-success-text: #065F46;
+    --status-warning-bg: #FEF3C7;
+    --status-warning-text: #92400E;
+    --status-critical-bg: #FEE2E2;
+    --status-critical-text: #991B1B;
+
+    --font-family-primary: 'Inter', sans-serif;
+    --body-bg-color: #F4F6F8;
+    --border-radius-lg: 0.5rem;
+    --border-radius-full: 9999px;
+}
+
+
+body {
+    font-family: var(--font-family-primary);
+    background-color: var(--body-bg-color);
+}
+
+.brand-red,
+.bg-brand {
+    background-color: var(--brand-primary);
+    color: white;
+}
+
+.card-padrao {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #F3F4F6;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--border-radius-full);
+    font-weight: 500;
+    font-size: 0.75rem;
+}
+
+.status-yellow {
+    background-color: var(--status-warning-bg);
+    color: var(--status-warning-text);
+}
+
+.status-green {
+    background-color: var(--status-success-bg);
+    color: var(--status-success-text);
+}
+
+.status-red {
+    background-color: var(--status-critical-bg);
+    color: var(--status-critical-text);
+}
+
+
+.status-text-red {
+    color: var(--status-critical-text) !important;
+}
+
+.status-text-yellow {
+    color: var(--status-warning-text) !important;
+}
+
+.status-text-green {
+    color: var(--status-success-text) !important;
+}
+
+
+.status-bg-red {
+    background-color: var(--status-critical-text) !important;
+}
+
+.status-bg-yellow {
+    background-color: var(--status-warning-text) !important;
+}
+
+.status-bg-blue {
+    background-color: var(--brand-action) !important;
+}
+
+
+
+.border-status-red {
+    border-color: var(--status-critical-text) !important;
+}
+
+.border-status-yellow {
+    border-color: var(--status-warning-text) !important;
+}
+
+.border-status-green {
+    border-color: var(--status-success-text) !important;
+}
