@@ -1,23 +1,43 @@
+const JIRA_DOMAIN = 'https://ontracksys.atlassian.net';
+const USER_EMAIL = process.env.JIRA_EMAIL;
+const API_TOKEN = process.env.JIRA_API_TOKEN;
 
-const JIRA_DOMAIN = 'https://ontracksys.atlassian.net'; 
-const USER_EMAIL = 'thiago.fukunaga@sptech.school' 
-const API_TOKEN = 'ATATT3xFfGF0bFFvkBL-qsTqSgrwl97cyQ3DG3KUFOJmB6LUhJQPXtiTrQ1HVTOqOOh03cv1I6mlYIdDdfLLxNQ-UjVx8R_3CBukZNkyz8taGuBPACn2NhOaRgnqgzeNHYUtP8nBnmzaWshkACQFxpw4YkZG8rNyjITMmhoOvNCviw-7HNm0eCA=99D74C61'; 
+/**
+ * Função Auxiliar: Extrai texto simples do formato complexo ADF do Jira
+ * O Jira v3 retorna a descrição como blocos de objetos, não como string.
+ */
+function extrairTextoDoADF(adfBody) {
+    if (!adfBody || !adfBody.content) return 'Sem descrição';
 
+    let textoFinal = '';
+    
+    // Percorre os blocos (parágrafos)
+    adfBody.content.forEach(bloco => {
+        if (bloco.content) {
+            bloco.content.forEach(item => {
+                if (item.type === 'text') {
+                    textoFinal += item.text + ' ';
+                }
+            });
+            textoFinal += '\n'; // Quebra de linha entre parágrafos
+        }
+    });
 
-async function buscarChamadosAbertos() {
+    return textoFinal.trim() || 'Descrição vazia ou formato não texto';
+}
+
+async function buscarChamados() {
     try {
         const endpoint = '/rest/api/3/search/jql';
-        
         const jqlQuery = 'project = CHAMADOS ORDER BY created DESC';
         
+        // 1. ATUALIZAÇÃO AQUI: Adicionado 'resolutiondate'
         const queryParams = new URLSearchParams({
             jql: jqlQuery,
-            fields: 'summary,status,priority,description,created,assignee'
+            fields: 'summary,status,priority,description,created,assignee,resolutiondate'
         });
 
         const urlCompleta = `${JIRA_DOMAIN}${endpoint}?${queryParams.toString()}`;
-
-        console.log(`Tentando conectar em: ${urlCompleta}`); 
 
         const response = await fetch(urlCompleta, {
             method: 'GET',
@@ -29,25 +49,37 @@ async function buscarChamadosAbertos() {
         });
 
         if (!response.ok) {
-            const errorBody = await response.text(); 
-            throw new Error(`Erro na API do Jira: ${response.status} - ${response.statusText}. Detalhes: ${errorBody}`);
+            const errorBody = await response.text();
+            throw new Error(`Erro na API do Jira: ${response.status} - ${errorBody}`);
         }
 
         const json = await response.json();
-        // tratamento
+
         const chamadosFormatados = json.issues.map(issue => {
+            
+            // Formatando datas para Português (Dia/Mês/Ano Hora:Minuto)
+            const dataCriacaoObj = new Date(issue.fields.created);
+            const dataResolucaoObj = issue.fields.resolutiondate ? new Date(issue.fields.resolutiondate) : null;
+
             return {
                 id: issue.key,
                 titulo: issue.fields.summary,
                 
+                // 2. ATUALIZAÇÃO: Usando a função auxiliar para ler a descrição
+                descricao: extrairTextoDoADF(issue.fields.description),
+                
                 status: issue.fields.status ? issue.fields.status.name : 'Sem Status',
-                corStatus: issue.fields.status && issue.fields.status.statusCategory ? issue.fields.status.statusCategory.colorName : 'blue-gray',
-                
                 prioridade: issue.fields.priority ? issue.fields.priority.name : 'Normal',
+                responsavel: issue.fields.assignee ? issue.fields.assignee.displayName : 'Não atribuído',
+
+                // 3. ATUALIZAÇÃO: Retornando Datas e Horas formatadas
+                dataHoraCriacao: dataCriacaoObj.toLocaleString('pt-BR'), // Ex: 21/11/2025 14:30:00
                 
-                dataCriacao: new Date(issue.fields.created).toLocaleDateString('pt-BR'),
+                dataHoraResolucao: dataResolucaoObj ? dataResolucaoObj.toLocaleString('pt-BR') : 'Não resolvido',
                 
-                responsavel: issue.fields.assignee ? issue.fields.assignee.displayName : 'Não atribuído'
+                // Se precisar só da hora separada:
+                horaCriacao: dataCriacaoObj.toLocaleTimeString('pt-BR'),
+                horaResolucao: dataResolucaoObj ? dataResolucaoObj.toLocaleTimeString('pt-BR') : '--:--'
             };
         });
 
@@ -55,8 +87,8 @@ async function buscarChamadosAbertos() {
 
     } catch (error) {
         console.error("Falha no Model:", error.message);
-        throw error; 
+        throw error;
     }
 }
 
-module.exports = { buscarChamadosAbertos };
+module.exports = { buscarChamados };
