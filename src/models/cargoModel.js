@@ -54,7 +54,7 @@ function adicionarPermissaoCargo(idCargo, idPermissao) {
 function removerPermissaoCargo(idCargo, idPermissao) {
     let instrucao = `
         DELETE FROM CargoPermissao
-        WHERE fkCargo = '${idCargo}' AND fkPermissao = '${idPermissao}';
+        WHERE fkCargo = ${idCargo} AND fkPermissao = ${idPermissao};
     `;
     return database.executar(instrucao);
 }
