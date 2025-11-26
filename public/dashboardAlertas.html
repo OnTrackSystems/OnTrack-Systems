@@ -6,7 +6,7 @@
     <title>OnTrack Systems - Monitoramento de Bilhetagem</title>
     
     <link rel="stylesheet" href="css/estilo-alerta.css">
-    <link rel="stylesheet" href="css/estilo-padrao-alerta.css">
+    <link rel="stylesheet" href="css/estilo-padrao.css">
     
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
@@ -16,26 +16,12 @@
         
         <header class="cabecalho-principal">
             <div class="logo-area">
-                <h1>OnTrack <span style="font-weight: 300;">Systems</span></h1>
-                <span class="tag-ambiente brand-red">SRV-BILHETAGEM-SP-01</span>
-            </div>
-            <div class="info-sistema">
-                <p class="subtitulo">Monitoramento de Infraestrutura Crítica - Transporte Público</p>
-                <div class="status-live status-text-green">● Tempo Real</div> 
+                <h1>OnTrack <span style="font-weight: 300;">Systems - Chamados</span> </h1>
+                <h1><span>Última atualizacao: <span id="ultimaAtt"></span></span></h1>
             </div>
         </header>
 
         <section class="grade-indicadores">
-            
-            <div class="card-padrao">
-                <div class="titulo-indicador">Status do Servidor Central</div>
-                <div class="valor-indicador status-text-green">
-                    <span>Operacional</span>
-                    <span style="font-size: 1.5rem">✔</span>
-                </div>
-                <div class="sub-indicador">Validação de Bilhetes: <strong>Ativa</strong></div>
-            </div>
-
             <div class="card-padrao">
                 <div class="titulo-indicador">MTTR (Tempo Médio de Reparo)</div>
                 <div class="valor-indicador">12m 30s</div>
@@ -236,6 +222,15 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script-alerta.js"></script>
 </body>
 </html>
+<script>
+    fetch("/chamados/getCallsFromBucket/").then(res => {
+        res.json().then(JSON => {
+            console.log(JSON)
+            document.getElementById("ultimaAtt").innerHTML = JSON.metadata.ultima_atualizacao;
+        })
+    
+    })
+</script>
