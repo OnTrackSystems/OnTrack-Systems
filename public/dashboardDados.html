@@ -391,6 +391,7 @@
         </main>
     </div>
 </body>
+
 <script>
     const dropdownButton = document.getElementById('dropdown-button');
     const dropdownMenu = document.getElementById('dropdown-menu');
@@ -402,7 +403,6 @@
     const garagens = [
         { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true },
         { id: 'g1', name: 'Garagem: Capão Redondo', status: 'critical', issue: 'Disco Crítico (98%)' },
-        { id: 'g2', name: 'Garagem: Campo Limpo', status: 'critical', issue: 'Falha de Backup' },
         { id: 'g3', name: 'Garagem: M\'Boi Mirim', status: 'warning', issue: 'Latência Alta' },
     ];
 
@@ -425,7 +425,6 @@
         let jsonGaragens = await respostaGaragens.json();
 
         for (garagem of jsonGaragens) {
-
             garagens.push({
                 id: `g${garagem.idGaragem}`,
                 name: `Garagem: ${garagem.nome}`,
@@ -435,8 +434,6 @@
     }
 
     async function renderList(filterText = '') {
-        await buscarGaragens();
-
         dropdownListContainer.innerHTML = '';
 
         const filtered = garagens.filter(g => g.name.toLowerCase().includes(filterText.toLowerCase()));
@@ -542,6 +539,7 @@
         dropdownMenu.classList.add('hidden');
 
         searchInput.value = '';
+
         renderList();
 
         console.log(`Garagem selecionada: ${item.id}`);
@@ -567,7 +565,12 @@
 
     searchInput.addEventListener('click', (e) => e.stopPropagation());
 
-    renderList();
+    async function carregarPagina() {
+        await buscarGaragens();
+        renderList();
+    }
+
+    carregarPagina();
 
     document.addEventListener("DOMContentLoaded", function () {
 
