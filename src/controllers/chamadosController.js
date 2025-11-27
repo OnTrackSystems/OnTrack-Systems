@@ -9,14 +9,9 @@ function listarChamados(req,res){
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 async function getCallsFromBucket(req, res){
+    
     const s3Client = new S3Client({
-        region: "us-east-1",
-        credentials: {
-            // é string mas qnd for subir p ec2 da pra colocar var de ambiente!!
-            accessKeyId:"",
-            secretAccessKey:"",
-            sessionToken:""
-        }
+        region: "us-east-1"
     });
 
     const input = {
