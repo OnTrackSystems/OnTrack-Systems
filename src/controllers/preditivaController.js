@@ -15,7 +15,7 @@ async function  JsonPreditiva(req, res){
         credentials: {
             accessKeyId:"",
             secretAccessKey:"",
-            sessionToken:""
+            sessionToken:""        
         }
     });
 
