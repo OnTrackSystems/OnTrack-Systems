@@ -212,11 +212,11 @@
                                 </div>
                             </div>
                             <div class="border-l border-gray-100 pl-4">
-                                <div class="text-xs text-gray-400 uppercase font-medium">Média Diária</div>
+                                <div class="text-xs text-gray-400 uppercase font-medium">Média Diária Mensal</div>
                                 <div class="text-lg font-semibold text-gray-700">2.1 GB</div>
                             </div>
                             <div class="border-l border-gray-100 pl-4 hidden sm:block">
-                                <div class="text-xs text-gray-400 uppercase font-medium">Projeção</div>
+                                <div class="text-xs text-gray-400 uppercase font-medium">Projeção Mensal</div>
                                 <div class="text-lg font-semibold text-gray-700">85 GB</div>
                             </div>
                         </div>
@@ -543,6 +543,13 @@
         renderList();
 
         console.log(`Garagem selecionada: ${item.id}`);
+
+        if (item.id !== 'all') {
+            const idNumerico = item.id.replace('g', '');
+            carregarGaragem(idNumerico);
+        } else {
+            console.log("Carregar visão geral de todas as garagens");
+        }
     }
 
     dropdownButton.addEventListener('click', (e) => {
@@ -571,6 +578,27 @@
     }
 
     carregarPagina();
+
+    async function carregarGaragem(idGaragem) {
+        try {
+            let respostaJsonGaragem = await fetch(`/dashDados/getJsonDashDados/${idGaragem}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!respostaJsonGaragem.ok) {
+                console.error(await respostaJsonGaragem.text());
+                return;
+            }
+
+            let jsonGaragem = await respostaJsonGaragem.json();
+            console.log(jsonGaragem);
+        } catch (e) {
+            console.error("Erro ao carregar dados da garagem:", e);
+        }
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
 

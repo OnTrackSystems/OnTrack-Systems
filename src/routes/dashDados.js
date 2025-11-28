@@ -7,8 +7,8 @@ router.get("/listarGaragens/:fkEmpresa", function(req, res) {
     dashDadosController.listarGaragens(req, res);
 });
 
-router.get("/getJsonDashDados", function(req,res){
-    chamadosController.getJsonDashDados(req,res)
+router.get("/getJsonDashDados/:idGaragem", function(req,res){
+    dashDadosController.getJsonDashDados(req,res)
 });
 
 module.exports = router;

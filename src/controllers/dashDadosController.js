@@ -8,16 +8,13 @@ function listarGaragens(req, res) {
     });
 }
 
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
+
 async function getJsonDashDados(req, res){
     let idGaragem = req.params.idGaragem;
 
     const s3Client = new S3Client({
         region: "us-east-1",
-        credentials: {
-            accessKeyId:"",
-            secretAccessKey:"",
-            sessionToken:""
-        }
     });
 
     const input = {
