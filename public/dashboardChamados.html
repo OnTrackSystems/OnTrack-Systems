@@ -86,11 +86,11 @@
                 <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Classificação dos incidentes ativos</p>
                 <div class="container-severidade">
                     <div class="estatistica-donut">
-                        <div class="indicador-circulo border-status-red status-text-red">2</div>
+                        <div class="indicador-circulo border-status-red status-text-red" id="bolaCrit"></div>
                         <span>Crítico</span>
                     </div>
                     <div class="estatistica-donut">
-                        <div class="indicador-circulo border-status-yellow status-text-yellow">5</div>
+                        <div class="indicador-circulo border-status-yellow status-text-yellow" id="bolaMed"></div>
                         <span>Atenção</span>
                     </div>
                     <div class="estatistica-donut">
@@ -321,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
             tableBody.innerHTML = "";
 
             let atuais = { cpu: 0, ram: 0, disco: 0 };
-
+                let contadorCritico = 0;
+                let contadorMedio = 0;
             JSON.dados.forEach(element => {
                 
                 // setando cor
@@ -355,6 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Tratamento para Tags de Alerta
                 if (element.titulo.includes("[ALERTA CRÍTICO]")) {
                     const partes = element.titulo.split("[ALERTA CRÍTICO]");
+                    contadorCritico++;
                     msgLimpa = partes[1] ? partes[1].replace("-", "").trim() : msgLimpa; 
                     if(msgLimpa.includes("Garagem")) { 
                          const subPartes = msgLimpa.split("Garagem");
@@ -364,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 if (element.titulo.includes("[ALERTA MÉDIO]")) {
                     const partes = element.titulo.split("[ALERTA MÉDIO]");
+                    contadorMedio++;
                     msgLimpa = partes[1] ? partes[1].replace("-", "").trim() : msgLimpa;
                     if(msgLimpa.includes("Garagem")) {
                          const subPartes = msgLimpa.split("Garagem");
@@ -371,6 +374,8 @@ document.addEventListener('DOMContentLoaded', function() {
                          local = subPartes[1].trim().replace(":", "").trim();
                     }
                 }
+                bolaCrit.innerHTML = contadorCritico
+                bolaMed.innerHTML = contadorMedio
 
                 // buscando id pelo nome
                 let filtroGaragemID = "0";
