@@ -7,7 +7,7 @@ router.get("/listarGaragens/:fkEmpresa", function(req, res) {
     preditivaController.listarGaragens(req, res);
 });
 
-router.get("/JsonPreditiva", function(req,res){
+router.get("/:fkEmpresa", function (req, res) {
     preditivaController.JsonPreditiva(req,res)
 });
 

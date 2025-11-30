@@ -1,5 +1,3 @@
-
-
 side.innerHTML = `<div id="SideNav" class="sideBar">
   <a href="javascript:void(0)" class="botaoFechar" onclick="fecharNav()">&times;</a>
   <a href="dashboard.html">Dashboard</a>
