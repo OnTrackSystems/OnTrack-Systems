@@ -6,6 +6,11 @@ function listarChamados(req,res){
     });
 }
 
+// variaveis que armazenam as aws key pra ficar mais facil de configurar
+const keyacesss = ""
+const secretkey = ""
+const sessionkey = ""
+
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3'); // requisitando o pacote
 
 async function getCallsFromBucket(req, res){
@@ -13,9 +18,9 @@ async function getCallsFromBucket(req, res){
     const s3Client = new S3Client({
         region: "us-east-1",
          credentials: {
-            accessKeyId: "",
-            secretAccessKey: "",
-            sessionToken: ""
+            accessKeyId:keyacesss ,
+            secretAccessKey: secretkey,
+            sessionToken: sessionkey,
         } // tem que configuar isso aq pra puxar do bucket
     });
 
@@ -41,9 +46,9 @@ async function getCallsFromBucketOpen(req, res){
     const s3Client = new S3Client({
         region: "us-east-1",
          credentials: {
-            accessKeyId: "",
-            secretAccessKey: "",
-            sessionToken: ""
+            accessKeyId:keyacesss ,
+            secretAccessKey: secretkey,
+            sessionToken: sessionkey,
         } // tem que configuar isso aq pra puxar do bucket
     });
 
