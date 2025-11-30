@@ -520,4 +520,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+fetch("/chamados/getCallsFromBucketOpen/").then(res => {
+        res.json().then(JSON => {
+            console.log(JSON)
+        }
+    
+    )
+    }
+        )
 </script>

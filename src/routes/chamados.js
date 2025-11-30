@@ -11,4 +11,8 @@ router.get("/getCallsFromBucket/", function(req,res){
     chamadosController.getCallsFromBucket(req,res)
 })
 
+router.get("/getCallsFromBucketOpen/", function(req,res){
+    chamadosController.getCallsFromBucketOpen(req,res)
+})
+
 module.exports = router;
