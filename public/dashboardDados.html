@@ -187,10 +187,7 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 space-y-6">
-            
-            <!-- SEÇÃO 1: PROGRESSÃO DA COLETA & INTEGRIDADE -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Coluna Esquerda: Progressão da Coleta -->
                 <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between h-full">
                     <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
@@ -203,7 +200,6 @@
                             </div>
                         </div>
 
-                        <!-- KPIs alinhados à direita -->
                         <div class="flex space-x-8 mt-4 md:mt-0">
                             <div class="border-l border-gray-100 pl-4">
                                 <div class="text-xs text-gray-400 uppercase font-medium">Média Diária Mensal</div>
@@ -218,10 +214,8 @@
                     <div id="progressao-chart" class="w-full h-64"></div>
                 </div>
 
-                <!-- Coluna Direita: Frota & Saúde (Empilhados) -->
                 <div class="lg:col-span-1 flex flex-col gap-6 h-full">
                     
-                    <!-- Frota Sincronizada -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-center flex-1">
                         <div class="flex items-center justify-between mb-2">
                             <h2 class="text-lg font-semibold text-gray-700">Frota Sincronizada</h2>
@@ -241,9 +235,7 @@
                         </div>
                     </div>
 
-                    <!-- Saúde do Sistema -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-4">
-                        <!-- Status Backup -->
                         <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
                             <div class="flex items-center space-x-3">
                                 <div class="p-2 bg-green-100 rounded-full">
@@ -259,7 +251,6 @@
                             <span class="text-xs font-bold text-green-700">OK</span>
                         </div>
 
-                        <!-- Arquivos Corrompidos -->
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                             <div class="flex items-center space-x-3">
                                 <div class="p-2 bg-gray-200 rounded-full">
@@ -278,9 +269,7 @@
                 </div>
             </div>
 
-            <!-- SEÇÃO 2: PREVISÃO DE ARMAZENAMENTO & USO DE DISCO -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Coluna Esquerda: Previsão de Armazenamento -->
                 <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-semibold text-gray-700">Previsão de Armazenamento</h2>
@@ -332,18 +321,14 @@
                     </div>
                 </div>
 
-                <!-- Coluna Direita: Uso de Disco Atual (Mantido Horizontal e Ampliado com ajuste de layout) -->
                 <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
                     <h2 class="text-lg font-semibold text-gray-700 mb-0">Uso de Disco Atual</h2>
-                    
-                    <!-- Alterado para justify-center e gap-6 para aproximar os elementos -->
+
                     <div class="flex flex-row items-center justify-center gap-6 flex-1">
-                        <!-- Chart Container (Left) -->
                         <div class="relative flex-shrink-0">
                             <div id="uso-disco-chart"></div>
                         </div>
                         
-                        <!-- Info Container (Right) -->
                         <div class="flex flex-col justify-center space-y-6 text-left">
                             <div>
                                 <div class="text-xs text-gray-500 mb-1 flex items-center uppercase font-medium">
@@ -376,15 +361,12 @@
     const selectedText = document.getElementById('selected-text');
     const selectedStatusDot = document.getElementById('selected-status-dot');
 
-    // Variáveis globais para os gráficos para permitir atualização
     var previsaoChart;
-    // var frotaChart; // Removido pois agora é apenas info textual
     var progressaoChart;
     var usoDiscoChart;
 
     const garagens = [
-        { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true },
-        // Outros itens virão do fetch
+        { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true }
     ];
 
     async function buscarGaragens() {
@@ -562,10 +544,13 @@
 
             if (jsonGaragem.history) {
                 const months = Object.keys(jsonGaragem.history).sort();
-                const lastMonthKey = months[months.length - 1];
-                const currentMonthData = jsonGaragem.history[lastMonthKey];
 
-                if (currentMonthData) {
+                const currentMonthKey = months[months.length - 1];
+                const previousMonthKey = months.length > 1 ? months[months.length - 2] : null;
+
+                const currentMonthData = jsonGaragem.history[currentMonthKey];
+                
+                if (currentMonthData && currentMonthData.summary) {
                     const totalIngested = currentMonthData.summary.totalIngestedGb || 0;
                     const projection = currentMonthData.summary.projectionGb || 0;
                     
@@ -573,37 +558,70 @@
                     document.getElementById('kpi-projecao').innerText = projection.toFixed(2) + " GB";
 
                     const daysObj = currentMonthData.days || {};
-                    const daysKeys = Object.keys(daysObj).sort((a, b) => parseInt(a) - parseInt(b));
-                    
-                    const labels = daysKeys; 
-                    const dataIngested = daysKeys.map(d => daysObj[d].dailyIngestedGb);
-
-                    const sum = dataIngested.reduce((a, b) => a + b, 0);
-                    const avg = dataIngested.length ? (sum / dataIngested.length) : 0;
+                    const daysValues = Object.values(daysObj).map(d => d.dailyIngestedGb);
+                    const avg = daysValues.length ? (daysValues.reduce((a, b) => a + b, 0) / daysValues.length) : 0;
                     document.getElementById('kpi-media-diaria').innerText = avg.toFixed(2) + " GB";
+                }
 
-                    if (progressaoChart) {
-                        progressaoChart.updateOptions({
-                            xaxis: { categories: labels }
-                        });
-                        progressaoChart.updateSeries([{
-                            name: 'Mês Atual',
-                            data: dataIngested
-                        }, {
-                            name: 'Mês Passado',
-                            data: [] 
-                        }]);
+                let labelsProgressao = [];
+                let seriesCurrentMonth = [];
+                let seriesPreviousMonth = [];
+
+                for (let i = 1; i <= 31; i++) {
+                    let dayLabel = i.toString();
+                    let dayKey = i.toString().padStart(2, '0');
+                    labelsProgressao.push(dayLabel);
+
+                    if (currentMonthData && currentMonthData.days && currentMonthData.days[dayKey]) {
+                        seriesCurrentMonth.push(currentMonthData.days[dayKey].dailyIngestedGb);
+                    } else {
+                        seriesCurrentMonth.push(0);
                     }
 
-                    if (previsaoChart) {
-                        previsaoChart.updateOptions({
-                            xaxis: { categories: labels }
-                        });
-                        previsaoChart.updateSeries([{
-                            name: 'GB Usado',
-                            data: dataIngested 
-                        }]);
+                    if (previousMonthKey) {
+                        const prevData = jsonGaragem.history[previousMonthKey];
+                        if (prevData && prevData.days && prevData.days[dayKey]) {
+                            seriesPreviousMonth.push(prevData.days[dayKey].dailyIngestedGb);
+                        } else {
+                            seriesPreviousMonth.push(0);
+                        }
+                    } else {
+                        seriesPreviousMonth.push(0);
                     }
+                }
+
+                if (progressaoChart) {
+                    progressaoChart.updateOptions({
+                        xaxis: { categories: labelsProgressao }
+                    });
+                    progressaoChart.updateSeries([{
+                        name: 'Mês Atual',
+                        data: seriesCurrentMonth
+                    }, {
+                        name: 'Mês Passado',
+                        data: seriesPreviousMonth
+                    }]);
+                }
+
+                let previsaoLabels = [];
+                let previsaoData = [];
+                
+                if (currentMonthData && currentMonthData.days) {
+                     const daysKeys = Object.keys(currentMonthData.days).sort((a, b) => parseInt(a) - parseInt(b));
+                     daysKeys.forEach(dayKey => {
+                         previsaoLabels.push(parseInt(dayKey).toString());
+                         previsaoData.push(currentMonthData.days[dayKey].dailyIngestedGb);
+                     });
+                }
+
+                if (previsaoChart) {
+                    previsaoChart.updateOptions({
+                        xaxis: { categories: previsaoLabels }
+                    });
+                    previsaoChart.updateSeries([{
+                        name: 'GB Usado',
+                        data: previsaoData 
+                    }]);
                 }
             }
 
@@ -615,20 +633,19 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         function generateDates() {
-            return ['1', '2', '3', '4', '5'];
+            return Array.from({length: 31}, (_, i) => i + 1);
         }
 
         const chartDates = generateDates();
 
-        // 1. Chart Previsão
         var previsaoOptions = {
             series: [{
                 name: 'GB Usado',
-                data: [0, 0, 0, 0, 0]
+                data: []
             }],
             chart: {
                 type: 'area',
-                height: 250, // Altura fixa de volta
+                height: 250,
                 toolbar: { show: false },
                 zoom: { enabled: false },
                 fontFamily: 'Inter, sans-serif'
@@ -661,13 +678,12 @@
         previsaoChart = new ApexCharts(document.querySelector("#previsao-chart"), previsaoOptions);
         previsaoChart.render();
 
-        // 2. Chart Uso Disco (ATUALIZADO: GAUGE FINA + APROXIMAÇÃO)
         var usoDiscoOptions = {
             series: [85],
             chart: {
                 type: 'radialBar',
-                height: 350, // Altura significativamente maior
-                width: 300,  // Largura controlada
+                height: 350,
+                width: 300,
                 offsetY: 0
             },
             colors: ['#3B82F6'],
@@ -677,7 +693,7 @@
                     endAngle: 135,
                     hollow: {
                         margin: 15,
-                        size: '75%', // Linha mais fina (era 60%, agora 75% aumenta o "buraco")
+                        size: '75%',
                         background: 'transparent',
                     },
                     track: {
@@ -707,21 +723,20 @@
                     }
                 }
             },
-            labels: ['Utilizado'], // Texto "Utilizado" dentro do gráfico
+            labels: ['Utilizado'],
             stroke: { lineCap: 'round' }
         };
         usoDiscoChart = new ApexCharts(document.querySelector("#uso-disco-chart"), usoDiscoOptions);
         usoDiscoChart.render();
 
-        // 3. Chart Progressão
         var progressaoOptions = {
             series: [
-                { name: 'Mês Atual', data: [0, 0, 0, 0, 0] },
-                { name: 'Mês Passado', data: [0, 0, 0, 0, 0] }
+                { name: 'Mês Atual', data: [] },
+                { name: 'Mês Passado', data: [] }
             ],
             chart: {
-                height: 250, // Restaurado altura fixa conforme pedido
-                type: 'area',
+                height: 250,
+                type: 'area',   
                 toolbar: { show: false },
                 zoom: { enabled: false }
             },
