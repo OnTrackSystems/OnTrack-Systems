@@ -131,7 +131,7 @@
                         <svg class="w-5 h-5 ml-2 -mr-1 text-gray-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
                                 clip-rule="evenodd" />
                         </svg>
                     </button>
@@ -186,110 +186,131 @@
             </div>
         </header>
 
-        <main class="flex-1 overflow-y-auto p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                <div
-                    class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between order-1">
+        <main class="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            <!-- SEÇÃO 1: PROGRESSÃO DA COLETA & INTEGRIDADE -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna Esquerda: Progressão da Coleta -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between h-full">
                     <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
                             <h2 class="text-lg font-semibold text-gray-700">Progressão da Coleta</h2>
                             <div class="flex items-baseline space-x-2 mt-1">
-                                <div class="text-3xl font-bold text-gray-900">42.5 GB</div>
-                                <div
-                                    class="text-sm text-green-600 font-semibold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
+                                <div id="kpi-total-coleta" class="text-3xl font-bold text-gray-900">-- GB</div>
+                                <div class="text-sm text-green-600 font-semibold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
                                     +5.2% <span class="text-gray-500 font-normal ml-1">vs mês passado</span>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- KPIs alinhados à direita -->
                         <div class="flex space-x-8 mt-4 md:mt-0">
                             <div class="border-l border-gray-100 pl-4">
-                                <div class="text-xs text-gray-400 uppercase font-medium">Frota Sincronizada</div>
-                                <div class="text-lg font-bold text-gray-700 flex items-center">
-                                    98%
-                                    <span class="text-xs font-normal text-gray-400 ml-1">(142/145)</span>
-                                </div>
-                            </div>
-                            <div class="border-l border-gray-100 pl-4">
                                 <div class="text-xs text-gray-400 uppercase font-medium">Média Diária Mensal</div>
-                                <div class="text-lg font-semibold text-gray-700">2.1 GB</div>
+                                <div id="kpi-media-diaria" class="text-lg font-semibold text-gray-700">-- GB</div>
                             </div>
                             <div class="border-l border-gray-100 pl-4 hidden sm:block">
                                 <div class="text-xs text-gray-400 uppercase font-medium">Projeção Mensal</div>
-                                <div class="text-lg font-semibold text-gray-700">85 GB</div>
+                                <div id="kpi-projecao" class="text-lg font-semibold text-gray-700">-- GB</div>
                             </div>
                         </div>
                     </div>
-
                     <div id="progressao-chart" class="w-full h-64"></div>
                 </div>
 
-                <div class="flex flex-col space-y-6 order-2">
-                    <div
-                        class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center flex-1">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Status de Backup</h2>
-                        <svg class="w-12 h-12 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <div class="text-xl font-semibold text-green-600 mt-1">Sucesso</div>
-                        <div class="text-xs text-gray-500">Realizado há 2h</div>
+                <!-- Coluna Direita: Frota & Saúde (Empilhados) -->
+                <div class="lg:col-span-1 flex flex-col gap-6 h-full">
+                    
+                    <!-- Frota Sincronizada -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-center flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h2 class="text-lg font-semibold text-gray-700">Frota Sincronizada</h2>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Operação Normal
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-end space-x-2 mt-2">
+                            <div class="text-4xl font-bold text-gray-900">98%</div>
+                            <div class="text-sm text-gray-500 mb-1">sincronizados</div>
+                        </div>
+                        <div class="text-sm text-gray-500 mt-1">142 de 145 veículos</div>
+
+                        <div class="w-full bg-gray-100 rounded-full h-2.5 mt-4">
+                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 98%"></div>
+                        </div>
                     </div>
 
-                    <div
-                        class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center flex-1">
-                        <h2 class="text-lg font-semibold text-gray-700 mb-2">Arquivos Corrompidos</h2>
-                        <svg class="w-12 h-12 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
-                        <div class="text-2xl font-bold text-green-600 mt-1">0</div>
-                        <div class="text-xs text-gray-500">Verificado hoje</div>
+                    <!-- Saúde do Sistema -->
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-4">
+                        <!-- Status Backup -->
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-green-100 rounded-full">
+                                    <svg class="w-5 h-5 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-900">Backup Realizado</div>
+                                    <div class="text-xs text-gray-500">Há 2 horas</div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-green-700">OK</span>
+                        </div>
+
+                        <!-- Arquivos Corrompidos -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 bg-gray-200 rounded-full">
+                                    <svg class="w-5 h-5 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-900">Arquivos Corrompidos</div>
+                                    <div class="text-xs text-gray-500">Verificado hoje</div>
+                                </div>
+                            </div>
+                            <span class="text-lg font-bold text-gray-700">0</span>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-
-                <div
-                    class="md:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col order-3">
+            <!-- SEÇÃO 2: PREVISÃO DE ARMAZENAMENTO & USO DE DISCO -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna Esquerda: Previsão de Armazenamento -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-semibold text-gray-700">Previsão de Armazenamento</h2>
-                        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Últimos 30
-                            dias</span>
+                        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md">Últimos 30 dias</span>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-6 flex-1">
                         <div class="w-full md:w-1/3 flex flex-col space-y-6">
                             <div class="text-center md:text-left">
-                                <div
-                                    class="flex items-center justify-center md:justify-start space-x-2 text-red-600 mb-1">
+                                <div class="flex items-center justify-center md:justify-start space-x-2 text-red-600 mb-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                     </svg>
                                     <span class="text-xs font-bold uppercase tracking-wider">Atenção Crítica</span>
                                 </div>
-                                <div class="text-5xl font-bold text-gray-900">14 <span
-                                        class="text-lg text-gray-500 font-normal">dias</span></div>
+                                <div class="text-5xl font-bold text-gray-900">14 <span class="text-lg text-gray-500 font-normal">dias</span></div>
                                 <div class="text-sm text-gray-500 mt-1">Estimativa p/ disco cheio</div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                                 <div>
-                                    <div class="text-xs text-gray-400 uppercase font-medium">Média de Crescimento</div>
-                                    <div class="text-base font-semibold text-gray-700">+52 GB<span
-                                            class="text-xs text-gray-400 font-normal">/dia</span></div>
+                                    <div class="text-xs text-gray-400 uppercase font-medium">Crescimento</div>
+                                    <div class="text-base font-semibold text-gray-700">+52 GB<span class="text-xs text-gray-400 font-normal">/dia</span></div>
                                 </div>
                                 <div>
                                     <div class="text-xs text-gray-400 uppercase font-medium">Tendência</div>
                                     <div class="text-base font-semibold text-red-500 flex items-center">
                                         +12%
                                         <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                         </svg>
                                     </div>
                                 </div>
@@ -305,89 +326,44 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="w-full md:w-2/3 h-64 md:h-auto relative">
+                        <div class="w-full md:w-2/3 h-full relative flex items-end">
                             <div id="previsao-chart" class="w-full h-full"></div>
                         </div>
                     </div>
                 </div>
 
-                <div
-                    class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col items-center order-4">
-                    <h2 class="text-lg font-semibold text-gray-700 mb-2">Uso de Disco Atual</h2>
-                    <div id="uso-disco-chart" class="flex-1 w-full"></div>
-                    <div class="text-center mt-2">
-                        <div class="text-sm text-gray-500">Usado: <span class="font-medium text-gray-700">8.5 TB</span>
+                <!-- Coluna Direita: Uso de Disco Atual (Mantido Horizontal e Ampliado com ajuste de layout) -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-0">Uso de Disco Atual</h2>
+                    
+                    <!-- Alterado para justify-center e gap-6 para aproximar os elementos -->
+                    <div class="flex flex-row items-center justify-center gap-6 flex-1">
+                        <!-- Chart Container (Left) -->
+                        <div class="relative flex-shrink-0">
+                            <div id="uso-disco-chart"></div>
                         </div>
-                        <div class="text-sm text-gray-500">Livre: <span class="font-medium text-gray-700">1.5 TB</span>
+                        
+                        <!-- Info Container (Right) -->
+                        <div class="flex flex-col justify-center space-y-6 text-left">
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center uppercase font-medium">
+                                    <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
+                                    Usado
+                                </div>
+                                <strong class="text-gray-900 block text-4xl">8.5 TB</strong>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500 mb-1 flex items-center uppercase font-medium">
+                                    <span class="w-2 h-2 rounded-full bg-gray-200 mr-2"></span>
+                                    Livre
+                                </div>
+                                <strong class="text-gray-900 block text-4xl">1.5 TB</strong>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-
-                <div class="md:col-span-3 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden order-5">
-                    <h2 class="text-lg font-semibold text-gray-700 p-6">Gerenciamento de Lotes Mensais</h2>
-                    <table class="w-full min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Lote/Mês</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Coletado SPTrans?</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Mês Passado</th>
-                                <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Próxima Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
-                                    2024-09</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-yellow">Aguardando Coleta</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Não</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Enviar até 05/10</td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
-                                    2024-08</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-green">Concluído</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Sim</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Arquivado</td>
-                            </tr>
-                            <tr id="falha-coleta-row">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Lote Mensal
-                                    2024-07</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-red">Falha na Coleta</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="status-badge status-red">Falha na Coleta</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Não</td>
-                                <td
-                                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center space-x-2">
-                                    <span>Reenviar</span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
             </div>
+
         </main>
     </div>
 </body>
@@ -400,36 +376,49 @@
     const selectedText = document.getElementById('selected-text');
     const selectedStatusDot = document.getElementById('selected-status-dot');
 
+    // Variáveis globais para os gráficos para permitir atualização
+    var previsaoChart;
+    // var frotaChart; // Removido pois agora é apenas info textual
+    var progressaoChart;
+    var usoDiscoChart;
+
     const garagens = [
         { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true },
-        { id: 'g1', name: 'Garagem: Capão Redondo', status: 'critical', issue: 'Disco Crítico (98%)' },
-        { id: 'g3', name: 'Garagem: M\'Boi Mirim', status: 'warning', issue: 'Latência Alta' },
+        // Outros itens virão do fetch
     ];
 
     async function buscarGaragens() {
-        let respostaGaragens = await fetch(`/dashDados/listarGaragens/${sessionStorage.ID_EMPRESA}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+        const idEmpresa = sessionStorage.ID_EMPRESA;
 
-        if (!respostaGaragens.ok) {
-            respostaGaragens.text().then((texto) => {
-                console.error(texto);
-            });
-
+        if (!idEmpresa) {
+            console.warn("ID da empresa não encontrado (sessão vazia). Usando apenas garagens de exemplo.");
             return;
         }
 
-        let jsonGaragens = await respostaGaragens.json();
-
-        for (garagem of jsonGaragens) {
-            garagens.push({
-                id: `g${garagem.idGaragem}`,
-                name: `Garagem: ${garagem.nome}`,
-                status: 'normal'
+        try {
+            let respostaGaragens = await fetch(`/dashDados/listarGaragens/${idEmpresa}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
+
+            if (!respostaGaragens.ok) {
+                console.error(await respostaGaragens.text());
+                return;
+            }
+
+            let jsonGaragens = await respostaGaragens.json();
+
+            for (let garagem of jsonGaragens) {
+                garagens.push({
+                    id: `g${garagem.idGaragem}`,
+                    name: `Garagem: ${garagem.nome}`,
+                    status: 'normal'
+                });
+            }
+        } catch (e) {
+            console.error("Erro ao buscar garagens:", e);
         }
     }
 
@@ -497,30 +486,7 @@
         };
 
         overview.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
-
-        if (critical.length > 0) {
-            const header = document.createElement('div');
-            header.className = "px-4 py-1 text-xs font-bold text-red-600 bg-red-50 uppercase tracking-wider mt-1";
-            header.innerText = `⚠️ Atenção Necessária (${critical.length})`;
-            dropdownListContainer.appendChild(header);
-            critical.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
-        }
-
-        if (warning.length > 0) {
-            const header = document.createElement('div');
-            header.className = "px-4 py-1 text-xs font-bold text-yellow-600 bg-yellow-50 uppercase tracking-wider mt-1";
-            header.innerText = `⚠️ Alertas (${warning.length})`;
-            dropdownListContainer.appendChild(header);
-            warning.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
-        }
-
-        if (normal.length > 0) {
-            const header = document.createElement('div');
-            header.className = "px-4 py-1 text-xs font-semibold text-gray-400 bg-gray-50 uppercase tracking-wider mt-1";
-            header.innerText = `✅ Operação Normal (${normal.length})`;
-            dropdownListContainer.appendChild(header);
-            normal.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
-        }
+        normal.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
 
         if (filtered.length === 0) {
             dropdownListContainer.innerHTML = '<div class="p-4 text-center text-sm text-gray-500">Nenhuma garagem encontrada.</div>';
@@ -537,9 +503,7 @@
         else selectedStatusDot.classList.add('bg-blue-500');
 
         dropdownMenu.classList.add('hidden');
-
         searchInput.value = '';
-
         renderList();
 
         console.log(`Garagem selecionada: ${item.id}`);
@@ -594,7 +558,55 @@
             }
 
             let jsonGaragem = await respostaJsonGaragem.json();
-            console.log(jsonGaragem);
+            console.log("Dados recebidos da garagem:", jsonGaragem);
+
+            if (jsonGaragem.history) {
+                const months = Object.keys(jsonGaragem.history).sort();
+                const lastMonthKey = months[months.length - 1];
+                const currentMonthData = jsonGaragem.history[lastMonthKey];
+
+                if (currentMonthData) {
+                    const totalIngested = currentMonthData.summary.totalIngestedGb || 0;
+                    const projection = currentMonthData.summary.projectionGb || 0;
+                    
+                    document.getElementById('kpi-total-coleta').innerText = totalIngested.toFixed(2) + " GB";
+                    document.getElementById('kpi-projecao').innerText = projection.toFixed(2) + " GB";
+
+                    const daysObj = currentMonthData.days || {};
+                    const daysKeys = Object.keys(daysObj).sort((a, b) => parseInt(a) - parseInt(b));
+                    
+                    const labels = daysKeys; 
+                    const dataIngested = daysKeys.map(d => daysObj[d].dailyIngestedGb);
+
+                    const sum = dataIngested.reduce((a, b) => a + b, 0);
+                    const avg = dataIngested.length ? (sum / dataIngested.length) : 0;
+                    document.getElementById('kpi-media-diaria').innerText = avg.toFixed(2) + " GB";
+
+                    if (progressaoChart) {
+                        progressaoChart.updateOptions({
+                            xaxis: { categories: labels }
+                        });
+                        progressaoChart.updateSeries([{
+                            name: 'Mês Atual',
+                            data: dataIngested
+                        }, {
+                            name: 'Mês Passado',
+                            data: [] 
+                        }]);
+                    }
+
+                    if (previsaoChart) {
+                        previsaoChart.updateOptions({
+                            xaxis: { categories: labels }
+                        });
+                        previsaoChart.updateSeries([{
+                            name: 'GB Usado',
+                            data: dataIngested 
+                        }]);
+                    }
+                }
+            }
+
         } catch (e) {
             console.error("Erro ao carregar dados da garagem:", e);
         }
@@ -603,28 +615,20 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         function generateDates() {
-            const dates = [];
-            const today = new Date();
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(today);
-                d.setDate(d.getDate() - i);
-                const day = d.getDate();
-                const month = d.toLocaleString('pt-BR', { month: 'short' }).replace('.', '');
-                dates.push(`${day} ${month}`);
-            }
-            return dates;
+            return ['1', '2', '3', '4', '5'];
         }
 
         const chartDates = generateDates();
 
+        // 1. Chart Previsão
         var previsaoOptions = {
             series: [{
                 name: 'GB Usado',
-                data: [120, 130, 145, 170, 190, 220, 260]
+                data: [0, 0, 0, 0, 0]
             }],
             chart: {
                 type: 'area',
-                height: 250,
+                height: 250, // Altura fixa de volta
                 toolbar: { show: false },
                 zoom: { enabled: false },
                 fontFamily: 'Inter, sans-serif'
@@ -643,50 +647,28 @@
                 curve: 'smooth',
                 width: 3
             },
-            markers: {
-                size: 0,
-                hover: { size: 5 }
-            },
             dataLabels: { enabled: false },
             xaxis: {
                 categories: chartDates,
-                labels: {
-                    show: true,
-                    style: { colors: '#6B7280', fontSize: '12px' }
-                },
+                labels: { show: true, style: { colors: '#6B7280', fontSize: '12px' } },
                 axisBorder: { show: false },
-                axisTicks: { show: false },
-                tooltip: { enabled: false }
+                axisTicks: { show: false }
             },
-            yaxis: {
-                show: true,
-                labels: {
-                    style: { colors: '#6B7280', fontSize: '12px' },
-                    formatter: function (val) { return val + " GB"; }
-                }
-            },
-            grid: {
-                show: true,
-                borderColor: '#f3f4f6',
-                strokeDashArray: 4,
-                padding: { left: 10, right: 0 }
-            },
-            tooltip: {
-                x: { show: true },
-                y: {
-                    formatter: function (val) { return val + " GB" }
-                }
-            }
+            yaxis: { show: true },
+            grid: { show: true, borderColor: '#f3f4f6', strokeDashArray: 4 },
+            tooltip: { y: { formatter: function (val) { return val + " GB" } } }
         };
-        var previsaoChart = new ApexCharts(document.querySelector("#previsao-chart"), previsaoOptions);
+        previsaoChart = new ApexCharts(document.querySelector("#previsao-chart"), previsaoOptions);
         previsaoChart.render();
 
-
+        // 2. Chart Uso Disco (ATUALIZADO: GAUGE FINA + APROXIMAÇÃO)
         var usoDiscoOptions = {
             series: [85],
             chart: {
                 type: 'radialBar',
-                height: 220,
+                height: 350, // Altura significativamente maior
+                width: 300,  // Largura controlada
+                offsetY: 0
             },
             colors: ['#3B82F6'],
             plotOptions: {
@@ -694,22 +676,30 @@
                     startAngle: -135,
                     endAngle: 135,
                     hollow: {
+                        margin: 15,
+                        size: '75%', // Linha mais fina (era 60%, agora 75% aumenta o "buraco")
+                        background: 'transparent',
+                    },
+                    track: {
+                        background: '#F3F4F6',
+                        strokeWidth: '100%',
                         margin: 0,
-                        size: '70%',
-                        background: '#fff',
                     },
                     dataLabels: {
+                        show: true,
                         name: {
+                            offsetY: 24,
                             show: true,
-                            fontSize: '14px',
                             color: '#6B7280',
-                            offsetY: 20
+                            fontSize: '16px',
+                            fontWeight: 600,
                         },
                         value: {
                             offsetY: -10,
-                            fontSize: '30px',
+                            color: '#111827',
+                            fontSize: '36px',
                             fontWeight: 'bold',
-                            color: '#1F2937',
+                            show: true,
                             formatter: function (val) {
                                 return val + "%";
                             }
@@ -717,76 +707,42 @@
                     }
                 }
             },
-            labels: ['Utilizado'],
+            labels: ['Utilizado'], // Texto "Utilizado" dentro do gráfico
             stroke: { lineCap: 'round' }
         };
-        var usoDiscoChart = new ApexCharts(document.querySelector("#uso-disco-chart"), usoDiscoOptions);
+        usoDiscoChart = new ApexCharts(document.querySelector("#uso-disco-chart"), usoDiscoOptions);
         usoDiscoChart.render();
 
-
+        // 3. Chart Progressão
         var progressaoOptions = {
             series: [
-                {
-                    name: 'Mês Atual',
-                    data: [1.2, 1.5, 2.0, 1.8, 2.5, 3.0, 2.8]
-                },
-                {
-                    name: 'Mês Passado',
-                    data: [1.0, 1.3, 1.8, 1.6, 2.2, 2.8, 2.7]
-                }
+                { name: 'Mês Atual', data: [0, 0, 0, 0, 0] },
+                { name: 'Mês Passado', data: [0, 0, 0, 0, 0] }
             ],
             chart: {
-                height: 250,
+                height: 250, // Restaurado altura fixa conforme pedido
                 type: 'area',
                 toolbar: { show: false },
                 zoom: { enabled: false }
             },
             colors: ['#3B82F6', '#EF4444'],
             dataLabels: { enabled: false },
-            stroke: {
-                curve: 'smooth',
-                width: 3,
-                dashArray: [0, 5]
-            },
+            stroke: { curve: 'smooth', width: 3, dashArray: [0, 5] },
             fill: {
                 type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.5,
-                    opacityTo: 0.1,
-                    stops: [0, 90, 100]
-                }
-            },
-            markers: {
-                size: 3,
-                hover: { size: 6 }
+                gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1, stops: [0, 90, 100] }
             },
             xaxis: {
-                categories: ['1', '5', '10', '16', '21', '26', '31'],
-                title: { text: 'Dia', style: { fontSize: '10px', color: '#6B7280' } },
+                categories: chartDates,
+                labels: { style: { colors: '#6B7280', fontSize: '10px' } },
                 axisBorder: { show: false },
                 axisTicks: { show: false }
             },
-            yaxis: {
-                show: true,
-                labels: {
-                    style: { colors: '#6B7280', fontSize: '10px' }
-                }
-            },
-            legend: {
-                show: true,
-                position: 'top',
-                horizontalAlign: 'right',
-                fontSize: '10px',
-                markers: { width: 8, height: 8 }
-            },
-            grid: {
-                borderColor: '#E5E7EB',
-                strokeDashArray: 4,
-                padding: { top: 0, bottom: 0, left: 10, right: 0 }
-            }
+            yaxis: { show: true },
+            legend: { show: true, position: 'top', horizontalAlign: 'right' },
+            grid: { borderColor: '#E5E7EB', strokeDashArray: 4 }
         };
-        var progressaoChart = new ApexCharts(document.querySelector("#progressao-chart"), progressaoOptions);
+        progressaoChart = new ApexCharts(document.querySelector("#progressao-chart"), progressaoOptions);
         progressaoChart.render();
 
     });
