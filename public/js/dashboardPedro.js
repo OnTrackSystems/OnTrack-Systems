@@ -34,21 +34,49 @@ async function atualizarPeriodo(periodo) {
 
 function renderizarKPIs(dados) {
     const kpis = dados.kpis_resumo;
+    const lista = dados.timeseries;
 
     // 1. Volume Total: O JSON vem em MB convertemos para GB
     const totalGB = (kpis.mb_total_enviado_periodo / 1024);
     document.getElementById('kpiTotalTransferido').innerText = totalGB.toFixed(2) + " GB";
 
-    // 2. Variação: O JSON atual NÃO possui campo de variação percentual.
-    // Deixaremos estático ou oculto para não quebrar a tela.
-    document.getElementById('kpiValorVariacao').innerText = "-";
-    document.getElementById('kpiPercentualVariacao').innerText = "Dado não disponível no JSON";
+    // 2. Variação: Comparação com período anterior (se existir no JSON)
+    // Vamos supor que o JSON tenha 'mb_total_enviado_periodo_anterior'
+    // Se não tiver, tentamos calcular ou mostramos "-"
     
-    // 3. Alertas: Usaremos 'onibus_garagem_pico' como métrica de exemplo 
-    // ou deixamos estático se não houver campo de "alertas"
-    // Aqui estou simulando: se CPU > 80% na média, é crítico.
-    const alertas = kpis.cpu_uso_medio > 80 ? "ALTO" : "Normal";
-    document.getElementById('kpiAlertasCriticos').innerText = kpis.onibus_garagem_pico + " (Pico Ônibus)";
+    let variacaoHTML = "-";
+    let valorVariacaoHTML = "-";
+
+    if (kpis.mb_total_enviado_periodo_anterior) {
+        const anteriorGB = kpis.mb_total_enviado_periodo_anterior / 1024;
+        const diferenca = totalGB - anteriorGB;
+        const percentual = anteriorGB > 0 ? ((diferenca / anteriorGB) * 100) : 0;
+
+        const sinal = diferenca >= 0 ? "+" : "";
+        const cor = diferenca >= 0 ? "text-success" : "text-danger";
+        
+        valorVariacaoHTML = `${sinal}${diferenca.toFixed(2)} GB`;
+        variacaoHTML = `<span class="${cor}">${sinal}${percentual.toFixed(1)}%</span> em relação ao período anterior`;
+    } else {
+        // Fallback se não tiver dados anteriores
+        variacaoHTML = "Dados anteriores não disponíveis";
+    }
+
+    document.getElementById('kpiValorVariacao').innerText = valorVariacaoHTML;
+    document.getElementById('kpiPercentualVariacao').innerHTML = variacaoHTML;
+    
+    // 3. Última Atualização
+    // Pega o último timestamp da lista
+    if (lista && lista.length > 0) {
+        const ultimoDado = lista[lista.length - 1];
+        const dataObj = new Date(ultimoDado.timestamp);
+        const dataFormatada = dataObj.toLocaleString('pt-BR', { 
+            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+        });
+        document.getElementById('kpiUltimaAtualizacao').innerText = dataFormatada;
+    } else {
+        document.getElementById('kpiUltimaAtualizacao').innerText = "--/-- --:--";
+    }
 }
 
 function renderizarGraficos(dados, periodo) {
@@ -90,7 +118,17 @@ function renderizarGraficos(dados, periodo) {
         },
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 2 },
-        xaxis: { categories: labels },
+        xaxis: { 
+            categories: labels,
+            labels: {
+                rotate: -45,
+                rotateAlways: false,
+                hideOverlappingLabels: true,
+                style: {
+                    fontSize: '12px'
+                }
+            }
+        },
         yaxis: {
             title: { text: 'Megabytes (MB)' }
         },
@@ -181,7 +219,7 @@ function renderizarGraficos(dados, periodo) {
         xaxis: {
             categories: ['Baixo (<10MB)', 'Médio (10-20MB)', 'Alto (20-30MB)', 'Pico (>30MB)'],
         },
-        colors: ['#28A745'] // Verde
+        colors: ['#135bec'] // Verde
     };
 
     if (distribuicaoChart) {
@@ -194,7 +232,7 @@ function renderizarGraficos(dados, periodo) {
 
 // Funções visuais (Botões)
 function atualizarBotoesAtivos(periodo) {
-    const botoes = ['btn-kpi-24h', 'btn-kpi-7d', 'btn-kpi-30d', 'btn-24h', 'btn-7d', 'btn-30d'];
+    const botoes = ['btn-kpi-24h', 'btn-kpi-7d', 'btn-kpi-30d'];
     botoes.forEach(btnId => {
         const btn = document.getElementById(btnId);
         if(btn) {
@@ -204,7 +242,7 @@ function atualizarBotoesAtivos(periodo) {
     });
     
     // Ativa os botões correspondentes
-    const idsAtivos = [`btn-kpi-${periodo}`, `btn-${periodo}`];
+    const idsAtivos = [`btn-kpi-${periodo}`];
     idsAtivos.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
