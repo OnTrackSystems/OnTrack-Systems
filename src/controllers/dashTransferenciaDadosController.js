@@ -1,4 +1,5 @@
 let dashDadosModel = require("../models/dashDadosModel");
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 function listarGaragens(req, res) {
     let fkEmpresa = req.params.fkEmpresa;
@@ -8,11 +9,10 @@ function listarGaragens(req, res) {
     });
 }
 
-const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-
 async function getJsonDashDados(req, res){
     let idGaragem = req.params.idGaragem;
     
+    // Se o período não for informado, o padrão vai ser 24h
     let periodo = req.query.periodo || '24h'; 
 
     const s3Client = new S3Client({
@@ -39,7 +39,7 @@ async function getJsonDashDados(req, res){
 
     } catch (error) {
         console.error("Erro ao buscar objeto no S3:", error);
-    
+        
         // Tratamento de erro caso o arquivo não exista
         if (error.name === 'NoSuchKey') {
             return res.status(404).json({ message: "Arquivo JSON não encontrado para esta garagem." });
