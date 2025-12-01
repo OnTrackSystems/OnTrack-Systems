@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>OnTrack - Dashboard Operacional</title>
+    <link rel="stylesheet" href="./css/navbar.css">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
@@ -12,6 +13,9 @@
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     <link rel="icon" href="ontrack_icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
     <style>
         .material-symbols-outlined {
             font-variation-settings:
@@ -47,129 +51,132 @@
 <body class="font-display bg-background-light dark:bg-background-dark">
     <div class="relative flex h-auto min-h-screen w-full flex-col">
         <div class="layout-container flex h-full grow flex-col">
-            <!-- TopNavBar Component -->
-            <header
-                class="sticky top-0 z-10 flex items-center justify-center border-b border-white/10 bg-background-light/80 px-4 py-3 backdrop-blur-sm dark:bg-background-dark/80 md:px-8">
-                <div class="flex w-full max-w-7xl items-center justify-between">
-                    <div class="flex items-center gap-4 text-slate-900 dark:text-white">
-                        <div class="size-6 text-primary">
-                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z"
-                                    fill="currentColor" fill-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">OnTrack</h2>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-2">
-                            <div class="h-2.5 w-2.5 rounded-full bg-success"></div>
-                            <span class="hidden text-sm font-medium text-slate-600 dark:text-slate-400 sm:block">Sistema
-                                Operacional</span>
-                        </div>
-                        <button
-                            class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-slate-200 text-slate-700 dark:bg-white/10 dark:text-white">
-                            <span class="material-symbols-outlined text-xl">notifications</span>
-                        </button>
-                    </div>
-                </div>
-            </header>
-            <main class="flex flex-1 justify-center p-4 md:p-8">
+
+            <div id="sidebar-container"></div>
+
+            <main id ="main-content" class="flex flex-1 justify-center p-4 md:p-8">
                 <div class="layout-content-container flex w-full flex-col gap-6 px-2 md:px-4">
 
-        <!-- KPI's e botões de mudança de período -->
-        <div class="flex items-center justify-between mb-6">
-            <h2 class="text-lg font-semibold">Resumo de Desempenho</h2>
-            <div class="flex gap-2">
-                <button onclick="atualizarPeriodo('24h')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-kpi-24h">24h</button>
-                <button onclick="atualizarPeriodo('7d')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-kpi-7d">7 dias</button>
-                <button onclick="atualizarPeriodo('30d')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-kpi-30d">30 dias</button>
-            </div>
-        </div>
-        <div class="grid grid-cols-3 gap-4 mb-6">
+                    <!-- KPI's e botões de mudança de período -->
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-lg font-semibold">Resumo de Desempenho</h2>
+                        <div class="flex gap-2">
+                            <button onclick="atualizarPeriodo('24h')"
+                                class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                id="btn-kpi-24h">24h</button>
+                            <button onclick="atualizarPeriodo('7d')"
+                                class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                id="btn-kpi-7d">7 dias</button>
+                            <button onclick="atualizarPeriodo('30d')"
+                                class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                id="btn-kpi-30d">30 dias</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
 
-            <!-- KPI: Volume Total Transferido -->
-            <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
-                <span class="text-gray-500 text-sm font-medium">Volume Total Transferido</span>
-                <span id="kpiTotalTransferido" class="text-3xl font-bold text-gray-900 mt-1">--</span>
-                <span id="kpiVariacaoTransferido" class="text-sm font-medium mt-1">--</span>
-            </div>
+                        <!-- KPI: Volume Total Transferido -->
+                        <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium">Volume Total Transferido</span>
+                            <span id="kpiTotalTransferido" class="text-3xl font-bold text-gray-900 mt-1">--</span>
+                            <span id="kpiVariacaoTransferido" class="text-sm font-medium mt-1">--</span>
+                        </div>
 
-            <!-- KPI: Variação Percentual -->
-            <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
-                <span class="text-gray-500 text-sm font-medium">Variação de Volume</span>
-                <span id="kpiValorVariacao" class="text-3xl font-bold text-gray-900 mt-1">--</span>
-                <span id="kpiPercentualVariacao" class="text-sm font-medium mt-1">--</span>
-            </div>
+                        <!-- KPI: Variação Percentual -->
+                        <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium">Variação de Volume</span>
+                            <span id="kpiValorVariacao" class="text-3xl font-bold text-gray-900 mt-1">--</span>
+                            <span id="kpiPercentualVariacao" class="text-sm font-medium mt-1">--</span>
+                        </div>
 
-            <!-- KPI: Alertas Críticos -->
-            <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
-                <span class="text-gray-500 text-sm font-medium">Alertas Críticos</span>
-                <span id="kpiAlertasCriticos" class="text-3xl font-bold text-gray-900 mt-1">--</span>
-                <span class="text-gray-500 text-sm mt-1">Últimos eventos críticos detectados</span>
-            </div>
+                        <!-- KPI: Alertas Críticos -->
+                        <div class="bg-white rounded-xl shadow-sm p-5 flex flex-col">
+                            <span class="text-gray-500 text-sm font-medium">Alertas Críticos</span>
+                            <span id="kpiAlertasCriticos" class="text-3xl font-bold text-gray-900 mt-1">--</span>
+                            <span class="text-gray-500 text-sm mt-1">Últimos eventos críticos detectados</span>
+                        </div>
 
-        </div>
+                    </div>
 
 
                     <!-- Main Grid 2x2 -->
                     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                        
+
                         <!-- Chart: Throughput History -->
-                        <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col min-h-[350px] lg:min-h-[400px]">
+                        <div
+                            class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col min-h-[350px] lg:min-h-[400px]">
                             <div class="flex items-center justify-between mb-4">
                                 <h2 class="text-lg font-semibold">Histórico de Throughput</h2>
                                 <div class="flex gap-2">
-                                    <button onclick="atualizarGrafico('24h')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-24h">24h</button>
-                                    <button onclick="atualizarGrafico('7d')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-7d">7 dias</button>
-                                    <button onclick="atualizarGrafico('30d')" class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors" id="btn-30d">30 dias</button>
+                                    <button onclick="atualizarGrafico('24h')"
+                                        class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                        id="btn-24h">24h</button>
+                                    <button onclick="atualizarGrafico('7d')"
+                                        class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                        id="btn-7d">7 dias</button>
+                                    <button onclick="atualizarGrafico('30d')"
+                                        class="px-3 py-1 text-sm font-medium rounded-lg bg-slate-100 hover:bg-primary hover:text-white transition-colors"
+                                        id="btn-30d">30 dias</button>
                                 </div>
                             </div>
                             <div id="chart-throughput" class="w-full flex-1"></div>
                         </div>
 
                         <!-- Alerts Panel -->
-                        <div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px] overflow-y-auto">
+                        <div
+                            class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px] overflow-y-auto">
                             <p class="text-base font-medium text-slate-900 dark:text-white">Alertas de Instabilidade</p>
                             <div class="flex flex-col gap-3">
-                                <div class="flex items-center gap-4 rounded-lg border border-warning/50 bg-warning/10 p-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning">
+                                <div
+                                    class="flex items-center gap-4 rounded-lg border border-warning/50 bg-warning/10 p-3">
+                                    <div
+                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning">
                                         <span class="material-symbols-outlined">network_check</span>
                                     </div>
                                     <div class="flex flex-col">
-                                        <p class="font-semibold text-slate-900 dark:text-white">Queda Brusca de Throughput</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Detectada queda de 40% no envio às 14:32.</p>
+                                        <p class="font-semibold text-slate-900 dark:text-white">Queda Brusca de
+                                            Throughput</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400">Detectada queda de 40% no
+                                            envio às 14:32.</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4 rounded-lg border border-danger/50 bg-danger/10 p-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-danger/20 text-danger">
+                                <div
+                                    class="flex items-center gap-4 rounded-lg border border-danger/50 bg-danger/10 p-3">
+                                    <div
+                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-danger/20 text-danger">
                                         <span class="material-symbols-outlined">error</span>
                                     </div>
                                     <div class="flex flex-col">
                                         <p class="font-semibold text-slate-900 dark:text-white">Zero Throughput</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Transferência interrompida por 5 minutos.</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400">Transferência interrompida
+                                            por 5 minutos.</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-100 p-3 dark:border-slate-700 dark:bg-slate-800">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/20 text-success">
+                                <div
+                                    class="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-100 p-3 dark:border-slate-700 dark:bg-slate-800">
+                                    <div
+                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/20 text-success">
                                         <span class="material-symbols-outlined">task_alt</span>
                                     </div>
                                     <div class="flex flex-col">
                                         <p class="font-semibold text-slate-900 dark:text-white">Conexão Restaurada</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Estabilidade normalizada às 14:45.</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400">Estabilidade normalizada
+                                            às 14:45.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Chart: Correlation -->
-                        <div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px]">
-                            <p class="text-base font-medium text-slate-900 dark:text-white">Correlação: Throughput vs. Recursos do Servidor</p>
+                        <div
+                            class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px]">
+                            <p class="text-base font-medium text-slate-900 dark:text-white">Correlação: Throughput vs.
+                                Recursos do Servidor</p>
                             <div id="chart-correlation" class="w-full flex-1"></div>
                         </div>
 
                         <div class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 
                             dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px]">
-                            
+
                             <p class="text-base font-medium text-slate-900 dark:text-white">
                                 Distribuição de Throughput (MB/s)
                             </p>
@@ -179,7 +186,7 @@
 
                     </div>
                 </div>
-                
+
             </main>
         </div>
     </div>
@@ -188,5 +195,6 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="js/dashboardPedro.js"></script>
 </body>
+<script src="./js/navbar.js"></script>
 
 </html>
