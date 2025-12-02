@@ -52,6 +52,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <span class="nav-link-text">Transferência de Dados</span>
                             </a>
                         </li>
+                        <li>
+                            <a class="nav-link" href="dashboardRealTimeBruno.html" style="padding-left: 3.5rem; font-size: 0.9em;">
+                                <span class="nav-link-text">Componentes</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
