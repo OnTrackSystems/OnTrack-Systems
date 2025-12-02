@@ -12,7 +12,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 async function JsonPreditiva(req, res) {
     let idGaragem = req.query.idGaragem;
-    
+
     let arquivoKey = "dashboard_data.json";
     if (idGaragem && idGaragem !== 'all') {
         arquivoKey = `dashboard_${idGaragem}.json`;
@@ -23,9 +23,9 @@ async function JsonPreditiva(req, res) {
     const s3Client = new S3Client({
         region: "us-east-1",
         credentials: {
-            accessKeyId:"",
-            secretAccessKey:"",
-            sessionToken:""
+            accessKeyId: "",
+            secretAccessKey: "",
+            sessionToken: ""
         }
     });
 
@@ -57,4 +57,4 @@ async function JsonPreditiva(req, res) {
 module.exports = {
     listarGaragens,
     JsonPreditiva
-}
+}                                                                                                                                                                   
