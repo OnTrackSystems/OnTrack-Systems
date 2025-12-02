@@ -1,8 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // =========================================================
-    // BLOCO 1: DADOS ESTÁTICOS (Garagens)
-    // =========================================================
     const csvContent = `stop_id,stop_name,stop_lat,stop_lon
 18849,Vila Madalena,-23.546498,-46.691141
 18852,Jabaquara,-23.646033,-46.641028
@@ -471,7 +468,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <hr style="border: 0; border-top: 1px solid #eee; margin: 10px 0;">
                     <p style="white-space: pre-wrap;">${descricao}</p>
                     <br>
-                    <p class="status-text-green">O sistema sugeriu correções com base no tipo de erro.</p>
                 `;
 
                 // exibe o modal
@@ -486,10 +482,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // apex
     function renderizarGrafico(atuais) {
+
         function simularPassado(valorAtual) {
-            if (valorAtual === 0) return Math.floor(Math.random() * 3);
-            return Math.floor(valorAtual * (0.7 + Math.random() * 0.6));
-        }
+    if (valorAtual === 0) return Math.floor(Math.random() * 4) + 2;
+
+    return Math.floor(valorAtual * (1.2 + Math.random() * 0.5));
+}
 
         let anteriores = {
             cpu: simularPassado(atuais.cpu),
