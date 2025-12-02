@@ -1,5 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    // =========================================================
+    // BLOCO 1: DADOS ESTÁTICOS (Garagens)
+    // =========================================================
     const csvContent = `stop_id,stop_name,stop_lat,stop_lon
 18849,Vila Madalena,-23.546498,-46.691141
 18852,Jabaquara,-23.646033,-46.641028
@@ -277,30 +280,61 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
+        // --- CÁLCULO MÉDIA SEMANAL (TOTAL) ---
+        // Aqui somamos os contadores da semana atual (calculados no loop acima)
+        // e atualizamos o elemento no DOM.
+        const elementoMediaSemanal = document.getElementById("mediaSemanal");
+        if(elementoMediaSemanal) {
+            const totalSemanal = atuais.cpu + atuais.ram + atuais.disco;
+            elementoMediaSemanal.innerHTML = totalSemanal;
+        }
+
         // chamando a funcao pra renderizar aplicando os filtros
         renderizarGrafico(atuais);
         aplicarFiltros();
     }
 
     // atualizando a tabela para mostrar os chamados que estao abertos
-    function atualizarPainelSeveridade(jsonDataAbertos) {
+    function atualizarPaineisFixos(jsonDataAbertos) {
         if (!jsonDataAbertos || !jsonDataAbertos.dados) return;
 
         let contadorCritico = 0;
         let contadorMedio = 0;
+        let countCat = { cpu: 0, ram: 0, disco: 0 };
 
         jsonDataAbertos.dados.forEach(element => {
+            
             if (element.prioridade === "Highest" || element.prioridade === "High") {
                 contadorCritico++;
             } else if (element.prioridade === "Medium") {
                 contadorMedio++;
             }
+
+            // Categorias
+            if (element.titulo.includes("CPU")) countCat.cpu++;
+            else if (element.titulo.includes("RAM")) countCat.ram++;
+            else if (element.titulo.includes("Disco")) countCat.disco++;
         });
 
-        // atualiza as bolinhas de contador
+        // atualiza bolinha contador
         if(document.getElementById("bolaCrit")) document.getElementById("bolaCrit").innerHTML = contadorCritico;
         if(document.getElementById("bolaMed")) document.getElementById("bolaMed").innerHTML = contadorMedio;
         if(document.getElementById("indicadorCritico")) document.getElementById("indicadorCritico").innerHTML = contadorCritico;
+
+        // atualiza as barras
+        const totalAbertos = jsonDataAbertos.dados.length || 1;
+        const updateCatUI = (type, count) => {
+
+            // calc porcentagem
+            const pct = Math.round((count / totalAbertos) * 100);
+            if(document.getElementById(`qtd${type}`)) document.getElementById(`qtd${type}`).innerText = count;
+            if(document.getElementById(`pct${type}`)) document.getElementById(`pct${type}`).innerText = pct + "%";
+            if(document.getElementById(`bar${type}`)) document.getElementById(`bar${type}`).style.width = pct + "%";
+        };
+
+        updateCatUI('Cpu', countCat.cpu);
+        updateCatUI('Ram', countCat.ram);
+        updateCatUI('Disco', countCat.disco);
     }
 
     // fetch dos dados gerais
@@ -316,8 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch("/chamados/getCallsFromBucketOpen/").then(res => res.json()).then(data => {
         dadosCache.abertos = data;
         
-       
-        atualizarPainelSeveridade(data);
+        // Chamada corrigida aqui (usando o nome correto da função definida acima)
+        atualizarPaineisFixos(data);
 
         // vendo se o filtro for "aberto" se for renderiza com os dados dos chamados abertos
         if(filtroDataset.value === 'abertos') {
