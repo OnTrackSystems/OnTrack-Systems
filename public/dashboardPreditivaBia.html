@@ -1,17 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OnTrack - Visão Global</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="./css/navbar.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.2/dist/apexcharts.min.js"></script>
+
+    <link rel="stylesheet" href="./css/navbar.css">
+    <link rel="icon" href="./assets/imgs/mini_logo_icon.png">
 
     <style>
         :root {
@@ -31,6 +36,7 @@
             overflow-x: hidden;
         }
 
+        /* Sidebar Styles */
         #sidebar {
             position: fixed;
             top: 0;
@@ -56,8 +62,10 @@
         .nav-link-text { opacity: 1; transition: opacity 0.2s ease; }
 
         body.sidebar-collapsed #sidebar { width: var(--sidebar-collapsed-width); }
-        body.sidebar-collapsed .logo-text, body.sidebar-collapsed .nav-link-text { opacity: 0; width: 0; overflow: hidden; pointer-events: none; }
+        body.sidebar-collapsed .logo-text,
+        body.sidebar-collapsed .nav-link-text { opacity: 0; width: 0; overflow: hidden; pointer-events: none; }
 
+        /* Navbar Styles */
         .navbar {
             background-color: #ffffff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -74,10 +82,12 @@
             padding-left: calc(var(--sidebar-width) + 1.5rem);
             transition: padding-left 0.3s ease-in-out;
         }
+
         body.sidebar-collapsed .navbar { padding-left: calc(var(--sidebar-collapsed-width) + 1.5rem); }
         #sidebar-toggle { background: none; border: none; cursor: pointer; color: #333; padding: 5px; }
         .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; }
 
+        /* Main Content */
         #main-content {
             padding-top: calc(var(--navbar-height) + 20px);
             padding-left: var(--sidebar-width);
@@ -86,6 +96,7 @@
             min-height: 100vh;
             background-color: #f8fafc;
         }
+
         body.sidebar-collapsed #main-content { padding-left: var(--sidebar-collapsed-width); }
 
         @media (max-width: 992px) {
@@ -99,190 +110,190 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #f1f5f9; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .apexcharts-tooltip { background: #fff; border-color: #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         
         .btn-active { background-color: #e2e8f0 !important; color: #1e293b !important; font-weight: 700; }
         #garage-dropdown { z-index: 9999; }
     </style>
 </head>
-<div id="sidebar-container"></div>
-<nav class="navbar">
-    <div style="display: flex; align-items: center;">
-        <button class="btn" type="button" id="sidebar-toggle">
-            <i class="fas fa-bars fa-lg"></i>
-        </button>
-        <h1 class="text-xl font-bold text-slate-800 ml-4 hidden sm:block">Visão Global da Infraestrutura</h1>
-    </div>
 
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <a href="#" style="color: #64748b;"><i class="fas fa-bell fa-lg"></i></a>
-        <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar">
-    </div>
-</nav>
-
-<div id="main-content">
-    <div class="p-6 md:p-8">
-
-        <div id="status-msg" class="hidden mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-sm text-sm font-medium"></div>
-
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">Monitoramento em Tempo Real</h2>
-                <p class="text-slate-500 text-sm">Última atualização: Hoje, <span id="last-update">--:--</span></p>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="relative group">
-                    <button onclick="toggleDropdown()" 
-                        class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 shadow-sm">
-                        <i data-lucide="globe" class="w-4 h-4 text-indigo-500"></i>
-                        <span id="garagem-label">Todas as Garagens</span>
-                        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
-                    </button>
-                    <div id="garage-dropdown" class="hidden absolute top-full right-0 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-                        <div onclick="selecionarGaragem('all', 'Todas as Garagens')" class="px-4 py-3 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 font-medium">Todas as Garagens</div>
-                        <div id="lista-garagens-dropdown"></div>
-                    </div>
-                </div>
-
-                <div class="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
-                    <button id="btn-24h" onclick="mudarPeriodo('24h')"
-                        class="px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-100 text-slate-800 btn-active">24h</button>
-                    <button id="btn-7d" onclick="mudarPeriodo('7d')"
-                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-500 hover:bg-slate-50">7d</button>
-                    <button id="btn-30d" onclick="mudarPeriodo('30d')"
-                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-500 hover:bg-slate-50">30d</button>
-                </div>
-                <button onclick="puxarJson(garagemSelecionada)" class="p-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors">
-                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                </button>
-            </div>
+<body>
+    <div id="sidebar-container"></div>
+    
+    <nav class="navbar">
+        <div style="display: flex; align-items: center;">
+            <button class="btn" type="button" id="sidebar-toggle">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <h1 class="text-xl font-bold text-slate-800 ml-4 hidden sm:block">Análise de tendências e janela de risco</h1>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium">Probabilidade de Falha</p>
-                        <h3 id="kpi-risco" class="text-3xl font-bold text-slate-800 mt-1">--%</h3>
-                    </div>
-                    <div class="p-2 bg-rose-50 rounded-lg text-rose-600"><i data-lucide="activity" class="w-6 h-6"></i></div>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span id="kpi-label-risco" class="text-slate-400 text-xs">Média Global (Pico)</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium">Horário de Pico</p>
-                        <h3 id="kpi-pico" class="text-3xl font-bold text-slate-800 mt-1">--:--</h3>
-                    </div>
-                    <div class="p-2 bg-amber-50 rounded-lg text-amber-600"><i data-lucide="clock" class="w-6 h-6"></i></div>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="text-slate-400 text-xs">Stress sistêmico</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-slate-500 text-sm font-medium">Uso de CPU (Média)</p>
-                        <h3 id="kpi-cpu" class="text-3xl font-bold text-slate-800 mt-1">--%</h3>
-                    </div>
-                    <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600"><i data-lucide="cpu" class="w-6 h-6"></i></div>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span class="text-slate-400 text-xs">Previsão no pico</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p id="label-kpi-alertas" class="text-slate-500 text-sm font-medium">Garagens em Alerta</p>
-                        <h3 id="kpi-alertas" class="text-3xl font-bold text-slate-800 mt-1">--</h3>
-                    </div>
-                    <div class="p-2 bg-red-50 rounded-lg text-red-600"><i data-lucide="siren" class="w-6 h-6"></i></div>
-                </div>
-                <div class="flex items-center text-sm">
-                    <span id="sub-kpi-alertas" class="text-slate-400 text-xs">Ação Necessária</span>
-                </div>
-            </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="#" style="color: #64748b;"><i class="fas fa-bell fa-lg"></i></a>
+            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar">
         </div>
+    </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <div id="main-content">
+        <div class="p-6 md:p-8">
 
-            <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm min-w-0 flex flex-col">
-                <div class="p-6 border-b border-slate-100">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                                <i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i>
-                                <span id="titulo-grafico">Risco de Falha vs. Carga (Global)</span>
-                            </h2>
-                            <p class="text-sm text-slate-500 mt-1">Correlação entre processamento e probabilidade de falha.</p>
+            <div id="status-msg" class="hidden mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow-sm text-sm font-medium"></div>
+
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800">Painel de Insights e Tendências</h2>
+                    <p class="text-slate-500 text-sm">Última atualização: Hoje, <span id="last-update">--:--</span></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    
+                    <div class="relative group">
+                        <button onclick="toggleDropdown()"
+                            class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors text-sm font-medium text-slate-700 shadow-sm">
+                            <i data-lucide="globe" class="w-4 h-4 text-indigo-500"></i>
+                            <span id="garagem-label">Todas as Garagens</span>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                        </button>
+                        <div id="garage-dropdown" class="hidden absolute top-full right-0 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
+                            <div onclick="selecionarGaragem('all', 'Todas as Garagens')" class="px-4 py-3 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 font-medium">Todas as Garagens</div>
+                            <div id="lista-garagens-dropdown"></div>
                         </div>
                     </div>
-                </div>
-                <div class="flex-1 p-4 relative min-h-[350px]">
-                    <div id="correlationChart" class="absolute inset-0 w-full h-full"></div>
+
+                    <div class="flex bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+                        <button id="btn-24h" onclick="mudarPeriodo('24h')" class="px-3 py-1.5 text-xs font-semibold rounded-md bg-slate-100 text-slate-800 btn-active">24h</button>
+                        <button id="btn-7d" onclick="mudarPeriodo('7d')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-500 hover:bg-slate-50">7d</button>
+                        <button id="btn-30d" onclick="mudarPeriodo('30d')" class="px-3 py-1.5 text-xs font-semibold rounded-md text-slate-500 hover:bg-slate-50">30d</button>
+                    </div>
+
+                    <button onclick="puxarJson(garagemSelecionada)" class="p-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 shadow-sm transition-colors">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden min-w-0 h-[450px]">
-                <div class="p-5 border-b border-slate-100 bg-slate-50">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="list-ordered" class="w-5 h-5 text-rose-600"></i>
-                        Garagens Críticas
-                    </h3>
-                    <p class="text-xs text-slate-500 mt-1">Clique para ver detalhes específicos</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Probabilidade de Falha</p>
+                            <h3 id="kpi-risco" class="text-3xl font-bold text-slate-800 mt-1">--%</h3>
+                        </div>
+                        <div class="p-2 bg-rose-50 rounded-lg text-rose-600"><i data-lucide="activity" class="w-6 h-6"></i></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span id="kpi-label-risco" class="text-slate-400 text-xs">Média Global (Pico)</span>
+                    </div>
                 </div>
-                <div id="ranking-list" class="flex-1 overflow-y-auto p-2 space-y-2 custom-scroll">
-                    <p class="text-center text-gray-400 mt-10">Carregando dados...</p>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Horário de Pico</p>
+                            <h3 id="kpi-pico" class="text-3xl font-bold text-slate-800 mt-1">--:--</h3>
+                        </div>
+                        <div class="p-2 bg-amber-50 rounded-lg text-amber-600"><i data-lucide="clock" class="w-6 h-6"></i></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span class="text-slate-400 text-xs">Stress sistêmico</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-slate-500 text-sm font-medium">Uso de CPU (Média)</p>
+                            <h3 id="kpi-cpu" class="text-3xl font-bold text-slate-800 mt-1">--%</h3>
+                        </div>
+                        <div class="p-2 bg-indigo-50 rounded-lg text-indigo-600"><i data-lucide="cpu" class="w-6 h-6"></i></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span class="text-slate-400 text-xs">Previsão no pico</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p id="label-kpi-alertas" class="text-slate-500 text-sm font-medium">Garagens em Alerta</p>
+                            <h3 id="kpi-alertas" class="text-3xl font-bold text-slate-800 mt-1">--</h3>
+                        </div>
+                        <div class="p-2 bg-red-50 rounded-lg text-red-600"><i data-lucide="siren" class="w-6 h-6"></i></div>
+                    </div>
+                    <div class="flex items-center text-sm">
+                        <span id="sub-kpi-alertas" class="text-slate-400 text-xs">Ação Necessária</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm min-w-0 flex flex-col">
+                    <div class="p-6 border-b border-slate-100">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i>
+                                    <span id="titulo-grafico">Risco de Falha vs. Carga (Global)</span>
+                                </h2>
+                                <p class="text-sm text-slate-500 mt-1">Correlação entre processamento e probabilidade de falha.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 p-4 relative min-h-[350px]">
+                        <div id="correlationChart" class="absolute inset-0 w-full h-full"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col overflow-hidden min-w-0 h-[450px]">
+                    <div class="p-5 border-b border-slate-100 bg-slate-50">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="list-ordered" class="w-5 h-5 text-rose-600"></i>
+                            Garagens Críticas
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-1">Clique para ver detalhes específicos</p>
+                    </div>
+                    <div id="ranking-list" class="flex-1 overflow-y-auto p-2 space-y-2 custom-scroll">
+                        <p class="text-center text-gray-400 mt-10">Carregando dados...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm min-w-0 flex flex-col">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4.5 h-4.5 text-indigo-600"></i>
+                            Média de CPU (Previsão)
+                        </h3>
+                        <div class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded"></div>
+                    </div>
+                    <div class="flex-1 p-4 relative min-h-[250px]">
+                        <div id="cpuChart" class="absolute inset-0 w-full h-full"></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col min-w-0">
+                    <div class="p-6 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4.5 h-4.5 text-slate-600"></i>
+                            Janela de Risco Sistêmico (24h)
+                        </h3>
+                    </div>
+                    <div id="heatmap-strip" class="flex-1 p-6 flex flex-col justify-center"></div>
                 </div>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm min-w-0 flex flex-col">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="cpu" class="w-4.5 h-4.5 text-indigo-600"></i>
-                        Média de CPU (Previsão)
-                    </h3>
-                    <div class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded"></div>
-                </div>
-                <div class="flex-1 p-4 relative min-h-[250px]">
-                    <div id="cpuChart" class="absolute inset-0 w-full h-full"></div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col min-w-0">
-                <div class="p-6 border-b border-slate-100">
-                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="clock" class="w-4.5 h-4.5 text-slate-600"></i>
-                        Janela de Risco Sistêmico (24h)
-                    </h3>
-                </div>
-                <div id="heatmap-strip" class="flex-1 p-6 flex flex-col justify-center"></div>
-            </div>
-        </div>
-
     </div>
-</div>
 
-<script src="./js/navbar.js"></script>
-<script>
+    <script src="./js/navbar.js"></script>
+    <script>
     lucide.createIcons();
 
-    let dadosCompletos = null;
+    let dadosCompletos = null;     
+    let listaGaragensOficial = [];  
+    
     let periodoSelecionado = '24h';
     let garagemSelecionada = 'all';
     let chartCorrelationInst = null;
@@ -298,10 +309,30 @@
             }
         }
 
+        carregarListaGaragens();
         puxarJson('all'); 
     });
 
     function desconectar() { sessionStorage.clear(); window.location = "index.html"; }
+
+    async function carregarListaGaragens() {
+        const idEmpresa = sessionStorage.ID_EMPRESA || 1;
+        try {
+            const resposta = await fetch(`/preditiva/listarGaragens/${idEmpresa}`);
+            
+            if (!resposta.ok) throw new Error(`Erro SQL: ${resposta.status}`);
+            
+            listaGaragensOficial = await resposta.json();
+            
+            console.log("Garagens do Banco:", listaGaragensOficial);
+            preencherDropdown(listaGaragensOficial);
+
+            if(dadosCompletos) atualizarInterface();
+
+        } catch (error) {
+            console.error("Erro ao carregar lista oficial:", error);
+        }
+    }
 
     async function puxarJson(idGaragem = 'all') {
         garagemSelecionada = idGaragem;
@@ -311,31 +342,21 @@
         try {
             let url = `/preditiva/${idEmpresa}?idGaragem=${idGaragem}`;
             
-            let resposta = await fetch(url, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
-
-            if (!resposta.ok) throw new Error(`Erro API: ${resposta.status}`);
+            let resposta = await fetch(url, { method: 'GET', headers: { 'Content-Type': 'application/json' }});
+            if (!resposta.ok) throw new Error(`Erro API S3: ${resposta.status}`);
 
             dadosCompletos = await resposta.json();
             console.log("JSON Recebido:", dadosCompletos);
 
-            if (!dadosCompletos || (!dadosCompletos.ranking && !dadosCompletos.kpis)) {
-                throw new Error("JSON inválido ou vazio.");
-            }
+            if (!dadosCompletos) throw new Error("JSON inválido.");
 
             msgEl.classList.add('hidden');
             document.getElementById('last-update').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-            if (idGaragem === 'all' && dadosCompletos.ranking) {
-                preencherDropdown(dadosCompletos.ranking);
-            }
             
             atualizarInterface();
 
         } catch (e) {
-            console.error("Erro:", e);
+            console.error("Erro S3:", e);
             msgEl.innerHTML = `<strong>Erro:</strong> ${e.message}`;
             msgEl.classList.remove('hidden');
         }
@@ -344,92 +365,113 @@
     function atualizarInterface() {
         if (!dadosCompletos) return;
 
+        let nomeParaTitulo = "Global"; 
+
+        // Seleciona o elemento do alerta para manipulação direta
+        const elAlertas = document.getElementById('kpi-alertas');
+
+        if (garagemSelecionada !== 'all') {
+            const garagemEncontrada = listaGaragensOficial.find(g => (g.id || g.idGaragem) == garagemSelecionada);
+            
+            if (garagemEncontrada) {
+                nomeParaTitulo = garagemEncontrada.nome || garagemEncontrada.nomeGaragem;
+            } else {
+                nomeParaTitulo = "Garagem Selecionada";
+            }
+
+            setText('titulo-grafico', `Risco vs. Carga - ${nomeParaTitulo}`);
+        } else {
+            setText('titulo-grafico', "Risco de Falha vs. Carga (Global)");
+        }
+
         let dadosGrafico = null;
         if (dadosCompletos.history && dadosCompletos.history[periodoSelecionado]) {
             dadosGrafico = JSON.parse(JSON.stringify(dadosCompletos.history[periodoSelecionado]));
         } else {
-            dadosGrafico = JSON.parse(JSON.stringify(dadosCompletos.chartData));
+            dadosGrafico = dadosCompletos.chartData ? JSON.parse(JSON.stringify(dadosCompletos.chartData)) : null;
         }
-        
         if(!dadosGrafico || !dadosGrafico.times) dadosGrafico = { times: [], systemLoad: [], failProbabilities: [] };
 
-        
         let kpis = dadosCompletos.kpis || {};
-        let tituloGrafico = "Risco de Falha vs. Carga (Global)";
 
         if (garagemSelecionada !== 'all') {
             const g = dadosCompletos; 
+            kpis.mediaRisco = g.risco; 
             
-            if (g.status) {
-                kpis.mediaRisco = g.risco; 
-                kpis.totalAlertas = g.status === 'Critical' ? 1 : 0; 
-                
+            setText('kpi-label-risco', "Risco desta Garagem");
+            setText('label-kpi-alertas', "Status Atual");
+            setText('sub-kpi-alertas', "Monitoramento");
 
-                setText('kpi-label-risco', "Risco desta Garagem");
-                setText('label-kpi-alertas', "Status Atual");
-                setText('sub-kpi-alertas', g.status);
-                setText('titulo-grafico', `Risco - ${g.nome}`);
+            let status = g.status || 'Normal';
+            let badgeHtml = '';
+
+            if (status === 'Critical') {
+                badgeHtml = `
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 border border-rose-200">
+                    <span class="relative flex h-3 w-3">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                    </span>
+                    <span class="text-sm font-bold text-rose-700">CRÍTICO</span>
+                </div>`;
+            } else if (status === 'Warning') {
+                badgeHtml = `
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-200">
+                    <span class="h-3 w-3 rounded-full bg-amber-500"></span>
+                    <span class="text-sm font-bold text-amber-700">ATENÇÃO</span>
+                </div>`;
+            } else {
+                badgeHtml = `
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200">
+                    <span class="h-3 w-3 rounded-full bg-emerald-500"></span>
+                    <span class="text-sm font-bold text-emerald-700">NORMAL</span>
+                </div>`;
             }
+
+            elAlertas.innerHTML = badgeHtml;
+            elAlertas.classList.remove('text-3xl'); 
 
         } else {
             setText('kpi-label-risco', "Média Global (Pico)");
             setText('label-kpi-alertas', "Garagens em Alerta");
             setText('sub-kpi-alertas', "Ação Necessária");
-            setText('titulo-grafico', "Risco de Falha vs. Carga (Global)");
             
-            if (dadosCompletos.ranking && dadosCompletos.ranking.length > 0) {
-                renderRanking(dadosCompletos.ranking);
+            elAlertas.innerHTML = kpis.totalAlertas;
+            elAlertas.classList.add('text-3xl');
+            
+            if (listaGaragensOficial.length > 0) {
+                renderRankingHibrido(listaGaragensOficial, dadosCompletos.ranking || []);
             }
         }
         
-        preencherKPIs(kpis, dadosGrafico);
+        preencherKPIs(kpis, dadosGrafico, garagemSelecionada === 'all');
+        
         renderCorrelationChart(dadosGrafico);
         renderCpuChart(dadosGrafico);
         renderHeatmapStrip(dadosCompletos.heatmap || []);
     }
 
-    function setText(id, text) {
-        const el = document.getElementById(id);
-        if (el) el.innerText = text;
-    }
-
-    function preencherKPIs(kpis, dadosGrafico) {
-        setText('kpi-risco', (kpis.mediaRisco || 0) + '%');
-        setText('kpi-pico', (kpis.horaPico || "--:--").replace(":00", ""));
-        setText('kpi-alertas', kpis.totalAlertas);
-
-        const loads = dadosGrafico?.systemLoad || [];
-        const lastLoad = loads.length > 0 ? loads[loads.length - 1] : 0;
-        setText('kpi-cpu', Math.round(lastLoad) + '%');
-    }
-
-    function preencherDropdown(ranking) {
-        const lista = document.getElementById('lista-garagens-dropdown');
-        lista.innerHTML = `<div onclick="selecionarGaragem('all', 'Todas as Garagens')" class="px-4 py-3 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 font-medium">Todas as Garagens</div>`;
-        
-        if(ranking) {
-            ranking.forEach(g => {
-                const div = document.createElement('div');
-                div.className = "px-4 py-3 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 flex justify-between items-center";
-                let color = g.status === "Critical" ? "text-red-500" : (g.status === "Warning" ? "text-amber-500" : "text-emerald-500");
-                div.innerHTML = `<span>${g.nome}</span> <i class="fas fa-circle ${color} text-[8px]"></i>`;
-                div.onclick = () => selecionarGaragem(g.id || g.nome, g.nome);
-                lista.appendChild(div);
-            });
-        }
-    }
-
-    function renderRanking(ranking) {
+    function renderRankingHibrido(listaDoBanco, dadosDoS3) {
         const container = document.getElementById('ranking-list');
         container.innerHTML = '';
-        if (!ranking || ranking.length === 0) {
-            container.innerHTML = '<p class="text-center text-gray-400 mt-10 text-sm">Nenhum dado.</p>';
-            return;
-        }
 
-        ranking.sort((a, b) => b.risco - a.risco);
+        let listaFinal = listaDoBanco.map(garagemSQL => {
+            const idBanco = garagemSQL.idGaragem || garagemSQL.id; 
+        
+            const dadosS3 = dadosDoS3.find(d => d.id == idBanco) || {};
 
-        ranking.forEach((g, index) => {
+            return {
+                id: idBanco,
+                nome: garagemSQL.nome || garagemSQL.nomeGaragem, 
+                risco: dadosS3.risco || 0,    
+                cpu: dadosS3.cpu || 0,        
+                status: dadosS3.status || 'Normal' 
+            };
+        });
+
+        listaFinal.sort((a, b) => b.risco - a.risco);
+
+        listaFinal.forEach((g, index) => {
             let bgClass = 'bg-white border-slate-100 hover:bg-slate-50';
             let textClass = 'text-slate-500';
             let statusColor = 'text-slate-300';
@@ -448,7 +490,7 @@
             }
 
             container.innerHTML += `
-            <div onclick="selecionarGaragem('${g.id || g.nome}', '${g.nome}')" class="flex items-center justify-between p-3 ${bgClass} rounded-lg border transition-all cursor-pointer mb-2">
+            <div onclick="selecionarGaragem('${g.id}', '${g.nome}')" class="flex items-center justify-between p-3 ${bgClass} rounded-lg border transition-all cursor-pointer mb-2">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs">${index + 1}</div>
                     <div>
@@ -460,6 +502,37 @@
             </div>`;
         });
         lucide.createIcons();
+    }
+    
+    function setText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
+
+    function preencherKPIs(kpis, dadosGrafico, atualizarAlertas = true) {
+        setText('kpi-risco', (kpis.mediaRisco || 0) + '%');
+        setText('kpi-pico', (kpis.horaPico || "--:--").replace(":00", ""));
+        
+        if (atualizarAlertas) {
+            setText('kpi-alertas', kpis.totalAlertas);
+        }
+
+        const loads = dadosGrafico?.systemLoad || [];
+        const lastLoad = loads.length > 0 ? loads[loads.length - 1] : 0;
+        setText('kpi-cpu', Math.round(lastLoad) + '%');
+    }
+
+    function preencherDropdown(lista) {
+        const containerLista = document.getElementById('lista-garagens-dropdown');
+        containerLista.innerHTML = '';
+        if(lista) {
+            lista.forEach(g => {
+                const id = g.idGaragem || g.id; 
+                const nome = g.nome || g.nomeGaragem;
+                const div = document.createElement('div');
+                div.className = "px-4 py-3 hover:bg-slate-50 cursor-pointer text-sm text-slate-700 border-b border-slate-100 flex justify-between items-center";
+                div.innerHTML = `<span>${nome}</span>`;
+                div.onclick = () => selecionarGaragem(id, nome);
+                containerLista.appendChild(div);
+            });
+        }
     }
 
     function toggleDropdown() { document.getElementById('garage-dropdown').classList.toggle('hidden'); }
@@ -492,21 +565,14 @@
         const container = document.querySelector("#correlationChart");
         container.innerHTML = "";
         if (!data || !data.times) return;
-
         const labels = data.times.map(t => t.replace(":00", "h")); 
-
         const options = {
-    ...commonOptions,
-    chart: { ...commonOptions.chart, type: 'line' },
-    series: [
-        { name: 'Carga', type: 'column', data: data.systemLoad },
-        { name: 'Risco', type: 'line', data: data.failProbabilities } 
-    ],
-    xaxis: { categories: labels, labels: { style: { colors: '#64748b', fontSize: '10px' } }, tooltip: { enabled: false } },
-    yaxis: [{ title: { text: "Falha (%)" } }, { opposite: true, title: { text: "Carga" } }],
-    colors: ['#cbd5e1', '#f43f5e'], stroke: { width: [0, 3] }, fill: { opacity: [1, 1] }, legend: { show: true, position: 'top' }
-};
-
+            ...commonOptions, chart: { ...commonOptions.chart, type: 'line' },
+            series: [{ name: 'Carga', type: 'column', data: data.systemLoad }, { name: 'Risco', type: 'line', data: data.failProbabilities } ],
+            xaxis: { categories: labels, labels: { style: { colors: '#64748b', fontSize: '10px' } }, tooltip: { enabled: false } },
+            yaxis: [{ title: { text: "Falha (%)" } }, { opposite: true, title: { text: "Carga" } }],
+            colors: ['#cbd5e1', '#f43f5e'], stroke: { width: [0, 3] }, fill: { opacity: [1, 1] }, legend: { show: true, position: 'top' }
+        };
         if(chartCorrelationInst) chartCorrelationInst.destroy();
         chartCorrelationInst = new ApexCharts(container, options);
         chartCorrelationInst.render();
@@ -516,10 +582,8 @@
         const container = document.querySelector("#cpuChart");
         container.innerHTML = "";
         if (!data || !data.times) return;
-
         const options = {
-            ...commonOptions,
-            chart: { ...commonOptions.chart, type: 'area' },
+            ...commonOptions, chart: { ...commonOptions.chart, type: 'area' },
             series: [{ name: 'Carga', data: data.systemLoad }],
             xaxis: { categories: data.times, labels: { show: false }, axisTicks: { show: false } },
             yaxis: { labels: { show: false }, max: 100 },
@@ -530,42 +594,21 @@
         chartCpuInst.render();
     }
 
-   function renderHeatmapStrip(data) {
-    const container = document.getElementById('heatmap-strip');
-    container.innerHTML = "";
-    if (!data) return;
-
-    
-    const colors = {
-        baixo: 'bg-emerald-400',   
-        medio: 'bg-amber-400',     
-        alto: 'bg-rose-500'        
-    };
-
-    let blocksHtml = "";
-    let labelsHtml = "";
-
-    data.forEach((value, h) => {
-        let color = '';
-        if (value >= 90) color = colors.alto;     
-        else if (value >= 50) color = colors.medio;
-        else color = colors.baixo;                 
-
-        let horaFormat = String(h).padStart(2, '0');
-        blocksHtml += `
-            <div class="flex-1 h-12 ${color} rounded-sm mx-[1px] hover:scale-110 transition-transform" 
-                 title="${horaFormat}h: ${value}%"></div>`;
-        labelsHtml += `<span class="text-[8px] text-slate-400">${horaFormat}h</span>`;
-    });
-
-    container.innerHTML = `
-        <div class="flex flex-col justify-center items-center h-full w-full gap-2">
-            <div class="flex w-full items-end justify-center gap-1">${blocksHtml}</div>
-            <div class="flex justify-between w-full">${labelsHtml}</div>
-        </div>`;
-}
-
-    puxarJson();
+    function renderHeatmapStrip(data) {
+        const container = document.getElementById('heatmap-strip');
+        container.innerHTML = "";
+        if (!data) return;
+        const colors = { baixo: 'bg-emerald-400', medio: 'bg-amber-400', alto: 'bg-rose-500' };
+        let blocksHtml = ""; let labelsHtml = "";
+        data.forEach((value, h) => {
+            let color = '';
+            if (value >= 90) color = colors.alto; else if (value >= 50) color = colors.medio; else color = colors.baixo;                 
+            let horaFormat = String(h).padStart(2, '0');
+            blocksHtml += `<div class="flex-1 h-12 ${color} rounded-sm mx-[1px] hover:scale-110 transition-transform" title="${horaFormat}h: ${value}%"></div>`;
+            labelsHtml += `<span class="text-[8px] text-slate-400">${horaFormat}h</span>`;
+        });
+        container.innerHTML = `<div class="flex flex-col justify-center items-center h-full w-full gap-2"><div class="flex w-full items-end justify-center gap-1">${blocksHtml}</div><div class="flex justify-between w-full">${labelsHtml}</div></div>`;
+    }
 </script>
 </body>
 </html>
