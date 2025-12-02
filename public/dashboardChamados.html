@@ -10,8 +10,6 @@
     <link rel="stylesheet" href="css/estilo-padrao.css">
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="js/dashboardChamados.js"></script>
-
 </head>
 
 <body>
@@ -25,61 +23,79 @@
             </div>
         </header>
 
+        <!-- KPIs -->
         <section class="grade-indicadores">
             <div class="card-padrao">
                 <div class="titulo-indicador">MTTR (Tempo Médio de Reparo)</div>
-                <div class="valor-indicador" id="valorMTTR">12m 30s</div>
-                <div class="sub-indicador status-text-green">↓ 15% mais rápido que ontem</div>
+                <div class="valor-indicador" id="valorMTTR">--</div>
+                <div class="sub-indicador status-text-green">Calculado com base nos resolvidos</div>
             </div>
 
             <div class="card-padrao">
-                <div class="titulo-indicador">Média Semanal de Alertas</div>
-                <div class="valor-indicador">142</div>
-                <div class="sub-indicador">Alertas registrados nos últimos 7 dias</div>
+                <div class="titulo-indicador">Total Alertas (Semana)</div>
+                <div class="valor-indicador" id="mediaSemanal">0</div>
+                <div class="sub-indicador">Alertas registrados na semana atual</div>
             </div>
 
             <div class="card-padrao">
                 <div class="titulo-indicador">Alertas Críticos Ativos</div>
-                <!-- Este valor agora será fixo baseado nos chamados abertos -->
                 <div class="valor-indicador status-text-red" id="indicadorCritico">0</div>
                 <div class="sub-indicador">Ação imediata necessária</div>
             </div>
+
+            <div class="legenda-container">
+                <div class="legenda-item">
+                    <span class="legenda-bolinha bolinha-vermelha"></span>
+                    <span class="legenda-texto">Crítico</span>
+                    <span class="legenda-subtexto">(Alta Prioridade)</span>
+                </div>
+                <div class="legenda-item">
+                    <span class="legenda-bolinha bolinha-amarela"></span>
+                    <span class="legenda-texto">Atenção</span>
+                    <span class="legenda-subtexto">(Média Prioridade)</span>
+                </div>
+                <div class="legenda-item">
+                    <span class="legenda-bolinha bolinha-verde"></span>
+                    <span class="legenda-texto">Normal</span>
+                    <span class="legenda-subtexto">(Resolvido/Info)</span>
+                </div>
+            </div>
+
         </section>
 
         <section class="secao-graficos">
 
             <div class="card-padrao">
-                <div class="titulo-grafico">Alertas por Categoria</div>
+                <div class="titulo-grafico">Alertas Abertos por Categoria</div>
 
                 <div class="linha-categoria">
                     <div class="cabecalho-cat">
-                        <span><strong>CPU</strong> (Processamento)</span>
-                        <span>55% dos alertas</span>
+                        <span><strong id="qtdCpu">0</strong> <strong>CPU</strong></span>
+                        <span id="pctCpu">0%</span>
                     </div>
                     <div class="fundo-progresso">
-                        <div class="preenchimento-progresso status-bg-red" style="width: 55%;"></div>
+                        <div id="barCpu" class="preenchimento-progresso status-bg-red" style="width: 0%;"></div>
                     </div>
-                    <p style="font-size: 0.75rem; margin-top: 2px; opacity: 0.7;">Incidentes recorrentes de 'High Load'
-                    </p>
+                    <p style="font-size: 0.75rem; margin-top: 2px; opacity: 0.7;">Incidentes de 'High Load'</p>
                 </div>
 
                 <div class="linha-categoria">
                     <div class="cabecalho-cat">
-                        <span><strong>Memória RAM</strong></span>
-                        <span>30% dos alertas</span>
+                        <span><strong id="qtdRam">0</strong> <strong>Memória RAM</strong></span>
+                        <span id="pctRam">0%</span>
                     </div>
                     <div class="fundo-progresso">
-                        <div class="preenchimento-progresso status-bg-yellow" style="width: 30%;"></div>
+                        <div id="barRam" class="preenchimento-progresso status-bg-yellow" style="width: 0%;"></div>
                     </div>
                 </div>
 
                 <div class="linha-categoria">
                     <div class="cabecalho-cat">
-                        <span><strong>Disco / Storage</strong></span>
-                        <span>15% dos alertas</span>
+                        <span><strong id="qtdDisco">0</strong> <strong>Disco / Storage</strong></span>
+                        <span id="pctDisco">0%</span>
                     </div>
                     <div class="fundo-progresso">
-                        <div class="preenchimento-progresso status-bg-blue" style="width: 15%;"></div>
+                        <div id="barDisco" class="preenchimento-progresso status-bg-blue" style="width: 0%;"></div>
                     </div>
                 </div>
             </div>
@@ -108,7 +124,6 @@
             <div class="titulo-grafico">Detalhamento dos Incidentes</div>
 
             <div class="barra-filtros">
-                <!-- NOVO FILTRO: DATASET (GERAL vs ABERTOS) -->
                 <select id="filtro-dataset" style="border: 2px solid #007bff; font-weight: bold;">
                     <option value="geral">Visualizar: Todos (Histórico Geral)</option>
                     <option value="abertos">Visualizar: Apenas Abertos</option>
@@ -150,7 +165,6 @@
                         </tr>
                     </thead>
                     <tbody id="tabelaFiller">
-                        <!-- Preenchido via JS -->
                     </tbody>
                 </table>
                 <div id="msg-sem-resultados" style="display:none; text-align:center; padding: 20px; color: #666;">
@@ -173,7 +187,6 @@
         </section>
     </div>
 
-    <!-- MODAL DINÂMICO -->
     <div id="modal-overlay" class="modal-overlay">
         <div class="modal-container card-padrao">
             <div class="modal-header">
@@ -181,7 +194,6 @@
                 <button class="fechar-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <!-- O conteúdo aqui será injetado via JS -->
                 <p id="modal-conteudo-dinamico">Carregando...</p>
             </div>
             <div class="modal-footer">
@@ -190,7 +202,7 @@
             </div>
         </div>
     </div>
-
+    
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
-
