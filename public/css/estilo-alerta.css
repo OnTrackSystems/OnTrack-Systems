@@ -465,3 +465,51 @@ body {
         width: 100%;
     }
 }
+
+.legenda-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 15px;
+    font-size: 0.9rem;
+    color: #444;
+    min-width: 160px;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legenda-bolinha {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: block;
+}
+
+.bolinha-vermelha {
+    background-color: #dc3545;
+    box-shadow: 0 0 3px rgba(220, 53, 69, 0.4);
+}
+
+.bolinha-amarela {
+    background-color: #ffc107;
+    box-shadow: 0 0 3px rgba(255, 193, 7, 0.4);
+}
+
+.bolinha-verde {
+    background-color: #28a745;
+    box-shadow: 0 0 3px rgba(40, 167, 69, 0.4);
+}
+
+.legenda-texto {
+    font-weight: 600;
+}
+
+.legenda-subtexto {
+    font-size: 0.8em;
+    opacity: 0.7;
+}
