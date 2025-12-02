@@ -40,42 +40,75 @@ function renderizarKPIs(dados) {
     const totalGB = (kpis.mb_total_enviado_periodo / 1024);
     document.getElementById('kpiTotalTransferido').innerText = totalGB.toFixed(2) + " GB";
 
-    // 2. Variação: Comparação com período anterior (se existir no JSON)
-    // Vamos supor que o JSON tenha 'mb_total_enviado_periodo_anterior'
-    // Se não tiver, tentamos calcular ou mostramos "-"
-    
-    let variacaoHTML = "-";
-    let valorVariacaoHTML = "-";
+    // Lógica de Variação (Simulada ou Real se o JSON tiver o campo)
+    // O usuário pediu:
+    // KPI 1 Subtexto: Aumento/Diminuição do valor (GB)
+    // KPI 2 Principal: Aumento/Diminuição do valor (GB)
+    // KPI 2 Subtexto: Porcentagem (%)
+
+    let diferencaGB = 0;
+    let percentual = 0;
+    let temDadosAnteriores = false;
 
     if (kpis.mb_total_enviado_periodo_anterior) {
         const anteriorGB = kpis.mb_total_enviado_periodo_anterior / 1024;
-        const diferenca = totalGB - anteriorGB;
-        const percentual = anteriorGB > 0 ? ((diferenca / anteriorGB) * 100) : 0;
-
-        const sinal = diferenca >= 0 ? "+" : "";
-        const cor = diferenca >= 0 ? "text-success" : "text-danger";
-        
-        valorVariacaoHTML = `${sinal}${diferenca.toFixed(2)} GB`;
-        variacaoHTML = `<span class="${cor}">${sinal}${percentual.toFixed(1)}%</span> em relação ao período anterior`;
+        diferencaGB = totalGB - anteriorGB;
+        percentual = anteriorGB > 0 ? ((diferencaGB / anteriorGB) * 100) : 0;
+        temDadosAnteriores = true;
     } else {
-        // Fallback se não tiver dados anteriores
-        variacaoHTML = "Dados anteriores não disponíveis";
+        // Se não tiver dados anteriores, vamos deixar zerado ou indicar indisponibilidade
+        // Para não quebrar a UI, definimos como null
+        temDadosAnteriores = false;
     }
 
-    document.getElementById('kpiValorVariacao').innerText = valorVariacaoHTML;
-    document.getElementById('kpiPercentualVariacao').innerHTML = variacaoHTML;
+    const sinal = diferencaGB >= 0 ? "+" : "";
+    const cor = diferencaGB >= 0 ? "text-success" : "text-danger";
+    const textoDiferenca = `${sinal}${diferencaGB.toFixed(2)} GB`;
+    const textoPercentual = `${sinal}${percentual.toFixed(1)}%`;
+
+    // KPI 1: Volume Total
+    // Subtexto: Valor da variação
+    const kpi1Sub = document.getElementById('kpiVariacaoTransferido');
+    if (kpi1Sub) {
+        if (temDadosAnteriores) {
+            kpi1Sub.innerHTML = `<span class="${cor}">${textoDiferenca}</span> em relação ao período anterior`;
+        } else {
+            kpi1Sub.innerText = "Sem dados anteriores";
+        }
+    }
+
+    // KPI 2: Variação de Volume
+    // Principal: Valor da variação
+    // Subtexto: Porcentagem
+    if (temDadosAnteriores) {
+        document.getElementById('kpiValorVariacao').innerText = textoDiferenca;
+        document.getElementById('kpiValorVariacao').className = `text-3xl font-bold mt-1 ${cor}`; // Aplica cor no valor principal também? O usuário não especificou, mas faz sentido. Vou manter padrão ou aplicar cor.
+        // Melhor manter a cor padrão do texto e usar a cor só no indicador se necessário, mas geralmente variação tem cor.
+        // Vou aplicar a cor no texto principal da KPI 2 para destacar.
+        
+        document.getElementById('kpiPercentualVariacao').innerHTML = `<span class="${cor}">${textoPercentual}</span> de variação`;
+    } else {
+        document.getElementById('kpiValorVariacao').innerText = "-";
+        document.getElementById('kpiValorVariacao').className = "text-3xl font-bold text-gray-900 mt-1";
+        document.getElementById('kpiPercentualVariacao').innerText = "Dados indisponíveis";
+    }
     
     // 3. Última Atualização
-    // Pega o último timestamp da lista
     if (lista && lista.length > 0) {
         const ultimoDado = lista[lista.length - 1];
         const dataObj = new Date(ultimoDado.timestamp);
-        const dataFormatada = dataObj.toLocaleString('pt-BR', { 
-            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
-        });
+        
+        const dia = String(dataObj.getDate()).padStart(2, '0');
+        const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
+        const ano = String(dataObj.getFullYear()).slice(-2);
+        const hora = String(dataObj.getHours()).padStart(2, '0');
+        const minuto = String(dataObj.getMinutes()).padStart(2, '0');
+        
+        const dataFormatada = `${dia}/${mes}/${ano} - ${hora}:${minuto}`;
+        
         document.getElementById('kpiUltimaAtualizacao').innerText = dataFormatada;
     } else {
-        document.getElementById('kpiUltimaAtualizacao').innerText = "--/-- --:--";
+        document.getElementById('kpiUltimaAtualizacao').innerText = "--/--/-- - --:--";
     }
 }
 
@@ -120,9 +153,10 @@ function renderizarGraficos(dados, periodo) {
         stroke: { curve: 'smooth', width: 2 },
         xaxis: { 
             categories: labels,
+            tickAmount: 10, // Limita a quantidade de labels no eixo X para não encavalar
             labels: {
                 rotate: -45,
-                rotateAlways: false,
+                rotateAlways: true, // Força a rotação sempre
                 hideOverlappingLabels: true,
                 style: {
                     fontSize: '12px'
