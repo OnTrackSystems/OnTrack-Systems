@@ -3,10 +3,7 @@ var throughputChart;
 var correlationChart;
 var distribuicaoChart;
 
-// 1. Defina o endereço do seu backend (Verifique se a porta no .env é 3333 ou 3000)
 const API_BASE_URL = "http://localhost:3333"; 
-
-// Define a garagem (busca da sessão ou usa valor padrão)
 const idGaragem = sessionStorage.ID_GARAGEM || "18897";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,223 +14,181 @@ async function atualizarPeriodo(periodo) {
     atualizarBotoesAtivos(periodo);
 
     try {
-        // 2. Use a URL completa aqui
         const response = await fetch(`${API_BASE_URL}/dashTransferenciaDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`);
         
-        if (!response.ok) {
-            throw new Error(`Erro HTTP: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
         const dados = await response.json();
-        
-        console.log(`Dados recebidos (${periodo}):`, dados);
+        const todosDados = dados.timeseries || [];
 
-        renderizarKPIs(dados);
-        renderizarGraficos(dados, periodo);
+        // --- LÓGICA DE CORTE (SPLIT) CORRIGIDA ---
+        // O backend envia o dobro do período.
+        // Para garantir que pegamos os dados mais recentes corretamente, usamos slice negativo.
+        
+        const totalRegistros = todosDados.length;
+        const tamanhoJanela = Math.floor(totalRegistros / 2);
+
+        // 1. Dados Atuais: Os últimos 'tamanhoJanela' registros
+        const dadosAtuais = todosDados.slice(-tamanhoJanela);
+
+        // 2. Dados Anteriores: Os registros imediatamente antes dos atuais
+        const dadosAnteriores = todosDados.slice(-tamanhoJanela * 2, -tamanhoJanela);
+
+        console.log(`=== Período: ${periodo} ===`);
+        console.log(`Total: ${totalRegistros} | Janela: ${tamanhoJanela}`);
+        console.log(`Atuais: ${dadosAtuais.length} | Anteriores: ${dadosAnteriores.length}`);
+
+        renderizarKPIsCalculados(dadosAtuais, dadosAnteriores);
+        renderizarGraficos(dadosAtuais, periodo);
 
     } catch (error) {
         console.error("Erro ao carregar dashboard:", error);
     }
 }
 
-function renderizarKPIs(dados) {
-    const kpis = dados.kpis_resumo;
-    const lista = dados.timeseries;
+function renderizarKPIsCalculados(dadosAtuais, dadosAnteriores) {
+    // Função auxiliar para somar (com Number() para evitar concatenação de strings)
+    const somarRede = (lista) => lista.reduce((acc, item) => acc + Number(item.Rede_Env || 0), 0);
 
-    // 1. Volume Total: O JSON vem em MB convertemos para GB
-    const totalGB = (kpis.mb_total_enviado_periodo / 1024);
-    document.getElementById('kpiTotalTransferido').innerText = totalGB.toFixed(2) + " GB";
+    const totalAtualMB = somarRede(dadosAtuais);
+    const totalAnteriorMB = somarRede(dadosAnteriores);
+    
+    const totalAtualGB = totalAtualMB / 1024;
+    const totalAnteriorGB = totalAnteriorMB / 1024;
 
-    // Lógica de Variação (Simulada ou Real se o JSON tiver o campo)
-    // O usuário pediu:
-    // KPI 1 Subtexto: Aumento/Diminuição do valor (GB)
-    // KPI 2 Principal: Aumento/Diminuição do valor (GB)
-    // KPI 2 Subtexto: Porcentagem (%)
+    // KPI Principal
+    const elTotal = document.getElementById('kpiTotalTransferido');
+    if(elTotal) elTotal.innerText = totalAtualGB.toFixed(2) + " GB";
 
-    let diferencaGB = 0;
+    // Cálculo da Variação
+    const diferencaGB = totalAtualGB - totalAnteriorGB;
     let percentual = 0;
-    let temDadosAnteriores = false;
-
-    if (kpis.mb_total_enviado_periodo_anterior) {
-        const anteriorGB = kpis.mb_total_enviado_periodo_anterior / 1024;
-        diferencaGB = totalGB - anteriorGB;
-        percentual = anteriorGB > 0 ? ((diferencaGB / anteriorGB) * 100) : 0;
-        temDadosAnteriores = true;
-    } else {
-        // Se não tiver dados anteriores, vamos deixar zerado ou indicar indisponibilidade
-        // Para não quebrar a UI, definimos como null
-        temDadosAnteriores = false;
+    
+    if (totalAnteriorGB > 0) {
+        percentual = (diferencaGB / totalAnteriorGB) * 100;
+    } else if (totalAtualGB > 0) {
+        percentual = 100;
     }
 
     const sinal = diferencaGB >= 0 ? "+" : "";
-    const cor = diferencaGB >= 0 ? "text-success" : "text-danger";
-    const textoDiferenca = `${sinal}${diferencaGB.toFixed(2)} GB`;
+    const cor = diferencaGB >= 0 ? "text-green-500" : "text-red-500";
+    const icone = diferencaGB >= 0 ? "↑" : "↓";
+    
+    const textoDiferencaGB = `${sinal}${diferencaGB.toFixed(2)} GB`;
     const textoPercentual = `${sinal}${percentual.toFixed(1)}%`;
 
-    // KPI 1: Volume Total
-    // Subtexto: Valor da variação
-    const kpi1Sub = document.getElementById('kpiVariacaoTransferido');
-    if (kpi1Sub) {
-        if (temDadosAnteriores) {
-            kpi1Sub.innerHTML = `<span class="${cor}">${textoDiferenca}</span> em relação ao período anterior`;
-        } else {
-            kpi1Sub.innerText = "Sem dados anteriores";
-        }
+    // KPI 1 Subtexto
+    const elSub1 = document.getElementById('kpiVariacaoTransferido');
+    if(elSub1) elSub1.innerHTML = `<span class="${cor} font-bold">${icone} ${textoDiferencaGB}</span> vs período anterior`;
+
+    // KPI 2
+    const kpi2Valor = document.getElementById('kpiValorVariacao');
+    const kpi2Sub = document.getElementById('kpiPercentualVariacao');
+    
+    if(kpi2Valor) {
+        kpi2Valor.innerText = textoDiferencaGB;
+        kpi2Valor.className = `text-3xl font-bold mt-1 ${cor}`;
+    }
+    if(kpi2Sub) {
+        kpi2Sub.innerHTML = `<span class="${cor}">${icone} ${textoPercentual}</span> de variação`;
     }
 
-    // KPI 2: Variação de Volume
-    // Principal: Valor da variação
-    // Subtexto: Porcentagem
-    if (temDadosAnteriores) {
-        document.getElementById('kpiValorVariacao').innerText = textoDiferenca;
-        document.getElementById('kpiValorVariacao').className = `text-3xl font-bold mt-1 ${cor}`; // Aplica cor no valor principal também? O usuário não especificou, mas faz sentido. Vou manter padrão ou aplicar cor.
-        // Melhor manter a cor padrão do texto e usar a cor só no indicador se necessário, mas geralmente variação tem cor.
-        // Vou aplicar a cor no texto principal da KPI 2 para destacar.
-        
-        document.getElementById('kpiPercentualVariacao').innerHTML = `<span class="${cor}">${textoPercentual}</span> de variação`;
-    } else {
-        document.getElementById('kpiValorVariacao').innerText = "-";
-        document.getElementById('kpiValorVariacao').className = "text-3xl font-bold text-gray-900 mt-1";
-        document.getElementById('kpiPercentualVariacao').innerText = "Dados indisponíveis";
-    }
-    
-    // 3. Última Atualização
-    if (lista && lista.length > 0) {
-        const ultimoDado = lista[lista.length - 1];
-        const dataObj = new Date(ultimoDado.timestamp);
-        
-        const dia = String(dataObj.getDate()).padStart(2, '0');
-        const mes = String(dataObj.getMonth() + 1).padStart(2, '0');
-        const ano = String(dataObj.getFullYear()).slice(-2);
-        const hora = String(dataObj.getHours()).padStart(2, '0');
-        const minuto = String(dataObj.getMinutes()).padStart(2, '0');
-        
-        const dataFormatada = `${dia}/${mes}/${ano} - ${hora}:${minuto}`;
-        
-        document.getElementById('kpiUltimaAtualizacao').innerText = dataFormatada;
-    } else {
-        document.getElementById('kpiUltimaAtualizacao').innerText = "--/--/-- - --:--";
+    // Última Atualização
+    const elUltima = document.getElementById('kpiUltimaAtualizacao');
+    if (elUltima) {
+        const hoje = new Date();
+        elUltima.innerText = `${String(hoje.getDate()).padStart(2, '0')}/${String(hoje.getMonth() + 1).padStart(2, '0')} - ${String(hoje.getHours()).padStart(2, '0')}:${String(hoje.getMinutes()).padStart(2, '0')}`;
     }
 }
 
-function renderizarGraficos(dados, periodo) {
-    const lista = dados.timeseries;
-
-    // Se a lista estiver vazia, não faz nada
+function renderizarGraficos(lista, periodo) {
     if (!lista || lista.length === 0) return;
 
-    // --- Mapeamento dos Dados (Array Map) ---
-    // Extraímos os arrays simples para o ApexCharts usar
+    // --- GERAÇÃO DE LABELS PROPORCIONAL ---
+    // Distribui o tempo total do período pelo número de pontos disponíveis.
+    // Isso corrige o erro de plotagem quando há muitos pontos (ex: 42 pontos em 7 dias).
     
-    // 1. Formatar Labels (Eixo X)
-    const labels = lista.map(item => {
-        const dataObj = new Date(item.timestamp);
+    const labels = lista.map((_, index) => {
+        const hoje = new Date();
+        const totalPontos = lista.length;
+        // Índice invertido: 0 é "agora", totalPontos-1 é o mais antigo
+        const iInvertido = totalPontos - 1 - index;
         
-        // Se for 24h, mostra Hora:Minuto. Se for dias, mostra Dia/Mês
+        const dataPonto = new Date();
+        
         if (periodo === '24h') {
-            return dataObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            // Distribui 24 horas entre os pontos
+            const horasParaVoltar = (24 / totalPontos) * iInvertido;
+            dataPonto.setMinutes(hoje.getMinutes() - (horasParaVoltar * 60));
+            return dataPonto.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } else if (periodo === '7d') {
+            // Distribui 7 dias entre os pontos
+            const diasParaVoltar = (7 / totalPontos) * iInvertido;
+            dataPonto.setHours(hoje.getHours() - (diasParaVoltar * 24));
+            return dataPonto.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         } else {
-            return dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+            // Distribui 30 dias entre os pontos
+            const diasParaVoltar = (30 / totalPontos) * iInvertido;
+            dataPonto.setHours(hoje.getHours() - (diasParaVoltar * 24));
+            return dataPonto.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         }
     });
 
-    // 2. Dados numéricos
-    const dataThroughput = lista.map(item => item.Rede_Env); // Assumindo MB
-    const dataCPU = lista.map(item => item.CPU);
+    const dataThroughput = lista.map(item => Number(item.Rede_Env || 0));
+    const dataCPU = lista.map(item => Number(item.CPU || 0)); 
 
-    // --- GRÁFICO 1: Histórico de Throughput ---
+    // --- GRÁFICO 1: Throughput ---
     const optionsThroughput = {
-        series: [{
-            name: 'Envio (MB)',
-            data: dataThroughput
-        }],
-        chart: {
-            type: 'area',
-            height: 350,
-            toolbar: { show: false },
-            zoom: { enabled: false }
-        },
+        series: [{ name: 'Envio (MB)', data: dataThroughput }],
+        chart: { type: 'area', height: 350, toolbar: { show: false }, zoom: { enabled: false } },
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 2 },
-        xaxis: { 
-            categories: labels,
-            tickAmount: 10, // Limita a quantidade de labels no eixo X para não encavalar
-            labels: {
-                rotate: -45,
-                rotateAlways: true, // Força a rotação sempre
-                hideOverlappingLabels: true,
-                style: {
-                    fontSize: '12px'
-                }
-            }
-        },
-        yaxis: {
-            title: { text: 'Megabytes (MB)' }
-        },
-        colors: ['#135bec'],
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 1,
-                opacityFrom: 0.5,
-                opacityTo: 0.05,
-                stops: [0, 90, 100]
-            }
-        },
-        tooltip: {
-            y: { formatter: (val) => val.toFixed(2) + " MB" }
-        }
+        xaxis: { categories: labels, tickAmount: 10, labels: { rotate: -45, style: { fontSize: '12px' } } },
+        yaxis: { title: { text: 'Megabytes (MB)' } },
+        colors: ['#2563EB'],
+        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.05, stops: [0, 90, 100] } },
+        tooltip: { y: { formatter: (val) => val.toFixed(2) + " MB" } }
     };
 
     if (throughputChart) {
-        throughputChart.updateOptions(optionsThroughput);
+        throughputChart.updateOptions({
+            series: [{ data: dataThroughput }],
+            xaxis: { categories: labels }
+        });
     } else {
-        throughputChart = new ApexCharts(document.querySelector("#chart-throughput"), optionsThroughput);
-        throughputChart.render();
+        const el = document.querySelector("#chart-throughput");
+        if(el) {
+            throughputChart = new ApexCharts(el, optionsThroughput);
+            throughputChart.render();
+        }
     }
 
-    // --- GRÁFICO 2: Correlação (Throughput vs CPU) ---
+    // --- GRÁFICO 2: Correlação ---
     const optionsCorrelation = {
-        series: [{
-            name: 'Rede (MB)',
-            type: 'column',
-            data: dataThroughput
-        }, {
-            name: 'Uso CPU (%)',
-            type: 'line',
-            data: dataCPU
-        }],
-        chart: {
-            height: 350,
-            type: 'line',
-            toolbar: { show: false }
-        },
-        stroke: { width: [0, 3] }, // Coluna sem borda, Linha com espessura 3
+        series: [{ name: 'Rede (MB)', type: 'column', data: dataThroughput }, { name: 'Uso CPU (%)', type: 'line', data: dataCPU }],
+        chart: { height: 350, type: 'line', toolbar: { show: false } },
+        stroke: { width: [0, 3] },
         dataLabels: { enabled: false },
-        labels: labels, // Eixo X
-        yaxis: [{
-            title: { text: 'Rede (MB)' },
-        }, {
-            opposite: true,
-            title: { text: 'CPU (%)' },
-            max: 100 // Teto do eixo CPU
-        }],
-        colors: ['#135bec', '#DC3545'], // Azul para rede, Vermelho para CPU
+        labels: labels,
+        yaxis: [{ title: { text: 'Rede (MB)' } }, { opposite: true, title: { text: 'CPU (%)' }, max: 100 }],
+        colors: ['#2563EB', '#DC3545'],
     };
 
     if (correlationChart) {
-        correlationChart.updateOptions(optionsCorrelation);
+        correlationChart.updateOptions({
+            series: [{ data: dataThroughput }, { data: dataCPU }],
+            labels: labels
+        });
     } else {
-        correlationChart = new ApexCharts(document.querySelector("#chart-correlation"), optionsCorrelation);
-        correlationChart.render();
+        const el = document.querySelector("#chart-correlation");
+        if(el) {
+            correlationChart = new ApexCharts(el, optionsCorrelation);
+            correlationChart.render();
+        }
     }
 
-    // --- GRÁFICO 3: Distribuição (Histograma Simulado) ---
-    // Vamos criar faixas baseadas nos valores de Rede_Env
-    
+    // --- GRÁFICO 3: Distribuição ---
     let baixo = 0, medio = 0, alto = 0, pico = 0;
-    
-    // Regra de negócio simples para classificar o tráfego
     dataThroughput.forEach(valor => {
         if (valor < 10) baixo++;
         else if (valor < 20) medio++;
@@ -242,50 +197,34 @@ function renderizarGraficos(dados, periodo) {
     });
 
     const optionsDist = {
-        series: [{
-            name: 'Ocorrências',
-            data: [baixo, medio, alto, pico]
-        }],
-        chart: {
-            type: 'bar',
-            height: 350,
-            toolbar: { show: false }
-        },
-        plotOptions: {
-            bar: { borderRadius: 4, horizontal: false }
-        },
-        xaxis: {
-            categories: ['Baixo (<10MB)', 'Médio (10-20MB)', 'Alto (20-30MB)', 'Pico (>30MB)'],
-        },
-        colors: ['#135bec'] // Verde
+        series: [{ name: 'Ocorrências', data: [baixo, medio, alto, pico] }],
+        chart: { type: 'bar', height: 350, toolbar: { show: false } },
+        plotOptions: { bar: { borderRadius: 4, horizontal: false } },
+        xaxis: { categories: ['Baixo (<10MB)', 'Médio (10-20MB)', 'Alto (20-30MB)', 'Pico (>30MB)'] },
+        colors: ['#2563EB']
     };
 
     if (distribuicaoChart) {
-        distribuicaoChart.updateOptions(optionsDist);
+        distribuicaoChart.updateOptions({ series: [{ data: [baixo, medio, alto, pico] }] });
     } else {
-        distribuicaoChart = new ApexCharts(document.querySelector("#chart-distribuicao"), optionsDist);
-        distribuicaoChart.render();
+        const el = document.querySelector("#chart-distribuicao");
+        if(el) {
+            distribuicaoChart = new ApexCharts(el, optionsDist);
+            distribuicaoChart.render();
+        }
     }
 }
 
-// Funções visuais (Botões)
-function atualizarBotoesAtivos(periodo) {
-    const botoes = ['btn-kpi-24h', 'btn-kpi-7d', 'btn-kpi-30d'];
-    botoes.forEach(btnId => {
-        const btn = document.getElementById(btnId);
-        if(btn) {
-            btn.classList.remove('bg-primary', 'text-white');
-            btn.classList.add('bg-slate-100');
-        }
-    });
-    
-    // Ativa os botões correspondentes
-    const idsAtivos = [`btn-kpi-${periodo}`];
-    idsAtivos.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.classList.remove('bg-slate-100');
-            el.classList.add('bg-primary', 'text-white');
+function atualizarBotoesAtivos(periodoSelecionado) {
+    const botoes = document.querySelectorAll('[data-periodo]');
+    botoes.forEach(btn => {
+        const periodo = btn.getAttribute('data-periodo');
+        if (periodo === periodoSelecionado) {
+            btn.classList.add('bg-blue-600', 'text-white');
+            btn.classList.remove('bg-gray-200', 'text-gray-700');
+        } else {
+            btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('bg-gray-200', 'text-gray-700');
         }
     });
 }
