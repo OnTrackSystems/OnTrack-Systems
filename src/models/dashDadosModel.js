@@ -11,6 +11,17 @@ function listarGaragens(fkEmpresa) {
     return database.executar(instrucaoSql);
 }
 
+function getTamanhoDisco(idGaragem) {
+    let instrucaoSql = `
+        SELECT tamanhoDisco
+        FROM Maquina
+        WHERE fkGaragem = ${idGaragem};
+    `;
+
+    return database.executar(instrucaoSql);
+}
+
 module.exports = {
-    listarGaragens
+    listarGaragens,
+    getTamanhoDisco
 }

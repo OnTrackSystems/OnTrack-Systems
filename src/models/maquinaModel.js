@@ -30,10 +30,10 @@ function listarMaquinas(idEmpresa) {
     return database.executar(instrucaoSql);
 }
 
-function adicionarServidor(uuid, idEmpresa, idGaragem) {
+function adicionarServidor(uuid, idEmpresa, idGaragem, tamanhoDisco) {
     let instrucaoSql = `
-        INSERT INTO Maquina (uuid, fkEmpresa, fkGaragem) VALUES
-            ('${uuid}', ${idEmpresa}, ${idGaragem});
+        INSERT INTO Maquina (uuid, fkEmpresa, fkGaragem, tamanhoDisco) VALUES
+            ('${uuid}', ${idEmpresa}, ${idGaragem}, ${tamanhoDisco});
     `;
 
     return database.executar(instrucaoSql);

@@ -187,7 +187,10 @@
         </header>
 
         <main class="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            <!-- SEÇÃO 1: PROGRESSÃO DA COLETA & INTEGRIDADE -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna Esquerda: Progressão da Coleta -->
                 <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-between h-full">
                     <div class="mb-4 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
@@ -195,11 +198,12 @@
                             <div class="flex items-baseline space-x-2 mt-1">
                                 <div id="kpi-total-coleta" class="text-3xl font-bold text-gray-900">-- GB</div>
                                 <div class="text-sm text-green-600 font-semibold flex items-center bg-green-50 px-2 py-0.5 rounded-full">
-                                    +5.2% <span class="text-gray-500 font-normal ml-1">vs mês passado</span>
+                                    --% <span class="text-gray-500 font-normal ml-1">vs mês passado</span>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- KPIs alinhados à direita -->
                         <div class="flex space-x-8 mt-4 md:mt-0">
                             <div class="border-l border-gray-100 pl-4">
                                 <div class="text-xs text-gray-400 uppercase font-medium">Média Diária Mensal</div>
@@ -209,33 +213,46 @@
                                 <div class="text-xs text-gray-400 uppercase font-medium">Projeção Mensal</div>
                                 <div id="kpi-projecao" class="text-lg font-semibold text-gray-700">-- GB</div>
                             </div>
+                            <!-- NOVA COLUNA: Total Mês Passado -->
+                            <div class="border-l border-gray-100 pl-4 hidden sm:block">
+                                <div class="text-xs text-gray-400 uppercase font-medium">Total Mês Passado</div>
+                                <div id="kpi-total-mes-passado" class="text-lg font-semibold text-gray-700">-- GB</div>
+                            </div>
                         </div>
                     </div>
                     <div id="progressao-chart" class="w-full h-64"></div>
                 </div>
 
+                <!-- Coluna Direita: Frota & Saúde (Empilhados) -->
                 <div class="lg:col-span-1 flex flex-col gap-6 h-full">
                     
+                    <!-- Frota Sincronizada (ATUALIZADA COM IDS) -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col justify-center flex-1">
                         <div class="flex items-center justify-between mb-2">
                             <h2 class="text-lg font-semibold text-gray-700">Frota Sincronizada</h2>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <!-- ID ADICIONADO PARA STATUS -->
+                            <span id="kpi-frota-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                 Operação Normal
                             </span>
                         </div>
                         
                         <div class="flex items-end space-x-2 mt-2">
-                            <div class="text-4xl font-bold text-gray-900">98%</div>
+                            <!-- ID ADICIONADO PARA PORCENTAGEM -->
+                            <div id="kpi-frota-percentual" class="text-4xl font-bold text-gray-900">--%</div>
                             <div class="text-sm text-gray-500 mb-1">sincronizados</div>
                         </div>
-                        <div class="text-sm text-gray-500 mt-1">142 de 145 veículos</div>
+                        <!-- ID ADICIONADO PARA DETALHES -->
+                        <div id="kpi-frota-detalhes" class="text-sm text-gray-500 mt-1">-- de -- veículos</div>
 
                         <div class="w-full bg-gray-100 rounded-full h-2.5 mt-4">
-                            <div class="bg-green-500 h-2.5 rounded-full" style="width: 98%"></div>
+                            <!-- ID ADICIONADO PARA BARRA -->
+                            <div id="kpi-frota-barra" class="bg-green-500 h-2.5 rounded-full" style="width: 0%"></div>
                         </div>
                     </div>
 
+                    <!-- Saúde do Sistema -->
                     <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col gap-4">
+                        <!-- Status Backup -->
                         <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
                             <div class="flex items-center space-x-3">
                                 <div class="p-2 bg-green-100 rounded-full">
@@ -251,6 +268,7 @@
                             <span class="text-xs font-bold text-green-700">OK</span>
                         </div>
 
+                        <!-- Arquivos Corrompidos -->
                         <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                             <div class="flex items-center space-x-3">
                                 <div class="p-2 bg-gray-200 rounded-full">
@@ -269,7 +287,9 @@
                 </div>
             </div>
 
+            <!-- SEÇÃO 2: PREVISÃO DE ARMAZENAMENTO & USO DE DISCO -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Coluna Esquerda: Previsão de Armazenamento -->
                 <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-lg font-semibold text-gray-700">Previsão de Armazenamento</h2>
@@ -279,38 +299,36 @@
                     <div class="flex flex-col md:flex-row gap-6 flex-1">
                         <div class="w-full md:w-1/3 flex flex-col space-y-6">
                             <div class="text-center md:text-left">
-                                <div class="flex items-center justify-center md:justify-start space-x-2 text-red-600 mb-1">
+                                <!-- ID ADICIONADO PARA O CONTAINER DO ALERTA -->
+                                <div id="prediction-alert-container" class="flex items-center justify-center md:justify-start space-x-2 text-red-600 mb-1">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                     </svg>
                                     <span class="text-xs font-bold uppercase tracking-wider">Atenção Crítica</span>
                                 </div>
-                                <div class="text-5xl font-bold text-gray-900">14 <span class="text-lg text-gray-500 font-normal">dias</span></div>
+                                <div class="text-5xl font-bold text-gray-900"><span id="kpi-dias-restantes">--</span> <span class="text-lg text-gray-500 font-normal">dias</span></div>
                                 <div class="text-sm text-gray-500 mt-1">Estimativa p/ disco cheio</div>
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                                 <div>
                                     <div class="text-xs text-gray-400 uppercase font-medium">Crescimento</div>
-                                    <div class="text-base font-semibold text-gray-700">+52 GB<span class="text-xs text-gray-400 font-normal">/dia</span></div>
+                                    <div id="kpi-crescimento" class="text-base font-semibold text-gray-700">-- GB<span class="text-xs text-gray-400 font-normal">/dia</span></div>
                                 </div>
                                 <div>
                                     <div class="text-xs text-gray-400 uppercase font-medium">Tendência</div>
-                                    <div class="text-base font-semibold text-red-500 flex items-center">
-                                        +12%
-                                        <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                        </svg>
+                                    <div id="kpi-tendencia" class="text-base font-semibold text-red-500 flex items-center">
+                                        --%
                                     </div>
                                 </div>
                                 <div class="col-span-2">
                                     <div class="text-xs text-gray-400 uppercase font-medium">Média Semanal</div>
                                     <div class="flex items-center justify-between">
-                                        <div class="text-base font-semibold text-gray-700">340 GB</div>
-                                        <div class="text-xs text-gray-400">vs 310 GB (Semana ant.)</div>
+                                        <div id="kpi-media-semanal-atual" class="text-base font-semibold text-gray-700">-- GB</div>
+                                        <div id="kpi-media-semanal-anterior" class="text-xs text-gray-400">vs -- GB (Semana ant.)</div>
                                     </div>
                                     <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
-                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 85%"></div>
+                                        <div id="kpi-media-semanal-barra" class="bg-blue-500 h-1.5 rounded-full" style="width: 0%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -321,28 +339,31 @@
                     </div>
                 </div>
 
+                <!-- Coluna Direita: Uso de Disco Atual -->
                 <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex flex-col h-full">
                     <h2 class="text-lg font-semibold text-gray-700 mb-0">Uso de Disco Atual</h2>
-
+                    
                     <div class="flex flex-row items-center justify-center gap-6 flex-1">
+                        <!-- Chart Container (Left) -->
                         <div class="relative flex-shrink-0">
                             <div id="uso-disco-chart"></div>
                         </div>
                         
+                        <!-- Info Container (Right) -->
                         <div class="flex flex-col justify-center space-y-6 text-left">
                             <div>
                                 <div class="text-xs text-gray-500 mb-1 flex items-center uppercase font-medium">
                                     <span class="w-2 h-2 rounded-full bg-blue-500 mr-2"></span>
                                     Usado
                                 </div>
-                                <strong class="text-gray-900 block text-4xl">8.5 TB</strong>
+                                <strong id="kpi-disco-usado" class="text-gray-900 block text-4xl">--</strong>
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500 mb-1 flex items-center uppercase font-medium">
                                     <span class="w-2 h-2 rounded-full bg-gray-200 mr-2"></span>
                                     Livre
                                 </div>
-                                <strong class="text-gray-900 block text-4xl">1.5 TB</strong>
+                                <strong id="kpi-disco-livre" class="text-gray-900 block text-4xl">--</strong>
                             </div>
                         </div>
                     </div>
@@ -361,12 +382,15 @@
     const selectedText = document.getElementById('selected-text');
     const selectedStatusDot = document.getElementById('selected-status-dot');
 
+    // Variáveis globais para os gráficos para permitir atualização
     var previsaoChart;
+    // var frotaChart; // Removido pois agora é apenas info textual
     var progressaoChart;
     var usoDiscoChart;
 
     const garagens = [
-        { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true }
+        { id: 'all', name: 'Todas as Garagens (Visão Geral)', status: 'normal', isOverview: true },
+        // Outros itens virão do fetch
     ];
 
     async function buscarGaragens() {
@@ -542,9 +566,131 @@
             let jsonGaragem = await respostaJsonGaragem.json();
             console.log("Dados recebidos da garagem:", jsonGaragem);
 
+            // 1. PROCESSAMENTO DO SERVER STATUS (ATUALIZADO COM FROTA)
+            if (jsonGaragem.serverStatus) {
+                const status = jsonGaragem.serverStatus;
+                
+                // Card Previsão de Armazenamento - ALERTA LÓGICA
+                if (status.estimatedDaysToFull !== undefined) {
+                    const daysToFull = status.estimatedDaysToFull;
+                    const today = new Date();
+                    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    const daysRemainingInMonth = lastDayOfMonth.getDate() - today.getDate();
+                    
+                    const alertContainer = document.getElementById('prediction-alert-container');
+                    
+                    if (daysToFull < daysRemainingInMonth) {
+                        // CRÍTICO
+                        alertContainer.className = "flex items-center justify-center md:justify-start space-x-2 text-red-600 mb-1";
+                        alertContainer.innerHTML = `
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span class="text-xs font-bold uppercase tracking-wider">Atenção Crítica</span>
+                        `;
+                    } else {
+                        // NORMAL
+                        alertContainer.className = "flex items-center justify-center md:justify-start space-x-2 text-green-600 mb-1";
+                        alertContainer.innerHTML = `
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-xs font-bold uppercase tracking-wider">Operação Normal</span>
+                        `;
+                    }
+
+                    document.getElementById('kpi-dias-restantes').innerText = daysToFull;
+                }
+                
+                if (status.currentDailyGrowthGb !== undefined) {
+                    document.getElementById('kpi-crescimento').innerHTML = `${status.currentDailyGrowthGb.toFixed(1)} GB<span class="text-xs text-gray-400 font-normal">/dia</span>`;
+                }
+                if (status.currentTrendPercent !== undefined) {
+                    const icon = status.currentTrendPercent >= 0 
+                        ? '<svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
+                        : ''; 
+                    document.getElementById('kpi-tendencia').innerHTML = `${status.currentTrendPercent.toFixed(1)}% ${icon}`;
+                }
+
+                // NOVA LÓGICA: Média Semanal
+                if (status.currentWeekAvgGb !== undefined && status.lastWeekAvgGb !== undefined) {
+                    const currentWeek = status.currentWeekAvgGb;
+                    const lastWeek = status.lastWeekAvgGb;
+
+                    document.getElementById('kpi-media-semanal-atual').innerText = `${currentWeek.toFixed(0)} GB`;
+                    document.getElementById('kpi-media-semanal-anterior').innerText = `vs ${lastWeek.toFixed(0)} GB (Semana ant.)`;
+
+                    let barWidth = 0;
+                    if (currentWeek > 0 || lastWeek > 0) {
+                        const maxVal = Math.max(currentWeek, lastWeek);
+                        barWidth = (currentWeek / maxVal) * 100;
+                    }
+                    if (lastWeek === 0 && currentWeek > 0) barWidth = 100;
+
+                    document.getElementById('kpi-media-semanal-barra').style.width = `${barWidth}%`;
+                }
+
+                // CARD FROTA SINCRONIZADA
+                if (status.activeBusesCount !== undefined && status.totalBusesConfigured !== undefined) {
+                    const active = status.activeBusesCount;
+                    const total = status.totalBusesConfigured;
+                    const percent = status.synchronizedFleetPercent || ((active / total) * 100);
+
+                    document.getElementById('kpi-frota-percentual').innerText = `${percent.toFixed(0)}%`;
+                    document.getElementById('kpi-frota-detalhes').innerText = `${active} de ${total} veículos`;
+                    document.getElementById('kpi-frota-barra').style.width = `${percent}%`;
+
+                    // Lógica opcional para status
+                    const statusEl = document.getElementById('kpi-frota-status');
+                    if (percent >= 90) {
+                        statusEl.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800";
+                        statusEl.innerText = "Operação Normal";
+                        document.getElementById('kpi-frota-barra').className = "bg-green-500 h-2.5 rounded-full";
+                    } else if (percent >= 75) {
+                        statusEl.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800";
+                        statusEl.innerText = "Atenção";
+                        document.getElementById('kpi-frota-barra').className = "bg-yellow-500 h-2.5 rounded-full";
+                    } else {
+                        statusEl.className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800";
+                        statusEl.innerText = "Crítico";
+                        document.getElementById('kpi-frota-barra').className = "bg-red-500 h-2.5 rounded-full";
+                    }
+                }
+
+                // Card Uso de Disco
+                let capacityGb = status.diskCapacityGb || 0;
+                let usedGb = status.lastKnownUsedGb || 0;
+                
+                if (usedGb > capacityGb * 10) {
+                     usedGb = usedGb / (1024 * 1024 * 1024);
+                }
+
+                let freeGb = status.freeDiskGb || (capacityGb - usedGb);
+                if (freeGb === 0 && capacityGb > 0) {
+                    freeGb = capacityGb - usedGb;
+                }
+
+                const formatSize = (gb) => {
+                    if (gb >= 1000) return (gb / 1000).toFixed(1) + " TB";
+                    return gb.toFixed(1) + " GB";
+                };
+
+                document.getElementById('kpi-disco-usado').innerText = formatSize(usedGb);
+                document.getElementById('kpi-disco-livre').innerText = formatSize(freeGb);
+
+                let percentUsed = 0;
+                if (capacityGb > 0) {
+                    percentUsed = (usedGb / capacityGb) * 100;
+                }
+                
+                if (usoDiscoChart) {
+                    usoDiscoChart.updateSeries([parseFloat(percentUsed.toFixed(1))]);
+                }
+            }
+
+            // 2. PROCESSAMENTO DO HISTÓRICO
             if (jsonGaragem.history) {
                 const months = Object.keys(jsonGaragem.history).sort();
-
                 const currentMonthKey = months[months.length - 1];
                 const previousMonthKey = months.length > 1 ? months[months.length - 2] : null;
 
@@ -556,11 +702,23 @@
                     
                     document.getElementById('kpi-total-coleta').innerText = totalIngested.toFixed(2) + " GB";
                     document.getElementById('kpi-projecao').innerText = projection.toFixed(2) + " GB";
-
+                    
                     const daysObj = currentMonthData.days || {};
                     const daysValues = Object.values(daysObj).map(d => d.dailyIngestedGb);
                     const avg = daysValues.length ? (daysValues.reduce((a, b) => a + b, 0) / daysValues.length) : 0;
                     document.getElementById('kpi-media-diaria').innerText = avg.toFixed(2) + " GB";
+                }
+
+                if (previousMonthKey) {
+                    const prevData = jsonGaragem.history[previousMonthKey];
+                    if (prevData && prevData.summary) {
+                        const totalPrev = prevData.summary.totalIngestedGb || 0;
+                        document.getElementById('kpi-total-mes-passado').innerText = totalPrev.toFixed(2) + " GB";
+                    } else {
+                        document.getElementById('kpi-total-mes-passado').innerText = "0.00 GB";
+                    }
+                } else {
+                    document.getElementById('kpi-total-mes-passado').innerText = "-- GB";
                 }
 
                 let labelsProgressao = [];
@@ -569,22 +727,20 @@
 
                 for (let i = 1; i <= 31; i++) {
                     let dayLabel = i.toString();
-                    let dayKey = i.toString().padStart(2, '0');
                     labelsProgressao.push(dayLabel);
 
-                    if (currentMonthData && currentMonthData.days && currentMonthData.days[dayKey]) {
-                        seriesCurrentMonth.push(currentMonthData.days[dayKey].dailyIngestedGb);
-                    } else {
-                        seriesCurrentMonth.push(0);
-                    }
+                    const getDayData = (monthData, day) => {
+                        if (!monthData || !monthData.days) return 0;
+                        if (monthData.days[day.toString()]) return monthData.days[day.toString()].dailyIngestedGb;
+                        if (monthData.days[day.toString().padStart(2, '0')]) return monthData.days[day.toString().padStart(2, '0')].dailyIngestedGb;
+                        return 0;
+                    };
 
+                    seriesCurrentMonth.push(getDayData(currentMonthData, i));
+                    
                     if (previousMonthKey) {
-                        const prevData = jsonGaragem.history[previousMonthKey];
-                        if (prevData && prevData.days && prevData.days[dayKey]) {
-                            seriesPreviousMonth.push(prevData.days[dayKey].dailyIngestedGb);
-                        } else {
-                            seriesPreviousMonth.push(0);
-                        }
+                         const prevData = jsonGaragem.history[previousMonthKey];
+                         seriesPreviousMonth.push(getDayData(prevData, i));
                     } else {
                         seriesPreviousMonth.push(0);
                     }
@@ -609,7 +765,7 @@
                 if (currentMonthData && currentMonthData.days) {
                      const daysKeys = Object.keys(currentMonthData.days).sort((a, b) => parseInt(a) - parseInt(b));
                      daysKeys.forEach(dayKey => {
-                         previsaoLabels.push(parseInt(dayKey).toString());
+                         previsaoLabels.push(parseInt(dayKey).toString()); 
                          previsaoData.push(currentMonthData.days[dayKey].dailyIngestedGb);
                      });
                 }
@@ -638,6 +794,7 @@
 
         const chartDates = generateDates();
 
+        // 1. Chart Previsão
         var previsaoOptions = {
             series: [{
                 name: 'GB Usado',
@@ -645,7 +802,7 @@
             }],
             chart: {
                 type: 'area',
-                height: 250,
+                height: 250, // Altura fixa de volta
                 toolbar: { show: false },
                 zoom: { enabled: false },
                 fontFamily: 'Inter, sans-serif'
@@ -678,12 +835,13 @@
         previsaoChart = new ApexCharts(document.querySelector("#previsao-chart"), previsaoOptions);
         previsaoChart.render();
 
+        // 2. Chart Uso Disco (ATUALIZADO: GAUGE FINA + APROXIMAÇÃO)
         var usoDiscoOptions = {
-            series: [85],
+            series: [0], // Inicia zerado
             chart: {
                 type: 'radialBar',
-                height: 350,
-                width: 300,
+                height: 350, // Altura significativamente maior
+                width: 300,  // Largura controlada
                 offsetY: 0
             },
             colors: ['#3B82F6'],
@@ -693,7 +851,7 @@
                     endAngle: 135,
                     hollow: {
                         margin: 15,
-                        size: '75%',
+                        size: '75%', // Linha mais fina (era 60%, agora 75% aumenta o "buraco")
                         background: 'transparent',
                     },
                     track: {
@@ -723,26 +881,27 @@
                     }
                 }
             },
-            labels: ['Utilizado'],
+            labels: ['Utilizado'], // Texto "Utilizado" dentro do gráfico
             stroke: { lineCap: 'round' }
         };
         usoDiscoChart = new ApexCharts(document.querySelector("#uso-disco-chart"), usoDiscoOptions);
         usoDiscoChart.render();
 
+        // 3. Chart Progressão
         var progressaoOptions = {
             series: [
                 { name: 'Mês Atual', data: [] },
                 { name: 'Mês Passado', data: [] }
             ],
             chart: {
-                height: 250,
+                height: 250, // Restaurado altura fixa conforme pedido
                 type: 'area',   
                 toolbar: { show: false },
                 zoom: { enabled: false }
             },
-            colors: ['#3B82F6', '#EF4444'],
+            colors: ['#3B82F6', '#EF4444'], // Azul para Atual, Vermelho para Passado
             dataLabels: { enabled: false },
-            stroke: { curve: 'smooth', width: 3, dashArray: [0, 5] },
+            stroke: { curve: 'smooth', width: 3, dashArray: [0, 5] }, // DashArray: Solido para atual, tracejado para passado
             fill: {
                 type: 'gradient',
                 gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.1, stops: [0, 90, 100] }

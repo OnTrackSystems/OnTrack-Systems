@@ -53,8 +53,9 @@ function adicionarServidor(req, res) {
     let uuid = req.body.uuid;
     let idEmpresa = req.body.idEmpresa;
     let idGaragem = req.body.idGaragem;
+    let tamanhoDisco = req.body.tamanhoDisco;
 
-    maquinaModel.adicionarServidor(uuid, idEmpresa, idGaragem).then((resultado) => {
+    maquinaModel.adicionarServidor(uuid, idEmpresa, idGaragem, tamanhoDisco).then((resultado) => {
         res.status(200).send("✅ Servidor cadastrado com sucesso!");
     });
 }

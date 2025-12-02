@@ -8,6 +8,14 @@ function listarGaragens(req, res) {
     });
 }
 
+function getTamanhoDisco(req, res) {
+    let idGaragem = req.params.idGaragem;
+
+    dashDadosModel.getTamanhoDisco(idGaragem).then((resultado) => {
+        res.status(200).json(resultado);
+    });
+}
+
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 async function getJsonDashDados(req, res){
@@ -35,5 +43,6 @@ async function getJsonDashDados(req, res){
 
 module.exports = {
     listarGaragens,
-    getJsonDashDados
+    getJsonDashDados,
+    getTamanhoDisco
 }
