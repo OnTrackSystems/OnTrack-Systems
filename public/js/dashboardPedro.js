@@ -3,6 +3,9 @@ var throughputChart;
 var correlationChart;
 var distribuicaoChart;
 
+// 1. Defina o endereço do seu backend (Verifique se a porta no .env é 3333 ou 3000)
+const API_BASE_URL = "http://localhost:3333"; 
+
 // Define a garagem (busca da sessão ou usa valor padrão)
 const idGaragem = sessionStorage.ID_GARAGEM || "18897";
 
@@ -14,7 +17,8 @@ async function atualizarPeriodo(periodo) {
     atualizarBotoesAtivos(periodo);
 
     try {
-        const response = await fetch(`/dashDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`);
+        // 2. Use a URL completa aqui
+        const response = await fetch(`${API_BASE_URL}/dashTransferenciaDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`);
         
         if (!response.ok) {
             throw new Error(`Erro HTTP: ${response.status}`);

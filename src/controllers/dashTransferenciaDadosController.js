@@ -9,43 +9,61 @@ function listarGaragens(req, res) {
     });
 }
 
-async function getJsonDashDados(req, res){
+async function getJsonDashDados(req, res) {
     let idGaragem = req.params.idGaragem;
-    
-    // Se o período não for informado, o padrão vai ser 24h
-    let periodo = req.query.periodo || '24h'; 
+    let periodo = req.query.periodo || '24h';
 
+    // Configuração do cliente S3
     const s3Client = new S3Client({
         region: "us-east-1",
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            sessionToken: process.env.AWS_SESSION_TOKEN 
+        }
     });
 
-    const nomeArquivo = `summary_${periodo}.json`;
-
-    const input = {
-        Bucket: "client-ontrack", 
-        Key: `idGaragem=${idGaragem}/${nomeArquivo}`
+    // Mapeamento: Frontend pede X -> Backend busca arquivo 2X
+    let nomeArquivo;
+    switch (periodo) {
+        case '24h':
+            nomeArquivo = 'summary_48h.json'; // 24h atual + 24h anterior
+            break;
+        case '7d':
+            nomeArquivo = 'summary_14d.json'; // 7d atual + 7d anterior
+            break;
+        case '30d':
+            nomeArquivo = 'summary_60d.json'; // 30d atual + 30d anterior
+            break;
+        default:
+            nomeArquivo = 'summary_48h.json';
+            break;
     }
 
     try {
+        const input = {
+            Bucket: "client-ontrack",
+            Key: `idGaragem=${idGaragem}/${nomeArquivo}`
+        };
+
         const command = new GetObjectCommand(input);
         const response = await s3Client.send(command);
+        
+        // Leitura do stream do S3
         const bytes = await response.Body.transformToByteArray();
-
         const jsonString = Buffer.from(bytes).toString("utf-8");
         const data = JSON.parse(jsonString);
 
-        console.log(`Dados recuperados do S3 (${input.Key}):`, data);
+        console.log(`Sucesso: Retornando ${nomeArquivo} para o período ${periodo}`);
         return res.status(200).json(data);
 
     } catch (error) {
-        console.error("Erro ao buscar objeto no S3:", error);
-        
-        // Tratamento de erro caso o arquivo não exista
-        if (error.name === 'NoSuchKey') {
-            return res.status(404).json({ message: "Arquivo JSON não encontrado para esta garagem." });
+        if (error.name === 'NoSuchKey' || error.Code === 'NoSuchKey') {
+            console.warn(`Arquivo não encontrado: ${nomeArquivo}`);
+            return res.status(404).json({ message: `Dados não encontrados para o período ${periodo}` });
         }
-        
-        return res.status(500).json({ message: "Erro interno ao buscar dados.", error: error.message });
+        console.error("Erro ao buscar no S3:", error);
+        return res.status(500).json({ message: "Erro interno ao processar dados.", error: error.message });
     }
 }
 
