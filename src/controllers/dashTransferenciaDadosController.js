@@ -15,8 +15,14 @@ async function getJsonDashDados(req, res){
     // Se o período não for informado, o padrão vai ser 24h
     let periodo = req.query.periodo || '24h'; 
 
+    // ADICIONE AS CREDENCIAIS AQUI
     const s3Client = new S3Client({
         region: "us-east-1",
+        credentials: {
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            sessionToken: process.env.AWS_SESSION_TOKEN // Se estiver usando credenciais temporárias (Academy)
+        }
     });
 
     const nomeArquivo = `summary_${periodo}.json`;

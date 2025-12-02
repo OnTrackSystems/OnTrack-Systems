@@ -23,6 +23,7 @@ var cargoRouter = require("./src/routes/cargos");
 var garagemRouter = require("./src/routes/garagens");
 var chamadosRouter = require("./src/routes/chamados");
 var dashDadosController = require("./src/routes/dashDados");
+var dashTransferenciaDadosController = require("./src/routes/dashTransferenciaDados");
 var preditivaRouter = require("./src/routes/preditiva");
 
 app.use(express.json());
@@ -38,6 +39,7 @@ app.use("/empresas", empresaRouter);
 app.use("/cargos", cargoRouter);
 app.use("/garagens", garagemRouter);
 app.use("/dashDados", dashDadosController);
+app.use("/dashTransferenciaDados", dashTransferenciaDadosController);
 app.use("/preditiva", preditivaRouter);
 app.use("/chamados", chamadosRouter);
 
