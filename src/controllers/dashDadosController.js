@@ -12,7 +12,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 async function getJsonDashDados(req, res){
     let idGaragem = req.params.idGaragem;
-    let periodo = req.query.periodo || '24h'; 
+    let periodo = req.query.periodo || '30d'; 
 
     const s3Client = new S3Client({
         region: "us-east-1",
@@ -30,61 +30,86 @@ async function getJsonDashDados(req, res){
             const bytes = await response.Body.transformToByteArray();
             return JSON.parse(Buffer.from(bytes).toString("utf-8"));
         } catch (e) {
-            // Se não achar, retorna null sem estourar erro na resposta principal ainda
             return null;
         }
     };
 
     try {
-        // 1. Busca o arquivo principal (ex: summary_24h.json)
-        let dataPrincipal = await fetchJson(`summary_${periodo}.json`);
+        let data = null;
 
-        if (!dataPrincipal) {
-            return res.status(404).json({ message: "Arquivo JSON não encontrado para esta garagem." });
-        }
+        // Lógica específica para 30 dias (usando arquivo de 60 dias)
+        if (periodo === '30d') {
+            data = await fetchJson('summary_60d.json');
+            
+            if (data && data.timeseries && data.timeseries.length > 30) {
+                const lista = data.timeseries;
+                
+                // Separa os últimos 30 dias (Atual) e os 30 anteriores (Anterior)
+                const ultimos30 = lista.slice(-30);
+                const anteriores30 = lista.slice(-60, -30);
 
-        // 2. Cálculo do "período anterior" usando summary_30d.json como base histórica
-        // Só faz sentido para 24h e 7d, pois 30d precisaria de 60d de histórico
-        if (periodo === '24h' || periodo === '7d') {
-            const data30d = await fetchJson('summary_30d.json');
+                // Calcula a proporção de volume baseada na soma de Rede_Env
+                const sumAtual = ultimos30.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
+                const sumAnterior = anteriores30.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
+                const sumTotal = sumAtual + sumAnterior;
 
-            if (data30d && data30d.timeseries && data30d.timeseries.length >= 2) {
-                const lista = data30d.timeseries;
-                let razao = 1;
+                // Distribui o total real do período (60d) proporcionalmente
+                const totalReal = data.kpis_resumo.mb_total_enviado_periodo;
+                const pesoAtual = sumTotal > 0 ? sumAtual / sumTotal : 0;
+                const pesoAnterior = sumTotal > 0 ? sumAnterior / sumTotal : 0;
 
-                if (periodo === '24h') {
-                    // Compara o último ponto (hoje/ontem recente) com o penúltimo
-                    const valorAtual = lista[lista.length - 1].Rede_Env || 0;
-                    const valorAnterior = lista[lista.length - 2].Rede_Env || 0;
-                    
-                    // Se o valor anterior for 0, evitamos divisão por zero mantendo razão 1 (sem variação)
-                    if (valorAnterior > 0) {
-                        razao = valorAtual / valorAnterior;
+                // Atualiza KPIs
+                data.kpis_resumo.mb_total_enviado_periodo = totalReal * pesoAtual;
+                data.kpis_resumo.mb_total_enviado_periodo_anterior = totalReal * pesoAnterior;
+
+                // Atualiza Timeseries para mostrar apenas os últimos 30 dias
+                data.timeseries = ultimos30;
+            }
+        } 
+        else {
+            // Para 24h e 7d, busca o arquivo padrão
+            data = await fetchJson(`summary_${periodo}.json`);
+
+            if (data) {
+                // Tenta buscar histórico (60d) para calcular variação
+                const historico = await fetchJson('summary_60d.json');
+                
+                if (historico && historico.timeseries && historico.timeseries.length >= 14) {
+                    const lista = historico.timeseries;
+                    let razao = 1;
+
+                    if (periodo === '24h') {
+                        // Compara o último dia completo com o penúltimo
+                        // (Ou os dois últimos pontos disponíveis no histórico diário)
+                        const valorAtual = lista[lista.length - 1].Rede_Env || 0;
+                        const valorAnterior = lista[lista.length - 2].Rede_Env || 0;
+                        
+                        if (valorAnterior > 0) razao = valorAtual / valorAnterior;
+                    } 
+                    else if (periodo === '7d') {
+                        // Compara a soma dos últimos 7 dias com os 7 dias anteriores
+                        const ultimos7 = lista.slice(-7);
+                        const anteriores7 = lista.slice(-14, -7);
+
+                        const somaAtual = ultimos7.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
+                        const somaAnterior = anteriores7.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
+
+                        if (somaAnterior > 0) razao = somaAtual / somaAnterior;
                     }
-                } 
-                else if (periodo === '7d' && lista.length >= 14) {
-                    // Compara a soma dos últimos 7 dias com os 7 dias anteriores a esses
-                    const ultimos7 = lista.slice(-7);
-                    const anteriores7 = lista.slice(-14, -7);
 
-                    const somaAtual = ultimos7.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
-                    const somaAnterior = anteriores7.reduce((acc, item) => acc + (item.Rede_Env || 0), 0);
-
-                    if (somaAnterior > 0) {
-                        razao = somaAtual / somaAnterior;
-                    }
+                    // Calcula o valor anterior estimado
+                    const totalAtual = data.kpis_resumo.mb_total_enviado_periodo;
+                    data.kpis_resumo.mb_total_enviado_periodo_anterior = totalAtual / razao;
                 }
-
-                // Aplica a razão inversa para descobrir quanto seria o "total anterior"
-                // Ex: Se hoje (100) é dobro de ontem (50), razão = 2. 
-                // Se total atual é 1000, total anterior estimado seria 1000 / 2 = 500.
-                const totalAtual = dataPrincipal.kpis_resumo.mb_total_enviado_periodo;
-                dataPrincipal.kpis_resumo.mb_total_enviado_periodo_anterior = totalAtual / razao;
             }
         }
 
-        console.log(`Dados recuperados e processados (${periodo}):`, dataPrincipal.kpis_resumo);
-        return res.status(200).json(dataPrincipal);
+        if (!data) {
+            return res.status(404).json({ message: "Arquivo JSON não encontrado para esta garagem." });
+        }
+
+        console.log(`Dados recuperados e processados (${periodo}):`, data.kpis_resumo);
+        return res.status(200).json(data);
 
     } catch (error) {
         console.error("Erro ao processar dados do S3:", error);
