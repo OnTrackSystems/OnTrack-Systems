@@ -35,7 +35,9 @@
             overflow-x: hidden;
         }
 
-        #sidebar-container { z-index: 1031; }
+        #sidebar-container {
+            z-index: 1031;
+        }
 
         .navbar {
             background-color: #ffffff;
@@ -43,13 +45,20 @@
             padding: 0.5rem 1.5rem;
             z-index: 1030;
             position: fixed;
-            top: 0; right: 0; height: var(--navbar-height);
-            display: flex; align-items: center; justify-content: space-between;
+            top: 0;
+            right: 0;
+            height: var(--navbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
             padding-left: calc(var(--sidebar-width) + 1.5rem);
             transition: padding-left 0.3s ease-in-out;
         }
-        body.sidebar-collapsed .navbar { padding-left: calc(var(--sidebar-collapsed-width) + 1.5rem); }
+
+        body.sidebar-collapsed .navbar {
+            padding-left: calc(var(--sidebar-collapsed-width) + 1.5rem);
+        }
 
         #main-content {
             padding-top: calc(var(--navbar-height) + 20px);
@@ -58,23 +67,44 @@
             transition: padding-left 0.3s ease-in-out;
             min-height: 100vh;
         }
-        body.sidebar-collapsed #main-content { padding-left: var(--sidebar-collapsed-width); }
+
+        body.sidebar-collapsed #main-content {
+            padding-left: var(--sidebar-collapsed-width);
+        }
 
         @media (max-width: 992px) {
-            #main-content, body.sidebar-collapsed #main-content { padding-left: 0; }
-            .navbar, body.sidebar-collapsed .navbar { padding-left: 1.5rem; width: 100%; }
+
+            #main-content,
+            body.sidebar-collapsed #main-content {
+                padding-left: 0;
+            }
+
+            .navbar,
+            body.sidebar-collapsed .navbar {
+                padding-left: 1.5rem;
+                width: 100%;
+            }
         }
+
         .progress-ring__circle {
             transition: stroke-dashoffset 0.35s, stroke 0.35s;
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
         }
+
         .modal {
-            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6);
-            display: flex; align-items: center; justify-content: center;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 9999;
         }
-        .transition-height { transition: max-height 0.28s ease; }
+
+        .transition-height {
+            transition: max-height 0.28s ease;
+        }
     </style>
 </head>
 
@@ -96,7 +126,7 @@
 
     <div id="main-content">
         <div class="p-6 md:p-8">
-            
+
             <header class="mb-8">
                 <h1 class="text-3xl font-bold text-textPrimary">Visão Geral</h1>
                 <p class="text-textSecondary mt-1">Visão objetiva do estado dos seus componentes de servidor.</p>
@@ -111,10 +141,14 @@
                         <p class="text-lg font-semibold text-textPrimary mb-1">Normal</p>
                         <div class="flex flex-col items-center mt-4 mb-6">
                             <span class="material-symbols-outlined text-success text-4xl mb-2">schedule</span>
-                            <p class="text-sm font-semibold text-textPrimary text-center">Hoje é Segunda — Carga histórica alta</p>
-                            <p class="text-sm text-textSecondary mt-1 text-center">Horário atual costuma apresentar maior volume</p>
+                            <p class="text-sm font-semibold text-textPrimary text-center">Hoje é Segunda — Carga
+                                histórica alta</p>
+                            <p class="text-sm text-textSecondary mt-1 text-center">Horário atual costuma apresentar
+                                maior volume</p>
                         </div>
-                        <button onclick="showReport('Padrão Operacional')" class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir Relatório</button>
+                        <button onclick="showReport('Padrão Operacional')"
+                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
+                            Relatório</button>
                     </div>
                 </div>
                 <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
@@ -127,7 +161,9 @@
                             <p class="text-sm font-semibold text-textPrimary mt-0">ônibus ativos</p>
                             <p class="text-sm text-textSecondary mt-1">Média para este horário: 14</p>
                         </div>
-                        <button onclick="showReport('Ônibus Ativos')" class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir Relatório</button>
+                        <button onclick="showReport('Ônibus Ativos')"
+                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
+                            Relatório</button>
                     </div>
                 </div>
                 <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
@@ -141,7 +177,9 @@
                             </p>
                             <p class="text-sm text-textSecondary mt-1">Acima do esperado</p>
                         </div>
-                        <button onclick="showReport('Comparação de Carga')" class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir Relatório</button>
+                        <button onclick="showReport('Comparação de Carga')"
+                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
+                            Relatório</button>
                     </div>
                 </div>
             </div>
@@ -151,11 +189,16 @@
                     <h3 id="modal-title" class="text-xl font-bold mb-4 text-textPrimary"></h3>
                     <table class="w-full border border-gray-200 rounded-lg mb-4">
                         <thead class="bg-gray-100">
-                            <tr><th class="text-left px-4 py-2">Data/Hora</th><th class="text-left px-4 py-2">Uso (%)</th><th class="text-left px-4 py-2">Status</th></tr>
+                            <tr>
+                                <th class="text-left px-4 py-2">Data/Hora</th>
+                                <th class="text-left px-4 py-2">Uso (%)</th>
+                                <th class="text-left px-4 py-2">Status</th>
+                            </tr>
                         </thead>
                         <tbody id="modal-table-body"></tbody>
                     </table>
-                    <button onclick="closeModal()" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Fechar</button>
+                    <button onclick="closeModal()"
+                        class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Fechar</button>
                 </div>
             </div>
 
@@ -177,7 +220,9 @@
         const charts = [];
 
         function generateUsage() { return Math.floor(Math.random() * 100); }
-        function generateNetworkMB() { return (Math.random() * 120).toFixed(1); }
+        function generateNetworkMB() {
+            return Math.round((Math.random() * 120).toFixed(1));
+        }
 
         function getStatus(usage) {
             if (usage < 70) return { text: "Normal", color: "success" };
@@ -194,28 +239,90 @@
 
         function createKPI(name, usage) {
             const status = getStatus(usage);
-            const dashArray = `${usage}, 100`;
-            const colorClasses = { success: "bg-success text-white", warning: "bg-warning text-white", danger: "bg-danger text-white" };
-            const lastUpdate = history[name].length ? history[name][history[name].length - 1].time : "—";
+
+            const colorClasses = {
+                success: "bg-success text-white",
+                warning: "bg-warning text-white",
+                danger: "bg-danger text-white",
+            };
+
+            const apexColors = {
+                success: "#10B981",
+                warning: "#F59E0B",
+                danger: "#EF4444"
+            };
+
+            const lastUpdate = history[name].length
+                ? history[name][history[name].length - 1].time
+                : "—";
+
+            const chartId = `radial-${name}-${Math.floor(Math.random() * 999999)}`;
+
+            setTimeout(() => {
+                var usoOptions = {
+                    series: [usage],
+                    chart: {
+                        type: 'radialBar',
+                        height: 200,
+                    },
+                    colors: [apexColors[status.color]],
+                    plotOptions: {
+                        radialBar: {
+                            startAngle: -135,
+                            endAngle: 135,
+                            min: 0,
+                            max: 100,
+                            hollow: {
+                                margin: 15,
+                                size: '75%',
+                                background: 'transparent',
+                            },
+                            track: {
+                                background: '#F3F4F6',
+                                strokeWidth: '100%',
+                                margin: 0,
+                            },
+                            dataLabels: {
+                                name: {
+                                    show: true,
+                                    color: '#6B7280',
+                                    fontSize: '14px',
+                                    offsetY: 20
+                                },
+                                value: {
+                                    formatter: function (val) {
+                                        return (name === "Rede") ? val + " MB/s" : val + "%";
+                                    },
+                                    color: '#111827',
+                                    fontSize: '28px',
+                                    fontWeight: 'bold',
+                                    offsetY: -10
+                                }
+                            }
+                        }
+                    },
+                    labels: ['Utilizado'],
+                    stroke: { lineCap: 'round' }
+                };
+
+                var chart = new ApexCharts(document.querySelector(`#${chartId}`), usoOptions);
+                chart.render();
+            }, 20);
 
             return `
-            <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
-              <div class="${colorClasses[status.color]} text-center py-2 font-semibold text-lg">${name}</div>
-              <div class="bg-white p-4 flex flex-col items-center justify-center">
-                <p class="text-lg font-semibold text-textPrimary mb-1">${status.text}</p>
-                <p class="text-sm text-textSecondary mb-4">Última atualização ${lastUpdate}</p>
-                <div class="relative w-24 h-24 mb-3">
-                  <svg class="w-full h-full" viewBox="0 0 36 36">
-                    <path class="text-gray-200" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"/>
-                    <path class="progress-ring__circle text-${status.color}" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="${dashArray}" stroke-linecap="round" stroke-width="3"/>
-                  </svg>
-                  <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                    <span class="text-2xl font-bold text-textPrimary">${name === "Rede" ? usage + " MB" : usage + "%"}</span>
-                  </div>
-                </div>
-                <button onclick="showReport('${name}')" class="bg-${status.color} text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">Exibir Relatório</button>
-              </div>
-            </div>`;
+    <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md">
+      <div class="${colorClasses[status.color]} text-center py-2 font-semibold text-lg">${name}</div>
+      <div class="bg-white p-4 flex flex-col items-center justify-center">
+        <p class="text-lg font-semibold text-textPrimary mb-1">${status.text}</p>
+        <p class="text-sm text-textSecondary mb-4">Última atualização ${lastUpdate}</p>
+
+        <div id="${chartId}" class="w-full flex justify-center"></div>
+
+        <button onclick="showReport('${name}')" class="bg-${status.color} text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
+          Exibir Relatório
+        </button>
+      </div>
+    </div>`;
         }
 
         function renderKPIs() {
@@ -240,13 +347,13 @@
 
             let rows = [];
             const dataSrc = history[name] && history[name].length > 0 ? history[name].slice().reverse() : [];
-            if(dataSrc.length === 0) {
-                 for (let i = 0; i < 10; i++) {
+            if (dataSrc.length === 0) {
+                for (let i = 0; i < 10; i++) {
                     const d = new Date(Date.now() - i * 60000);
                     rows.push({ time: d.toLocaleString(), value: Math.floor(Math.random() * 100) });
                 }
             } else { rows = dataSrc; }
-            
+
             tbody.innerHTML = rows.map(h => {
                 const val = Number(h.value);
                 const status = getStatus(val);
@@ -257,7 +364,7 @@
 
         function closeModal() {
             const modal = document.getElementById("report-modal");
-            if(modal) modal.classList.add("hidden");
+            if (modal) modal.classList.add("hidden");
         }
 
         function generateLabels(period) {
@@ -267,7 +374,7 @@
         }
 
         function createChartElement(id) {
-            const compName = components[id]; 
+            const compName = components[id];
             return `
             <div class="bg-white p-6 rounded-xl border border-border shadow-sm">
                 <div class="flex items-center justify-between mb-4">
@@ -384,8 +491,9 @@
 
         renderKPIs();
         renderCharts();
-        
-        if(typeof lucide !== 'undefined') lucide.createIcons();
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 </body>
+
 </html>
