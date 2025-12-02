@@ -23,7 +23,6 @@
             </div>
         </header>
 
-        <!-- KPIs -->
         <section class="grade-indicadores">
             <div class="card-padrao">
                 <div class="titulo-indicador">MTTR (Tempo Médio de Reparo)</div>
@@ -47,12 +46,12 @@
                 <div class="legenda-item">
                     <span class="legenda-bolinha bolinha-vermelha"></span>
                     <span class="legenda-texto">Crítico</span>
-                    <span class="legenda-subtexto">(Alta Prioridade)</span>
+                    <span class="legenda-subtexto">( X >= 90%)</span>
                 </div>
                 <div class="legenda-item">
                     <span class="legenda-bolinha bolinha-amarela"></span>
                     <span class="legenda-texto">Atenção</span>
-                    <span class="legenda-subtexto">(Média Prioridade)</span>
+                    <span class="legenda-subtexto">( X >= 75% )</span>
                 </div>
                 <div class="legenda-item">
                     <span class="legenda-bolinha bolinha-verde"></span>
@@ -60,11 +59,9 @@
                     <span class="legenda-subtexto">(Resolvido/Info)</span>
                 </div>
             </div>
-
         </section>
 
         <section class="secao-graficos">
-
             <div class="card-padrao">
                 <div class="titulo-grafico">Alertas Abertos por Categoria</div>
 
@@ -76,7 +73,6 @@
                     <div class="fundo-progresso">
                         <div id="barCpu" class="preenchimento-progresso status-bg-red" style="width: 0%;"></div>
                     </div>
-                    <p style="font-size: 0.75rem; margin-top: 2px; opacity: 0.7;">Incidentes de 'High Load'</p>
                 </div>
 
                 <div class="linha-categoria">
@@ -102,7 +98,8 @@
 
             <div class="card-padrao">
                 <div class="titulo-grafico">Severidade Atual</div>
-                <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Classificação dos incidentes ativos (Tempo Real)</p>
+                <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Classificação dos incidentes ativos
+                    (Tempo Real)</p>
                 <div class="container-severidade">
                     <div class="estatistica-donut">
                         <div class="indicador-circulo border-status-red status-text-red" id="bolaCrit">0</div>
@@ -150,17 +147,17 @@
                 <button id="btn-limpar" class="btn-reset">Limpar Filtros</button>
             </div>
 
-            <div style="overflow-x: auto;">
+            <div class="tabela-scroll">
                 <table id="tabela-alertas">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Status</th> 
+                            <th>Status</th>
                             <th>Severidade</th>
                             <th>Local</th>
                             <th>Categoria</th>
                             <th>Mensagem</th>
-                            <th>Data</th> 
+                            <th>Data</th>
                             <th>Ação</th>
                         </tr>
                     </thead>
@@ -179,7 +176,6 @@
                     <span>Comparativo de Incidentes (Semana Atual x Anterior)</span>
                     <span class="status-text-red"
                         style="font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
-                        ↑ Variação Estimada <span style="opacity: 0.5;">| Por Componente</span>
                     </span>
                 </div>
                 <div id="grafico-comparativo"></div>
@@ -197,12 +193,13 @@
                 <p id="modal-conteudo-dinamico">Carregando...</p>
             </div>
             <div class="modal-footer">
-                <button class="btn-acao">Exportar Log</button>
                 <button class="btn-reset fechar-modal-btn">Fechar</button>
             </div>
         </div>
     </div>
-    
-    <script src="js/dashboard.js"></script>
+
+
+    <script src="js/dashboardChamados.js"></script>
 </body>
+
 </html>
