@@ -204,26 +204,53 @@ function renderizarGraficos(lista, periodo) {
     }
 
     // --- GRÁFICO 3: Distribuição de Volume (em MB) ---
-    // Categorias ajustadas para valores reais do dataset
-    let baixo = 0, medio = 0, alto = 0, pico = 0;
-    dataThroughputMB.forEach(valor => {
-        if (valor < 50) baixo++;
-        else if (valor < 100) medio++;
-        else if (valor < 150) alto++;
-        else pico++;
-    });
+    // Categorias ajustadas por período com base nos valores reais
+    let categorias = [];
+    let contagens = [0, 0, 0, 0];
+
+    if (periodo === '24h') {
+        // 24h: menor ~20MB, maior ~44MB
+        categorias = ['Baixo (<25 MB)', 'Médio (25-32 MB)', 'Alto (32-38 MB)', 'Pico (>38 MB)'];
+        dataThroughputMB.forEach(valor => {
+            if (valor < 25) contagens[0]++;
+            else if (valor < 32) contagens[1]++;
+            else if (valor < 38) contagens[2]++;
+            else contagens[3]++;
+        });
+    } else if (periodo === '7d') {
+        // 7d: menor ~72MB, maior ~192MB
+        categorias = ['Baixo (<100 MB)', 'Médio (100-140 MB)', 'Alto (140-170 MB)', 'Pico (>170 MB)'];
+        dataThroughputMB.forEach(valor => {
+            if (valor < 100) contagens[0]++;
+            else if (valor < 140) contagens[1]++;
+            else if (valor < 170) contagens[2]++;
+            else contagens[3]++;
+        });
+    } else {
+        // 30d: menor ~550MB, maior ~840MB
+        categorias = ['Baixo (<600 MB)', 'Médio (600-700 MB)', 'Alto (700-780 MB)', 'Pico (>780 MB)'];
+        dataThroughputMB.forEach(valor => {
+            if (valor < 600) contagens[0]++;
+            else if (valor < 700) contagens[1]++;
+            else if (valor < 780) contagens[2]++;
+            else contagens[3]++;
+        });
+    }
 
     const optionsDist = {
-        series: [{ name: 'Ocorrências', data: [baixo, medio, alto, pico] }],
+        series: [{ name: 'Ocorrências', data: contagens }],
         chart: { type: 'bar', height: 350, toolbar: { show: false } },
         plotOptions: { bar: { borderRadius: 4, horizontal: false } },
-        xaxis: { categories: ['Baixo (<50 MB)', 'Médio (50-100 MB)', 'Alto (100-150 MB)', 'Pico (>150 MB)'] },
+        xaxis: { categories: categorias },
         colors: ['#2563EB'],
         tooltip: { y: { formatter: (val) => val + " ocorrências" } }
     };
 
     if (distribuicaoChart) {
-        distribuicaoChart.updateOptions({ series: [{ data: [baixo, medio, alto, pico] }] });
+        distribuicaoChart.updateOptions({ 
+            series: [{ data: contagens }],
+            xaxis: { categories: categorias }
+        });
     } else {
         const el = document.querySelector("#chart-distribuicao");
         if (el) {
