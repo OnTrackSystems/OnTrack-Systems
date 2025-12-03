@@ -139,7 +139,7 @@
                                     class="w-2 h-2 mr-2 rounded-full bg-green-500 flex-shrink-0"></span>
                                 <span id="selected-text" class="truncate">Todas as Garagens (Visão Geral)</span>
                             </span>
-                            <!-- Ícone SUBSTITUÍDO por versão "outline" (mais fina) -->
+                            <!-- Ícone outline (fino) -->
                             <svg class="w-4 h-4 ml-2 -mr-1 text-gray-400 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                             </svg>
@@ -185,7 +185,6 @@
                     <!-- Data do Monitoramento -->
                     <div class="flex flex-col">
                         <span class="text-[10px] text-gray-400 uppercase font-semibold leading-tight">Último monitoramento</span>
-                        <!-- Aumentado de text-xs para text-sm -->
                         <span id="label-ultimo-monitoramento" class="text-sm font-medium text-gray-700">--/--/---- --:--</span>
                     </div>
                 </div>
@@ -478,7 +477,7 @@
 
         if (currentUnsynchronizedBuses && currentUnsynchronizedBuses.length > 0) {
             currentUnsynchronizedBuses.forEach(bus => {
-                const date = new Date(bus.detectedAt);
+                const date = new Date(bus.detectadoEm); // Alterado para chave em PT
                 const formattedDate = date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR');
 
                 const li = document.createElement('li');
@@ -489,7 +488,7 @@
                             <i class="ri-bus-line"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-900">Ônibus ${bus.busId}</p>
+                            <p class="text-sm font-medium text-gray-900">Ônibus ${bus.idOnibus}</p> <!-- Alterado para chave em PT -->
                             <p class="text-xs text-gray-500">Erro de Sincronização</p>
                         </div>
                     </div>
@@ -535,11 +534,10 @@
         }
 
         try {
+            // 1. Lista básica
             let respostaGaragens = await fetch(`/dashDados/listarGaragens/${idEmpresa}`, {
                 method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             });
 
             if (!respostaGaragens.ok) {
@@ -547,15 +545,52 @@
                 return;
             }
 
-            let jsonGaragens = await respostaGaragens.json();
+            let listaGaragens = await respostaGaragens.json();
 
-            for (let garagem of jsonGaragens) {
-                garagens.push({
+            // 2. Para cada garagem, buscar o JSON detalhado para verificar status em paralelo
+            const statusPromises = listaGaragens.map(async (garagem) => {
+                let status = 'normal';
+                let issue = '';
+
+                try {
+                    const respDetalhe = await fetch(`/dashDados/getJsonDashDados/${garagem.idGaragem}`);
+                    if (respDetalhe.ok) {
+                        const jsonDetalhe = await respDetalhe.json();
+                        
+                        // Verificar data do monitoramento (USAR APENAS ultimoMonitoramento para o status, conforme solicitado)
+                        let dataString = jsonDetalhe.ultimoMonitoramento;
+                        if (dataString) {
+                            const dataMon = new Date(dataString);
+                            const agora = new Date();
+                            // Diferença em milissegundos
+                            const diffMs = agora - dataMon;
+                            // Converter para minutos
+                            const diffMinutes = Math.floor(diffMs / 60000);
+
+                            if (diffMinutes > 5) {
+                                status = 'critical';
+                                issue = 'Monitoramento interrompido';
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error(`Erro ao verificar status da garagem ${garagem.idGaragem}`, err);
+                }
+
+                return {
                     id: `g${garagem.idGaragem}`,
                     name: `Garagem: ${garagem.nome}`,
-                    status: 'normal'
-                });
-            }
+                    status: status,
+                    issue: issue
+                };
+            });
+
+            // Aguarda todas as verificações
+            const garagensProcessadas = await Promise.all(statusPromises);
+            
+            // Adiciona ao array global
+            garagens.push(...garagensProcessadas);
+
         } catch (e) {
             console.error("Erro ao buscar garagens:", e);
         }
@@ -625,6 +660,8 @@
         };
 
         overview.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
+        critical.forEach(item => dropdownListContainer.appendChild(createItemHTML(item))); // Exibir criticos primeiro
+        warning.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
         normal.forEach(item => dropdownListContainer.appendChild(createItemHTML(item)));
 
         if (filtered.length === 0) {
@@ -701,7 +738,7 @@
             let jsonGaragem = await respostaJsonGaragem.json();
             console.log("Dados recebidos da garagem:", jsonGaragem);
 
-            // 0. ATUALIZAR DATA DE MONITORAMENTO
+            // 0. ATUALIZAR DATA DE MONITORAMENTO (Usando chave em PT)
             if (jsonGaragem.ultimoMonitoramento) {
                 const dataMon = new Date(jsonGaragem.ultimoMonitoramento);
                 if (!isNaN(dataMon.getTime())) {
@@ -711,9 +748,9 @@
                     }).replace(',', ''); // Remove a vírgula
                     document.getElementById('label-ultimo-monitoramento').innerText = formattedDate;
                 }
-            } else if (jsonGaragem.lastUpdate) {
-                // Fallback para lastUpdate se ultimoMonitoramento não existir
-                const dataMon = new Date(jsonGaragem.lastUpdate);
+            } else if (jsonGaragem.ultimaAtualizacao) { // Alterado para nova chave
+                // Fallback para ultimaAtualizacao se ultimoMonitoramento não existir
+                const dataMon = new Date(jsonGaragem.ultimaAtualizacao);
                 if (!isNaN(dataMon.getTime())) {
                     const formattedDate = dataMon.toLocaleString('pt-BR', { 
                         day: '2-digit', month: '2-digit', year: 'numeric', 
@@ -723,13 +760,13 @@
                 }
             }
 
-            // 1. PROCESSAMENTO DO SERVER STATUS
-            if (jsonGaragem.serverStatus) {
-                const status = jsonGaragem.serverStatus;
+            // 1. PROCESSAMENTO DO STATUS SERVIDOR (NOVA CHAVE EM PT)
+            if (jsonGaragem.statusServidor) {
+                const status = jsonGaragem.statusServidor;
                 
                 // Card Previsão de Armazenamento - ALERTA LÓGICA
-                if (status.estimatedDaysToFull !== undefined) {
-                    const daysToFull = status.estimatedDaysToFull;
+                if (status.diasEstimadosParaEncher !== undefined) { // Alterado para PT
+                    const daysToFull = status.diasEstimadosParaEncher;
                     const today = new Date();
                     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
                     const daysRemainingInMonth = lastDayOfMonth.getDate() - today.getDate();
@@ -759,19 +796,19 @@
                     document.getElementById('kpi-dias-restantes').innerText = daysToFull;
                 }
                 
-                if (status.currentDailyGrowthGb !== undefined) {
-                    document.getElementById('kpi-crescimento').innerHTML = `${status.currentDailyGrowthGb.toFixed(1)} GB<span class="text-xs text-gray-400 font-normal">/dia</span>`;
+                if (status.crescimentoDiarioAtualGb !== undefined) { // Alterado para PT
+                    document.getElementById('kpi-crescimento').innerHTML = `${status.crescimentoDiarioAtualGb.toFixed(1)} GB<span class="text-xs text-gray-400 font-normal">/dia</span>`;
                 }
-                if (status.currentTrendPercent !== undefined) {
-                    const icon = status.currentTrendPercent >= 0 
+                if (status.tendenciaAtualPercentual !== undefined) { // Alterado para PT
+                    const icon = status.tendenciaAtualPercentual >= 0 
                         ? '<svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>'
                         : ''; 
-                    document.getElementById('kpi-tendencia').innerHTML = `${status.currentTrendPercent.toFixed(1)}% ${icon}`;
+                    document.getElementById('kpi-tendencia').innerHTML = `${status.tendenciaAtualPercentual.toFixed(1)}% ${icon}`;
                 }
 
-                if (status.currentWeekAvgGb !== undefined && status.lastWeekAvgGb !== undefined) {
-                    const currentWeek = status.currentWeekAvgGb;
-                    const lastWeek = status.lastWeekAvgGb;
+                if (status.mediaSemanaAtualGb !== undefined && status.mediaSemanaAnteriorGb !== undefined) { // Alterado para PT
+                    const currentWeek = status.mediaSemanaAtualGb;
+                    const lastWeek = status.mediaSemanaAnteriorGb;
 
                     document.getElementById('kpi-media-semanal-atual').innerText = `${currentWeek.toFixed(0)} GB`;
                     document.getElementById('kpi-media-semanal-anterior').innerText = `vs ${lastWeek.toFixed(0)} GB (Semana ant.)`;
@@ -787,16 +824,16 @@
                 }
 
                 // CARD FROTA SINCRONIZADA
-                if (status.activeBusesCount !== undefined && status.totalBusesInGarage !== undefined) {
-                    const active = status.activeBusesCount;
-                    const total = status.totalBusesInGarage;
-                    const percent = status.synchronizedFleetPercent || ((active / total) * 100);
+                if (status.onibusAtivosQtd !== undefined && status.totalOnibusGaragem !== undefined) { // Alterado para PT
+                    const active = status.onibusAtivosQtd;
+                    const total = status.totalOnibusGaragem;
+                    const percent = status.percentualFrotaSincronizada || ((active / total) * 100); // Alterado para PT
 
                     document.getElementById('kpi-frota-percentual').innerText = `${percent.toFixed(0)}%`;
                     document.getElementById('kpi-frota-detalhes').innerText = `${active} de ${total} veículos`;
                     document.getElementById('kpi-frota-barra').style.width = `${percent}%`;
 
-                    currentUnsynchronizedBuses = status.unsynchronizedBuses || [];
+                    currentUnsynchronizedBuses = status.onibusNaoSincronizados || []; // Alterado para PT
 
                     const statusEl = document.getElementById('kpi-frota-status');
                     if (percent >= 90) {
@@ -815,14 +852,14 @@
                 }
 
                 // Card Uso de Disco
-                let capacityGb = status.diskCapacityGb || 0;
-                let usedGb = status.lastKnownUsedGb || 0;
+                let capacityGb = status.capacidadeDiscoGb || 0; // Alterado para PT
+                let usedGb = status.ultimoUsoConhecidoGb || 0; // Alterado para PT
                 
                 if (usedGb > capacityGb * 10) {
                      usedGb = usedGb / (1024 * 1024 * 1024);
                 }
 
-                let freeGb = status.freeDiskGb || (capacityGb - usedGb);
+                let freeGb = status.discoLivreGb || (capacityGb - usedGb); // Alterado para PT
                 if (freeGb === 0 && capacityGb > 0) {
                     freeGb = capacityGb - usedGb;
                 }
@@ -845,31 +882,31 @@
                 }
             }
 
-            // 2. PROCESSAMENTO DO HISTÓRICO
-            if (jsonGaragem.history) {
-                const months = Object.keys(jsonGaragem.history).sort();
+            // 2. PROCESSAMENTO DO HISTÓRICO (NOVA CHAVE EM PT)
+            if (jsonGaragem.historico) {
+                const months = Object.keys(jsonGaragem.historico).sort();
                 const currentMonthKey = months[months.length - 1];
                 const previousMonthKey = months.length > 1 ? months[months.length - 2] : null;
 
-                const currentMonthData = jsonGaragem.history[currentMonthKey];
+                const currentMonthData = jsonGaragem.historico[currentMonthKey];
                 
-                if (currentMonthData && currentMonthData.summary) {
-                    const totalIngested = currentMonthData.summary.totalIngestedGb || 0;
-                    const projection = currentMonthData.summary.projectionGb || 0;
+                if (currentMonthData && currentMonthData.resumo) { // Alterado para PT: resumo
+                    const totalIngested = currentMonthData.resumo.totalIngeridoGb || 0; // Alterado para PT: totalIngeridoGb
+                    const projection = currentMonthData.resumo.projecaoGb || 0; // Alterado para PT: projecaoGb
                     
                     document.getElementById('kpi-total-coleta').innerText = totalIngested.toFixed(2) + " GB";
                     document.getElementById('kpi-projecao').innerText = projection.toFixed(2) + " GB";
                     
-                    const daysObj = currentMonthData.days || {};
-                    const daysValues = Object.values(daysObj).map(d => d.dailyIngestedGb);
+                    const daysObj = currentMonthData.dias || {}; // Alterado para PT: dias
+                    const daysValues = Object.values(daysObj).map(d => d.ingestaoDiariaGb); // Alterado para PT: ingestaoDiariaGb
                     const avg = daysValues.length ? (daysValues.reduce((a, b) => a + b, 0) / daysValues.length) : 0;
                     document.getElementById('kpi-media-diaria').innerText = avg.toFixed(2) + " GB";
                 }
 
                 if (previousMonthKey) {
-                    const prevData = jsonGaragem.history[previousMonthKey];
-                    if (prevData && prevData.summary) {
-                        const totalPrev = prevData.summary.totalIngestedGb || 0;
+                    const prevData = jsonGaragem.historico[previousMonthKey];
+                    if (prevData && prevData.resumo) {
+                        const totalPrev = prevData.resumo.totalIngeridoGb || 0;
                         document.getElementById('kpi-total-mes-passado').innerText = totalPrev.toFixed(2) + " GB";
                     } else {
                         document.getElementById('kpi-total-mes-passado').innerText = "0.00 GB";
@@ -887,16 +924,16 @@
                     labelsProgressao.push(dayLabel);
 
                     const getDayData = (monthData, day) => {
-                        if (!monthData || !monthData.days) return 0;
-                        if (monthData.days[day.toString()]) return monthData.days[day.toString()].dailyIngestedGb;
-                        if (monthData.days[day.toString().padStart(2, '0')]) return monthData.days[day.toString().padStart(2, '0')].dailyIngestedGb;
+                        if (!monthData || !monthData.dias) return 0;
+                        if (monthData.dias[day.toString()]) return monthData.dias[day.toString()].ingestaoDiariaGb;
+                        if (monthData.dias[day.toString().padStart(2, '0')]) return monthData.dias[day.toString().padStart(2, '0')].ingestaoDiariaGb;
                         return 0;
                     };
 
                     seriesCurrentMonth.push(getDayData(currentMonthData, i));
                     
                     if (previousMonthKey) {
-                         const prevData = jsonGaragem.history[previousMonthKey];
+                         const prevData = jsonGaragem.historico[previousMonthKey];
                          seriesPreviousMonth.push(getDayData(prevData, i));
                     } else {
                         seriesPreviousMonth.push(0);
@@ -919,11 +956,11 @@
                 let previsaoLabels = [];
                 let previsaoData = [];
                 
-                if (currentMonthData && currentMonthData.days) {
-                     const daysKeys = Object.keys(currentMonthData.days).sort((a, b) => parseInt(a) - parseInt(b));
+                if (currentMonthData && currentMonthData.dias) {
+                     const daysKeys = Object.keys(currentMonthData.dias).sort((a, b) => parseInt(a) - parseInt(b));
                      daysKeys.forEach(dayKey => {
                          previsaoLabels.push(parseInt(dayKey).toString()); 
-                         previsaoData.push(currentMonthData.days[dayKey].dailyIngestedGb);
+                         previsaoData.push(currentMonthData.dias[dayKey].ingestaoDiariaGb);
                      });
                 }
 
@@ -938,7 +975,7 @@
                 }
             }
 
-            // 3. PROCESSAMENTO DE BACKUP E ARQUIVOS
+            // 3. PROCESSAMENTO DE BACKUP E ARQUIVOS (Mantive lógica antiga para segurança, mas verifique se chaves mudaram)
             if (jsonGaragem.backup) {
                 const backup = jsonGaragem.backup;
                 const backupDateStr = backup.data.replace(' ', 'T');
