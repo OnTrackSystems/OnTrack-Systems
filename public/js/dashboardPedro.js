@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function atualizarPeriodo(periodo) {
     atualizarBotoesAtivos(periodo);
+    
+    // Mostra indicador de carregamento
+    mostrarCarregamento(true);
 
     try {
         const response = await fetch(`${API_BASE_URL}/dashTransferenciaDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`);
@@ -20,14 +23,14 @@ async function atualizarPeriodo(periodo) {
 
         const dados = await response.json();
         
-        // Usa os dados processados pelo backend
+        // Dados já otimizados pelo Lambda
         const timeseries = dados.timeseries || [];
         const kpis = dados.kpis_resumo || {};
         const alertas = dados.alertas || [];
 
-        console.log(`=== Período: ${periodo} ===`);
-        console.log('KPIs recebidas:', kpis);
-        console.log('Alertas recebidos:', alertas);
+        console.log(`=== Dashboard Pedro - Período: ${periodo} ===`);
+        console.log(`KPIs: ${kpis.mb_total_enviado_periodo}MB atual, ${kpis.mb_total_enviado_periodo_anterior}MB anterior`);
+        console.log(`Dados: ${timeseries.length} pontos, ${alertas.length} alertas`);
 
         renderizarKPIsDoBackend(kpis);
         renderizarGraficos(timeseries, periodo);
@@ -35,6 +38,27 @@ async function atualizarPeriodo(periodo) {
 
     } catch (error) {
         console.error("Erro ao carregar dashboard:", error);
+        // Mostra erro visual para o usuário
+        mostrarErro("Erro ao carregar dados. Tente novamente.");
+    } finally {
+        // Remove indicador de carregamento
+        mostrarCarregamento(false);
+    }
+}
+
+function mostrarCarregamento(mostrar) {
+    const container = document.getElementById('container-alertas');
+    if (!container) return;
+    
+    if (mostrar) {
+        container.innerHTML = '<p class="text-sm text-gray-500">🔄 Carregando dados otimizados...</p>';
+    }
+}
+
+function mostrarErro(mensagem) {
+    const container = document.getElementById('container-alertas');
+    if (container) {
+        container.innerHTML = `<p class="text-sm text-red-500">⚠️ ${mensagem}</p>`;
     }
 }
 
@@ -44,27 +68,42 @@ function renderizarAlertas(alertas) {
 
     container.innerHTML = ""; // Limpa o container
 
-    if (alertas.length === 0) {
+    if (!alertas || alertas.length === 0) {
         container.innerHTML = '<p class="text-sm text-gray-500">Nenhuma instabilidade detectada no período.</p>';
         return;
     }
 
-    alertas.forEach(alerta => {
+    // Mostra até 10 alertas para não sobrecarregar a UI
+    const alertasExibir = alertas.slice(0, 10);
+    
+    alertasExibir.forEach(alerta => {
         const div = document.createElement('div');
-        // Usa as classes enviadas pelo backend para manter o estilo
-        div.className = `flex items-center gap-4 rounded-lg border p-3 ${alerta.classes.container}`;
+        // Usa as classes enviadas pelo Lambda para manter o estilo
+        div.className = `flex items-center gap-4 rounded-lg border p-3 ${alerta.classes?.container || 'border-gray-200 bg-gray-50'}`;
+        
+        const iconeBg = alerta.classes?.iconeBg || 'bg-gray-200';
+        const tituloClass = alerta.classes?.titulo || 'text-slate-900';
+        const textoClass = alerta.classes?.texto || 'text-slate-600';
         
         div.innerHTML = `
-            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${alerta.classes.iconeBg}">
-                <span class="material-symbols-outlined">${alerta.icone}</span>
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${iconeBg}">
+                <span class="material-symbols-outlined">${alerta.icone || 'info'}</span>
             </div>
             <div class="flex flex-col">
-                <p class="font-semibold ${alerta.classes.titulo}">${alerta.titulo}</p>
-                <p class="text-sm ${alerta.classes.texto}">${alerta.mensagem}</p>
+                <p class="font-semibold ${tituloClass}">${alerta.titulo}</p>
+                <p class="text-sm ${textoClass}">${alerta.mensagem}</p>
             </div>
         `;
         container.appendChild(div);
     });
+    
+    // Adiciona contador se há mais alertas
+    if (alertas.length > 10) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = 'text-center text-sm text-gray-500 mt-2';
+        infoDiv.textContent = `+${alertas.length - 10} alertas adicionais`;
+        container.appendChild(infoDiv);
+    }
 }
 
 function renderizarKPIsDoBackend(kpis) {
@@ -120,60 +159,34 @@ function renderizarKPIsDoBackend(kpis) {
     }
 }
 
-// Função para reduzir pontos nos gráficos para melhor visualização
-function amostrarDados(lista, periodo) {
-    if (!lista || lista.length === 0) return [];
-    
-    let maxPontos;
-    let intervalo;
-    
-    // Define quantos pontos mostrar baseado no período
-    if (periodo === '24h') {
-        maxPontos = Math.min(lista.length, 24); // Máximo 24 pontos (1 por hora)
-    } else if (periodo === '7d') {
-        maxPontos = Math.min(lista.length, 28); // Máximo 28 pontos (4 por dia)
-    } else { // 30d
-        maxPontos = Math.min(lista.length, 30); // Máximo 30 pontos (1 por dia)
-    }
-    
-    // Se já temos poucos pontos, retorna todos
-    if (lista.length <= maxPontos) {
-        return lista;
-    }
-    
-    // Calcula o intervalo de amostragem
-    intervalo = Math.floor(lista.length / maxPontos);
-    
-    // Cria array com pontos amostrados
-    const dadosAmostrados = [];
-    for (let i = 0; i < lista.length; i += intervalo) {
-        dadosAmostrados.push(lista[i]);
-    }
-    
-    // Garante que o último ponto seja sempre incluído
-    if (dadosAmostrados[dadosAmostrados.length - 1] !== lista[lista.length - 1]) {
-        dadosAmostrados.push(lista[lista.length - 1]);
-    }
-    
-    return dadosAmostrados;
-}
-
 function renderizarGraficos(lista, periodo) {
     if (!lista || lista.length === 0) return;
 
-    // Aplica amostragem para melhorar visualização
-    const listaAmostrada = amostrarDados(lista, periodo);
-    console.log(`Período: ${periodo}, Pontos originais: ${lista.length}, Pontos após amostragem: ${listaAmostrada.length}`);
+    // Dados já vêm otimizados do Lambda, não precisamos de amostragem adicional
+    console.log(`Renderizando gráficos - Período: ${periodo}, Pontos: ${lista.length}`);
 
-    // --- GERAÇÃO DE LABELS PROPORCIONAL ---
-    // Distribui o tempo total do período pelo número de pontos disponíveis.
+    // --- GERAÇÃO DE LABELS OTIMIZADAS ---
+    // Lambda já entrega dados na frequência ideal para cada período
     
-    const labels = listaAmostrada.map((_, index) => {
-        const hoje = new Date();
-        const totalPontos = listaAmostrada.length;
-        // Índice invertido: 0 é "agora", totalPontos-1 é o mais antigo
-        const iInvertido = totalPontos - 1 - index;
+    const labels = lista.map((ponto, index) => {
+        // Usa timestamp real do ponto quando disponível
+        if (ponto.timestamp) {
+            try {
+                const dt = new Date(ponto.timestamp);
+                if (periodo === '24h') {
+                    return dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+                }
+            } catch (e) {
+                // Fallback para geração automática se timestamp for inválido
+            }
+        }
         
+        // Fallback: geração automática de labels
+        const hoje = new Date();
+        const totalPontos = lista.length;
+        const iInvertido = totalPontos - 1 - index;
         const dataPonto = new Date();
         
         if (periodo === '24h') {
@@ -194,17 +207,17 @@ function renderizarGraficos(lista, periodo) {
         }
     });
 
-    const dataThroughput = listaAmostrada.map(item => Number(item.Rede_Env || 0));
-    const dataCPU = listaAmostrada.map(item => Number(item.CPU || 0)); 
+    const dataThroughput = lista.map(item => Number(item.Rede_Env || 0));
+    const dataCPU = lista.map(item => Number(item.CPU || 0)); 
 
-    // Define número de ticks no eixo X baseado no período para melhor legibilidade
+    // Define número de ticks no eixo X baseado no período
     let tickAmount;
     if (periodo === '24h') {
-        tickAmount = Math.min(8, listaAmostrada.length); // Máximo 8 labels
+        tickAmount = Math.min(12, lista.length); // Máximo 12 labels para 24h
     } else if (periodo === '7d') {
-        tickAmount = Math.min(7, listaAmostrada.length); // Máximo 7 labels
+        tickAmount = Math.min(14, lista.length); // Máximo 14 labels para 7d
     } else { // 30d
-        tickAmount = Math.min(10, listaAmostrada.length); // Máximo 10 labels
+        tickAmount = Math.min(15, lista.length); // Máximo 15 labels para 30d
     }
 
     // --- GRÁFICO 1: Throughput ---
@@ -319,17 +332,34 @@ function renderizarGraficos(lista, periodo) {
 }
 
 function atualizarBotoesAtivos(periodoSelecionado) {
-    const botoes = document.querySelectorAll('[data-periodo]');
-    botoes.forEach(btn => {
-        const periodo = btn.getAttribute('data-periodo');
-        if (periodo === periodoSelecionado) {
-            btn.classList.add('bg-blue-600', 'text-white');
-            btn.classList.remove('bg-gray-200', 'text-gray-700');
-        } else {
-            btn.classList.remove('bg-blue-600', 'text-white');
-            btn.classList.add('bg-gray-200', 'text-gray-700');
+    // Remove classes ativas de todos os botões
+    const todosBotoes = ['btn-kpi-24h', 'btn-kpi-7d', 'btn-kpi-30d'];
+    todosBotoes.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('bg-slate-100', 'text-gray-700');
         }
     });
+    
+    // Adiciona classe ativa ao botão selecionado
+    let botaoAtivo;
+    switch (periodoSelecionado) {
+        case '24h':
+            botaoAtivo = document.getElementById('btn-kpi-24h');
+            break;
+        case '7d':
+            botaoAtivo = document.getElementById('btn-kpi-7d');
+            break;
+        case '30d':
+            botaoAtivo = document.getElementById('btn-kpi-30d');
+            break;
+    }
+    
+    if (botaoAtivo) {
+        botaoAtivo.classList.remove('bg-slate-100', 'text-gray-700');
+        botaoAtivo.classList.add('bg-primary', 'text-white');
+    }
 }
 
 function atualizarGrafico(periodo) {

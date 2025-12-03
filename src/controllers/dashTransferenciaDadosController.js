@@ -18,17 +18,17 @@ async function getJsonDashDados(req, res) {
         region: "us-east-1"
     });
 
-    // Mapeamento: Frontend pede X -> Backend busca arquivo 2X
+    // Mapeamento: Frontend pede X -> Backend busca arquivo otimizado
     let nomeArquivo;
     switch (periodo) {
         case '24h':
-            nomeArquivo = 'summary_48h.json'; // 24h atual + 24h anterior
+            nomeArquivo = 'summary_48h.json'; // Já processado com variação
             break;
         case '7d':
-            nomeArquivo = 'summary_14d.json'; // 7d atual + 7d anterior
+            nomeArquivo = 'summary_14d.json'; // Já processado com variação
             break;
         case '30d':
-            nomeArquivo = 'summary_60d.json'; // 30d atual + 30d anterior
+            nomeArquivo = 'summary_60d.json'; // Já processado com variação
             break;
         default:
             nomeArquivo = 'summary_48h.json';
@@ -37,7 +37,7 @@ async function getJsonDashDados(req, res) {
 
     try {
         const input = {
-            Bucket: "s3-client-ontracksystems",
+            Bucket: "client-ontrack",
             Key: `idGaragem=${idGaragem}/${nomeArquivo}`
         };
 
@@ -49,7 +49,10 @@ async function getJsonDashDados(req, res) {
         const jsonString = Buffer.from(bytes).toString("utf-8");
         const data = JSON.parse(jsonString);
 
-        console.log(`Sucesso: Retornando ${nomeArquivo} para o período ${periodo}`);
+        // O Lambda já calculou tudo: KPIs, variação, alertas e otimizou os dados
+        // Apenas retorna os dados prontos para o frontend
+        console.log(`Sucesso: Dados otimizados carregados para ${periodo} - KPIs: ${data.kpis_resumo?.mb_total_enviado_periodo}MB, Alertas: ${data.alertas?.length || 0}`);
+        
         return res.status(200).json(data);
 
     } catch (error) {
