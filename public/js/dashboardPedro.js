@@ -346,12 +346,36 @@ function renderizarGraficos(lista, periodo) {
     }
 
     // --- GRÁFICO 3: Distribuição (usa dados originais para análise completa) ---
+    // Os valores de Rede_Env representam:
+    // - 24h: Volume por hora (MB/h)
+    // - 7d: Volume por 4 horas (MB/4h) - Range observado: 49MB a 743MB
+    // - 30d: Volume por dia (MB/dia) - Range observado: 1368MB a 2373MB
+    // Ajusta as faixas de classificação de acordo com o período
+    
     const todosValoresThroughput = lista.map(item => Number(item.Rede_Env || 0));
     let baixo = 0, medio = 0, alto = 0, pico = 0;
+    
+    // Define thresholds baseados no período
+    let thresholds, labels_dist;
+    
+    if (periodo === '24h') {
+        // 24h: valores por hora (original)
+        thresholds = { baixo: 10, medio: 20, alto: 30 };
+        labels_dist = ['Baixo (<10MB)', 'Médio (10-20MB)', 'Alto (20-30MB)', 'Pico (>30MB)'];
+    } else if (periodo === '7d') {
+        // 7d: Range 49MB-743MB, dividindo em 4 faixas proporcionais
+        thresholds = { baixo: 200, medio: 400, alto: 600 };
+        labels_dist = ['Baixo (<200MB)', 'Médio (200-400MB)', 'Alto (400-600MB)', 'Pico (>600MB)'];
+    } else {
+        // 30d: Range 1368MB-2373MB, dividindo em 4 faixas proporcionais
+        thresholds = { baixo: 1500, medio: 1800, alto: 2100 };
+        labels_dist = ['Baixo (<1.5GB)', 'Médio (1.5-1.8GB)', 'Alto (1.8-2.1GB)', 'Pico (>2.1GB)'];
+    }
+    
     todosValoresThroughput.forEach(valor => {
-        if (valor < 10) baixo++;
-        else if (valor < 20) medio++;
-        else if (valor < 30) alto++;
+        if (valor < thresholds.baixo) baixo++;
+        else if (valor < thresholds.medio) medio++;
+        else if (valor < thresholds.alto) alto++;
         else pico++;
     });
 
@@ -359,12 +383,15 @@ function renderizarGraficos(lista, periodo) {
         series: [{ name: 'Ocorrências', data: [baixo, medio, alto, pico] }],
         chart: { type: 'bar', height: 350, toolbar: { show: false } },
         plotOptions: { bar: { borderRadius: 4, horizontal: false } },
-        xaxis: { categories: ['Baixo (<10MB)', 'Médio (10-20MB)', 'Alto (20-30MB)', 'Pico (>30MB)'] },
+        xaxis: { categories: labels_dist },
         colors: ['#2563EB']
     };
 
     if (distribuicaoChart) {
-        distribuicaoChart.updateOptions({ series: [{ data: [baixo, medio, alto, pico] }] });
+        distribuicaoChart.updateOptions({ 
+            series: [{ data: [baixo, medio, alto, pico] }],
+            xaxis: { categories: labels_dist }
+        });
     } else {
         const el = document.querySelector("#chart-distribuicao");
         if(el) {
