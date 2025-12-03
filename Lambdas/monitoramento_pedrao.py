@@ -24,10 +24,11 @@ RAM_BASE_GB = 2.5
 RAM_MB_POR_ONIBUS = 150      
 RUÍDO_RAM_MAXIMO = 1.5      
 
-# Rede ajustada para throughput realista em MB/s (Target: ~100-150GB/dia)
-REDE_BASE_MB = 1.1           # Base: 1.1 MB/s (Garante > 1.0 no off-peak)
-REDE_MB_POR_ONIBUS = 0.03    # Cada ônibus adiciona ~30KB/s
-RUÍDO_REDE_MAXIMO = 0.2      # Variação natural reduzida
+# Rede AJUSTADA para throughput realista em MB/s (Target: ~1GB/dia => ~1024MB/dia)
+# Para 1GB/dia: 1024 MB / 86400 segundos = ~0.0118 MB/s de média.
+REDE_BASE_MB_SEG = 0.005           # Base ajustada para MB/s
+REDE_MB_POR_ONIBUS = 0.00015       # Cada ônibus adiciona ~0.15 KB/s
+RUÍDO_REDE_MAXIMO = 0.002          # Variação natural reduzida
 
 # Padrões de aleatoriedade por dia
 def get_variacao_diaria():
@@ -71,9 +72,9 @@ def simular_dados_mes(id_garagem):
     data_final = datetime.now()
     data_inicial = data_final - timedelta(days=DIAS_PARA_SIMULAR)
    
-    # Acumuladores em GB (começam em valores iniciais realistas)
-    acumulado_rede_env = 10.0  # GB
-    acumulado_rede_rec = 5.0   # GB
+    # Acumuladores MUDADOS PARA MB (começam em valores iniciais realistas)
+    acumulado_rede_env_mb = 10240.0  # 10 GB iniciais (~10240 MB)
+    acumulado_rede_rec_mb = 5120.0   # 5 GB iniciais (~5120 MB)
     uso_disco_base = 240.0
    
     data_atual = data_inicial
@@ -85,13 +86,14 @@ def simular_dados_mes(id_garagem):
         mes = data_atual.strftime('%m')
         dia = data_atual.strftime('%d')
        
-        # Loop sobre as 24 horas... (Lógica de simulação omitida para brevidade)
+        # Loop sobre as 24 horas...
         for hora in range(24):
             dados_hora = {
                 "timestamp": [], "usuario": [], "CPU": [], "RAM": [], "RAM_Percent": [],
                 "Disco": [], "PacotesEnv": [], "PacotesRec": [], "Num_processos": [],
-                "GB_Enviados_Seg": [], "GB_Recebidos_Seg": [],  # Mudado para GB/s
-                "GB_Total_Enviados": [], "GB_Total_Recebidos": [],  # Mudado para GB
+                # NOVAS COLUNAS: MB/s e MB Total
+                "MB_Enviados_Seg": [], "MB_Recebidos_Seg": [],
+                "MB_Total_Enviados": [], "MB_Total_Recebidos": [],
                 "Onibus_Garagem": []
             }
            
@@ -114,37 +116,36 @@ def simular_dados_mes(id_garagem):
                 ram_usada_gb = min(TOTAL_RAM_GB, (RAM_BASE_GB + (num_onibus * RAM_MB_POR_ONIBUS / 1024) + ruido_ram) * variacao_dia['ram_mult'])
                 ram_percent = max(5.0, min(95.0, (ram_usada_gb / TOTAL_RAM_GB) * 100))
                
+                # CÁLCULO DE REDE AGORA É DIRETAMENTE EM MB/s
                 ruido_rede = random.uniform(-RUÍDO_REDE_MAXIMO, RUÍDO_REDE_MAXIMO)
-                mb_env_seg = max(0.5, (REDE_BASE_MB + (num_onibus * REDE_MB_POR_ONIBUS) + ruido_rede) * variacao_dia['rede_mult'] * micro_var)
+                mb_env_seg = max(0.001, (REDE_BASE_MB_SEG + (num_onibus * REDE_MB_POR_ONIBUS) + ruido_rede) * variacao_dia['rede_mult'] * micro_var)
                 
                 # Sistema de geração de anomalias e restauração
-                # 2% chance de erro crítico (<= 1 MB/s)
+                # 2% chance de erro crítico (<= 0.001 MB/s)
                 if random.random() < 0.02:
-                    mb_env_seg = random.uniform(0.3, 0.95)
+                    mb_env_seg = random.uniform(0.0005, 0.0009) # Valor crítico em MB/s
                     
                     # 40% de chance de restaurar após erro crítico (gera alerta de restauração)
-                    # Verifica se há pelo menos 2 pontos anteriores
-                    if len(dados_hora["GB_Enviados_Seg"]) >= 2:
-                        # Verifica se o ponto anterior foi crítico
-                        gb_anterior = dados_hora["GB_Enviados_Seg"][-1]
-                        mb_anterior = gb_anterior * 1024 / INTERVALO_COLETA_SEGUNDOS
+                    if len(dados_hora["MB_Enviados_Seg"]) >= 2:
+                        mb_anterior = dados_hora["MB_Enviados_Seg"][-1]
                         
-                        if mb_anterior <= 1.0 and random.random() < 0.40:
+                        if mb_anterior <= 0.001 and random.random() < 0.40:
                             # Restaura para valor normal (pico simulado)
-                            mb_env_seg = random.uniform(3.0, 5.0)
+                            mb_env_seg = random.uniform(0.005, 0.01) # Pico simulado em MB/s
                 
-                # 5% chance de warning (1.0 - 1.2 MB/s) - apenas se não for crítico
+                # 5% chance de warning (0.001 - 0.0015 MB/s) - apenas se não for crítico
                 elif random.random() < 0.05:
-                    mb_env_seg = random.uniform(1.0, 1.2)
+                    mb_env_seg = random.uniform(0.001, 0.0015)
                 
                 mb_rec_seg = mb_env_seg * random.uniform(0.08, 0.12)  # Recebimento proporcional
                 
-                # Converte MB/s para GB acumulado no intervalo
-                gb_env_delta = (mb_env_seg / 1024) * INTERVALO_COLETA_SEGUNDOS
-                gb_rec_delta = (mb_rec_seg / 1024) * INTERVALO_COLETA_SEGUNDOS
+                # Cálculo do Delta: MB/s * Intervalo = MB Acumulado no Intervalo
+                mb_env_delta = mb_env_seg * INTERVALO_COLETA_SEGUNDOS
+                mb_rec_delta = mb_rec_seg * INTERVALO_COLETA_SEGUNDOS
                 
-                acumulado_rede_env += gb_env_delta
-                acumulado_rede_rec += gb_rec_delta
+                # Acumuladores: MB acumulado
+                acumulado_rede_env_mb += mb_env_delta
+                acumulado_rede_rec_mb += mb_rec_delta
                
                 taxa_escrita_disco = 0.0001 + (num_onibus * 0.00005)
                 if random.random() > 0.5: uso_disco_base += taxa_escrita_disco
@@ -159,14 +160,18 @@ def simular_dados_mes(id_garagem):
                 dados_hora["RAM_Percent"].append(round(ram_percent, 2))
                 dados_hora["Disco"].append(round(uso_disco_base, 2))
                 # Pacotes baseados no throughput (assumindo ~1500 bytes/pacote)
-                pacotes_env = int((gb_env_delta * 1024 * 1024 * 1024) / 1500)
+                # (MB/s * 1024 * 1024) = Bytes/s. Multiplica pelo intervalo para dar total de bytes.
+                bytes_env_delta = mb_env_seg * 1024 * 1024 * INTERVALO_COLETA_SEGUNDOS
+                pacotes_env = int(bytes_env_delta / 1500)
                 dados_hora["PacotesEnv"].append(pacotes_env)
                 dados_hora["PacotesRec"].append(int(pacotes_env * 0.1))  # Proporção recv
                 dados_hora["Num_processos"].append(num_processos)
-                dados_hora["GB_Enviados_Seg"].append(round(gb_env_delta / INTERVALO_COLETA_SEGUNDOS, 8))
-                dados_hora["GB_Recebidos_Seg"].append(round(gb_rec_delta / INTERVALO_COLETA_SEGUNDOS, 8))
-                dados_hora["GB_Total_Enviados"].append(round(acumulado_rede_env, 5))
-                dados_hora["GB_Total_Recebidos"].append(round(acumulado_rede_rec, 5))
+                # MB/s já estão calculados
+                dados_hora["MB_Enviados_Seg"].append(round(mb_env_seg, 8))
+                dados_hora["MB_Recebidos_Seg"].append(round(mb_rec_seg, 8))
+                # Acumulado em MB
+                dados_hora["MB_Total_Enviados"].append(round(acumulado_rede_env_mb, 5))
+                dados_hora["MB_Total_Recebidos"].append(round(acumulado_rede_rec_mb, 5))
                 dados_hora["Onibus_Garagem"].append(num_onibus)
                
                 timestamp_simulado += timedelta(seconds=INTERVALO_COLETA_SEGUNDOS)
