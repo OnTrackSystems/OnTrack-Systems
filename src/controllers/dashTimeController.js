@@ -23,8 +23,8 @@ async function getJsonUnica(req, res) {
         region: "us-east-1"
     });
 
-    const bucketName = "s3-raw-04251055"; 
-    const nomeArquivo = `idGaragem=garagem_padrao/snapshot/coletaUnicaOTS.json`;
+    const bucketName = "s3-raw-ontracksystems"; 
+    const nomeArquivo = `idGaragem=18897/snapshot/coletaUnicaOTS.json`;
 
     console.log(`Buscando arquivo: ${nomeArquivo} no bucket: ${bucketName}`);
 
@@ -64,10 +64,10 @@ async function getJsonUnica(req, res) {
 async function getJsonRelatorio(req, res) {
     const idGaragem = req.params.idGaragem;
     const s3Client = new S3Client({ region: "us-east-1" });
-    const bucketName = "s3-client-04251055";
+    const bucketName = "s3-client-ontracksystems";
     
     // Caminho exato conforme sua print
-    const nomeArquivo = `idGaragem=garagem_padrao/relatorio/historico_geral.json`;
+    const nomeArquivo = `idGaragem=18897/relatorio/historico_geral.json`;
 
     console.log(`[Relatorio] Buscando: ${nomeArquivo}`);
 

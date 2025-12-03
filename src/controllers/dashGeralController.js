@@ -24,8 +24,8 @@ async function getJsonDashDados(req, res) {
         region: "us-east-1"
     });
 
-    const bucketName = "s3-client-04251055"; 
-    const nomeArquivo = `idGaragem=garagem_padrao/dashboard_novo.json`;
+    const bucketName = "s3-client-ontracksystems"; 
+    const nomeArquivo = `idGaragem=18897/dashboard_novo.json`;
 
     console.log(`Buscando arquivo: ${nomeArquivo} no bucket: ${bucketName}`);
 
@@ -69,9 +69,9 @@ async function getJsonKPIs(req, res) {
         region: "us-east-1"
     });
 
-    const bucketName = "s3-client-04251055"; 
+    const bucketName = "s3-client-ontracksystems"; 
 
-    const nomeArquivo = "idGaragem=garagem_padrao/relatorio_onibus.json"; 
+    const nomeArquivo = "idGaragem=18897/relatorio_onibus.json"; 
 
     console.log(`[Alertas] Buscando: ${nomeArquivo}`);
 
