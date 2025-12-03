@@ -13,28 +13,45 @@ CLIENT_BUCKET = "client-ontrack"
 TIME_RANGES: Dict[str, Dict[str, Any]] = {
     "48h": {
         "range": timedelta(hours=48),
-        "frequency": "h",           # Amostragem horária
-        "dashboard_period": 24,     # Últimas 24h para dashboard
-        "comparison_period": 24     # 24h anteriores para comparação
+        "frequency": "h",
+        "dashboard_period": 24,
+        "comparison_period": 24
     },
     "14d": {
         "range": timedelta(days=14),
-        "frequency": "4h",          # Amostragem a cada 4 horas
-        "dashboard_period": 42,     # Últimos 7d (7d * 6 pontos/dia = 42)
-        "comparison_period": 42     # 7d anteriores (42 pontos)
+        "frequency": "4h",
+        "dashboard_period": 42,
+        "comparison_period": 42
     },
     "60d": {
         "range": timedelta(days=60),
-        "frequency": "D",           # Amostragem diária
-        "dashboard_period": 30,     # Últimos 30d para dashboard
-        "comparison_period": 30     # 30d anteriores para comparação
+        "frequency": "D",
+        "dashboard_period": 30,
+        "comparison_period": 30
     }
 }
 
-# Thresholds para alertas (MB/s)
-ALERT_THRESHOLDS = {
-    "critical": 0.001,
-    "warning": 0.0015
+# Thresholds para alertas baseados nos valores REAIS de cada período
+# Valores em MB por intervalo (não MB/s)
+ALERT_THRESHOLDS_BY_PERIOD = {
+    "48h": {
+        # 24h: menor ~20MB, maior ~44MB por hora
+        "critical": 22,      # Abaixo de 22 MB/h = crítico
+        "warning": 26,       # Abaixo de 26 MB/h = aviso
+        "drop_percent": 0.25 # Queda de 25% = flutuação
+    },
+    "14d": {
+        # 7d: menor ~72MB, maior ~192MB por 4h
+        "critical": 85,      # Abaixo de 85 MB/4h = crítico
+        "warning": 110,      # Abaixo de 110 MB/4h = aviso
+        "drop_percent": 0.30 # Queda de 30% = flutuação
+    },
+    "60d": {
+        # 30d: menor ~550MB, maior ~840MB por dia
+        "critical": 580,     # Abaixo de 580 MB/dia = crítico
+        "warning": 650,      # Abaixo de 650 MB/dia = aviso
+        "drop_percent": 0.20 # Queda de 20% = flutuação
+    }
 }
 
 # Cliente S3
@@ -82,34 +99,40 @@ def get_keys_for_time_range(time_range: timedelta, id_garagem: str) -> List[str]
     return keys
 
 
-def generate_alerts(timeseries_data: List[Dict], frequency: str) -> List[Dict]:
-    """Gera alertas baseados nos dados de throughput (calculados de Volume MB para MB/s)."""
+def generate_alerts(timeseries_data: List[Dict], frequency: str, time_key: str) -> List[Dict]:
+    """Gera alertas baseados nos dados de throughput usando thresholds específicos por período."""
     alerts: List[Dict] = []
 
-    seconds_map = {"h": 3600, "4h": 14400, "D": 86400}
-    interval_seconds = seconds_map.get(frequency, 3600)
+    # Obtém thresholds específicos do período
+    thresholds = ALERT_THRESHOLDS_BY_PERIOD.get(time_key, ALERT_THRESHOLDS_BY_PERIOD["48h"])
+    critical_mb = thresholds["critical"]
+    warning_mb = thresholds["warning"]
+    drop_threshold = thresholds["drop_percent"]
+
+    # Mapeamento de unidade de tempo para exibição
+    unit_map = {"h": "hora", "4h": "4 horas", "D": "dia"}
+    time_unit = unit_map.get(frequency, "intervalo")
 
     for i, ponto in enumerate(timeseries_data):
         volume_mb = float(ponto.get("Rede_Env", 0))
-        throughput_mb_s = (volume_mb) / interval_seconds if interval_seconds > 0 else 0
 
         timestamp = ponto.get("timestamp", "")
         try:
             dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-            hora_formatada = dt.strftime("%H:%M")
+            hora_formatada = dt.strftime("%d/%m %H:%M")
         except Exception:
             hora_formatada = f"#{i}"
 
-        throughput_anterior = None
+        volume_anterior = None
         if i > 0:
-            vol_ant = float(timeseries_data[i - 1].get("Rede_Env", 0))
-            throughput_anterior = (vol_ant) / interval_seconds
+            volume_anterior = float(timeseries_data[i - 1].get("Rede_Env", 0))
 
-        if throughput_mb_s <= ALERT_THRESHOLDS["critical"]:
+        # Alerta CRÍTICO: volume muito baixo
+        if volume_mb <= critical_mb:
             alerts.append({
                 "tipo": "danger",
                 "titulo": "Throughput Crítico",
-                "mensagem": f"Envio crítico ({throughput_mb_s*1000:.3f} KB/s) detectado às {hora_formatada}.", # Ajustei label para KB/s visualmente se *1000
+                "mensagem": f"Transferência crítica ({volume_mb:.1f} MB/{time_unit}) detectada em {hora_formatada}.",
                 "timestamp": timestamp,
                 "icone": "error",
                 "classes": {
@@ -119,11 +142,12 @@ def generate_alerts(timeseries_data: List[Dict], frequency: str) -> List[Dict]:
                     "texto": "text-slate-600 dark:text-slate-400"
                 }
             })
-        elif throughput_mb_s < ALERT_THRESHOLDS["warning"]:
+        # Alerta WARNING: volume abaixo do ideal
+        elif volume_mb < warning_mb:
             alerts.append({
                 "tipo": "warning",
                 "titulo": "Throughput Baixo",
-                "mensagem": f"Envio abaixo do ideal ({throughput_mb_s*1000:.3f} KB/s) às {hora_formatada}.",
+                "mensagem": f"Transferência abaixo do ideal ({volume_mb:.1f} MB/{time_unit}) em {hora_formatada}.",
                 "timestamp": timestamp,
                 "icone": "warning",
                 "classes": {
@@ -134,13 +158,14 @@ def generate_alerts(timeseries_data: List[Dict], frequency: str) -> List[Dict]:
                 }
             })
 
-        if (throughput_anterior is not None and
-                throughput_anterior <= ALERT_THRESHOLDS["critical"] and
-                throughput_mb_s > ALERT_THRESHOLDS["warning"]):
+        # Alerta de RECUPERAÇÃO: saiu do crítico para normal
+        if (volume_anterior is not None and
+                volume_anterior <= critical_mb and
+                volume_mb > warning_mb):
             alerts.append({
                 "tipo": "success",
                 "titulo": "Conexão Restaurada",
-                "mensagem": f"Estabilidade normalizada ({throughput_mb_s*1000:.3f} KB/s) às {hora_formatada}.",
+                "mensagem": f"Transferência normalizada ({volume_mb:.1f} MB/{time_unit}) em {hora_formatada}.",
                 "timestamp": timestamp,
                 "icone": "task_alt",
                 "classes": {
@@ -151,8 +176,8 @@ def generate_alerts(timeseries_data: List[Dict], frequency: str) -> List[Dict]:
                 }
             })
 
-    # Fase 2: garante pelo menos 3 avisos de problema (danger/warning)
-    problem_alerts = [a for a in alerts if a["tipo"] in ["danger", "warning"] and a.get("titulo") != "Conexão Restaurada"]
+    # Fase 2: Detecta flutuações bruscas (quedas significativas)
+    problem_alerts = [a for a in alerts if a["tipo"] in ["danger", "warning"]]
 
     if len(problem_alerts) < 3:
         alerts_to_add = 3 - len(problem_alerts)
@@ -162,28 +187,27 @@ def generate_alerts(timeseries_data: List[Dict], frequency: str) -> List[Dict]:
 
             ponto_atual = timeseries_data[i]
             volume_mb = float(ponto_atual.get("Rede_Env", 0))
-            throughput_mb_s = (volume_mb) / interval_seconds
-            vol_ant = float(timeseries_data[i - 1].get("Rede_Env", 0))
-            throughput_anterior = (vol_ant) / interval_seconds
+            volume_anterior = float(timeseries_data[i - 1].get("Rede_Env", 0))
 
             timestamp = ponto_atual.get("timestamp", "")
             try:
                 dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
-                hora_formatada = dt.strftime("%H:%M")
+                hora_formatada = dt.strftime("%d/%m %H:%M")
             except Exception:
                 hora_formatada = f"#{i}"
 
-            already_problem_alerted = any(
+            already_alerted = any(
                 a.get("timestamp") == timestamp and a.get("tipo") in ["danger", "warning"] for a in alerts
             )
 
-            if not already_problem_alerted and throughput_anterior > 0 and throughput_mb_s > ALERT_THRESHOLDS["warning"]:
-                drop_percent = (throughput_anterior - throughput_mb_s) / throughput_anterior
-                if drop_percent >= 0.5:
+            # Detecta queda percentual significativa
+            if not already_alerted and volume_anterior > 0 and volume_mb > warning_mb:
+                drop_percent = (volume_anterior - volume_mb) / volume_anterior
+                if drop_percent >= drop_threshold:
                     alerts.append({
                         "tipo": "warning",
                         "titulo": "Flutuação de Throughput",
-                        "mensagem": f"Queda de {drop_percent*100:.0f}% no envio ({throughput_anterior*1000:.3f} -> {throughput_mb_s*1000:.3f} KB/s) às {hora_formatada}.",
+                        "mensagem": f"Queda de {drop_percent*100:.0f}% ({volume_anterior:.1f} → {volume_mb:.1f} MB) em {hora_formatada}.",
                         "timestamp": timestamp,
                         "icone": "trending_down",
                         "classes": {
@@ -205,7 +229,6 @@ def calculate_kpis_with_variation(df_filtered: pd.DataFrame, timeseries_current:
     """Calcula KPIs somando os pontos do gráfico (Volume por intervalo)."""
     summary: Dict[str, Any] = {}
 
-    # Proteções caso colunas não existam
     if "CPU" in df_filtered.columns and not df_filtered["CPU"].isnull().all():
         summary["cpu_uso_medio"] = round(df_filtered["CPU"].mean(), 2)
     else:
@@ -225,16 +248,13 @@ def calculate_kpis_with_variation(df_filtered: pd.DataFrame, timeseries_current:
 
     summary["disco_uso_gb"] = round(df_filtered["Disco"].iloc[-1], 2) if "Disco" in df_filtered.columns else 0.0
 
-    # Média de banda (MB/s) — adaptado para coluna MB
     if "MB_Enviados_Seg" in df_filtered.columns:
-        # Já está em MB, não precisa converter de GB
         summary["media_banda_periodo"] = round(df_filtered["MB_Enviados_Seg"].mean(), 6)
     else:
         summary["media_banda_periodo"] = 0.0
 
     summary["total_eventos_periodo"] = 0
 
-    # Volume do período atual e anterior (Rede_Env já está em MB)
     volume_atual_mb = sum(float(p.get("Rede_Env", 0)) for p in timeseries_current) if timeseries_current else 0.0
     volume_anterior_mb = sum(float(p.get("Rede_Env", 0)) for p in timeseries_previous) if timeseries_previous else 0.0
 
@@ -267,7 +287,6 @@ def split_timeseries_for_comparison(timeseries_full: List[Dict], config: Dict) -
         dashboard_points = int(dashboard_points * ratio)
         comparison_points = total_points - dashboard_points
 
-    # Garantir índices corretos: previous = os pontos imediatamente antes dos atuais
     timeseries_previous = timeseries_full[-(dashboard_points + comparison_points):-dashboard_points] if (dashboard_points + comparison_points) <= total_points else timeseries_full[:comparison_points]
     timeseries_current = timeseries_full[-dashboard_points:] if dashboard_points > 0 else []
 
@@ -308,35 +327,30 @@ def process_and_aggregate_data(keys: List[str], time_key: str, time_range_limit:
     df_ts = df_filtered.set_index("timestamp")
     freq = config["frequency"]
 
-    # ADAPTADO PARA COLUNAS MB
     ts_agg = df_ts.resample(freq).agg({
         "CPU": "mean",
         "RAM_Percent": "mean",
         "Onibus_Garagem": "mean",
-        "MB_Enviados_Seg": "mean",             # Alterado de GB para MB
+        "MB_Enviados_Seg": "mean",
         "Disco": "last",
-        "MB_Total_Enviados": ["max", "min"],   # Alterado de GB para MB
-        "MB_Total_Recebidos": "last"           # Alterado de GB para MB
+        "MB_Total_Enviados": ["max", "min"],
+        "MB_Total_Recebidos": "last"
     }).dropna()
 
     ts_agg.columns = ["_".join(col).strip() if isinstance(col, tuple) else col for col in ts_agg.columns.values]
 
-    # Renomeando colunas agregadas
     ts_agg.rename(columns={
         "CPU_mean": "CPU",
         "RAM_Percent_mean": "RAM_Perc",
         "Onibus_Garagem_mean": "Onibus",
-        "MB_Total_Enviados_max": "MB_Total_Max", # Alterado
-        "MB_Total_Enviados_min": "MB_Total_Min", # Alterado
-        "MB_Total_Recebidos_last": "MB_Total_Recebidos" # Alterado
+        "MB_Total_Enviados_max": "MB_Total_Max",
+        "MB_Total_Enviados_min": "MB_Total_Min",
+        "MB_Total_Recebidos_last": "MB_Total_Recebidos"
     }, inplace=True)
 
     ts_agg = ts_agg.reset_index()
     ts_agg["timestamp"] = ts_agg["timestamp"].dt.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Calcula Rede_Env (MB)
-    # Como Max e Min já estão em MB, a diferença é diretamente em MB.
-    # REMOVIDO A MULTIPLICAÇÃO POR 1024
     ts_agg["Rede_Env"] = ts_agg["MB_Total_Max"] - ts_agg["MB_Total_Min"]
 
     ts_agg = ts_agg[["timestamp", "CPU", "RAM_Perc", "Onibus", "Rede_Env", "MB_Total_Max", "MB_Total_Recebidos"]]
@@ -349,11 +363,11 @@ def process_and_aggregate_data(keys: List[str], time_key: str, time_range_limit:
 
     summary = calculate_kpis_with_variation(df_filtered, timeseries_current, timeseries_previous)
 
-    alerts = generate_alerts(timeseries_current, config["frequency"])
+    # Passa time_key para generate_alerts usar thresholds corretos
+    alerts = generate_alerts(timeseries_current, config["frequency"], time_key)
 
     print(f"Gerados {len(alerts)} alertas para {id_garagem} ({time_key})")
 
-    # Envia série combinada (anterior + atual) para que frontend possa dividir corretamente
     timeseries_combined = timeseries_previous + timeseries_current
 
     final_payload = {
