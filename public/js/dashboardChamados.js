@@ -460,7 +460,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // faz o html conforme as info coletadas
                 modalBody.innerHTML = `
-                    <p class="modal-meta"><strong>ID do Evento:</strong> <span>${idVisual}</span></p>
                     <div style="display: flex; gap: 20px; margin-bottom: 15px; font-size: 0.9rem; color: #555;">
                         <div><strong>Abertura:</strong> ${dtCriacao}</div>
                         <div><strong>Resolução:</strong> ${dtResolucao}</div>
