@@ -6,200 +6,302 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OnTrack Systems - Monitoramento de Bilhetagem</title>
 
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/estilo-alerta.css">
     <link rel="stylesheet" href="css/estilo-padrao.css">
+    <link rel="stylesheet" href="css/navbar.css"> <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        :root {
+            --primary-red: #dc3545;
+            --primary-red-darker: #b02a37;
+            --sidebar-text: #ffffff;
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 80px;
+            --navbar-height: 70px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        #sidebar-container {
+            z-index: 1031;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0.5rem 1.5rem;
+            z-index: 1030;
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: var(--navbar-height);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding-left: calc(var(--sidebar-width) + 1.5rem);
+            transition: padding-left 0.3s ease-in-out;
+        }
+
+        body.sidebar-collapsed .navbar {
+            padding-left: calc(var(--sidebar-collapsed-width) + 1.5rem);
+        }
+
+        #main-content {
+            padding-top: calc(var(--navbar-height) + 20px);
+            padding-left: var(--sidebar-width);
+            padding-right: 0;
+            transition: padding-left 0.3s ease-in-out;
+            min-height: 100vh;
+        }
+
+        body.sidebar-collapsed #main-content {
+            padding-left: var(--sidebar-collapsed-width);
+        }
+
+        @media (max-width: 992px) {
+
+            #main-content,
+            body.sidebar-collapsed #main-content {
+                padding-left: 0;
+            }
+
+            .navbar,
+            body.sidebar-collapsed .navbar {
+                padding-left: 1.5rem;
+                width: 100%;
+            }
+        }
+        
+        .container-dashboard {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="container-dashboard">
+    <div id="sidebar-container"></div>
 
-        <header class="cabecalho-principal">
-            <div class="logo-area">
-                <h1>OnTrack <span style="font-weight: 300;">Systems - Chamados</span> </h1>
-                <h1><span>Última atualizacao: <span id="ultimaAtt">Carregando...</span></span></h1>
-            </div>
-        </header>
+    <nav class="navbar">
+        <div style="display: flex; align-items: center;">
+            <button class="btn" type="button" id="sidebar-toggle" style="background:none; border:none; cursor:pointer;">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <h1 class="text-xl font-bold text-slate-800 ml-4 hidden sm:block">Dashboard de Chamados</h1>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <a href="#" style="color: #64748b;"><i class="fas fa-bell fa-lg"></i></a>
+            <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User Avatar" class="user-avatar" style="width:32px; height:32px; border-radius:50%;">
+        </div>
+    </nav>
 
-        <section class="grade-indicadores">
-            <div class="card-padrao">
-                <div class="titulo-indicador">MTTR (Tempo Médio de Reparo)</div>
-                <div class="valor-indicador" id="valorMTTR">--</div>
-                <div class="sub-indicador status-text-green">Calculado com base nos resolvidos</div>
-            </div>
+    <div id="main-content">
+        
+        <div class="container-dashboard">
 
-            <div class="card-padrao">
-                <div class="titulo-indicador">Total Alertas (Semana)</div>
-                <div class="valor-indicador" id="mediaSemanal">0</div>
-                <div class="sub-indicador">Alertas registrados na semana atual</div>
-            </div>
-
-            <div class="card-padrao">
-                <div class="titulo-indicador">Alertas Críticos Ativos</div>
-                <div class="valor-indicador status-text-red" id="indicadorCritico">0</div>
-                <div class="sub-indicador">Ação imediata necessária</div>
-            </div>
-
-            <div class="legenda-container">
-                <div class="legenda-item">
-                    <span class="legenda-bolinha bolinha-vermelha"></span>
-                    <span class="legenda-texto">Crítico</span>
-                    <span class="legenda-subtexto">( X >= 90%)</span>
+            <header class="cabecalho-principal">
+                <div class="logo-area">
+                    <h1>OnTrack <span style="font-weight: 300;">Systems - Chamados</span> </h1>
+                    <h1><span>Última atualizacao: <span id="ultimaAtt">Carregando...</span></span></h1>
                 </div>
-                <div class="legenda-item">
-                    <span class="legenda-bolinha bolinha-amarela"></span>
-                    <span class="legenda-texto">Atenção</span>
-                    <span class="legenda-subtexto">( X >= 75% )</span>
-                </div>
-                <div class="legenda-item">
-                    <span class="legenda-bolinha bolinha-verde"></span>
-                    <span class="legenda-texto">Normal</span>
-                    <span class="legenda-subtexto">(Resolvido/Info)</span>
-                </div>
-            </div>
-        </section>
+            </header>
 
-        <section class="secao-graficos">
-            <div class="card-padrao">
-                <div class="titulo-grafico">Alertas Abertos por Categoria</div>
-
-                <div class="linha-categoria">
-                    <div class="cabecalho-cat">
-                        <span><strong id="qtdCpu">0</strong> <strong>CPU</strong></span>
-                        <span id="pctCpu">0%</span>
-                    </div>
-                    <div class="fundo-progresso">
-                        <div id="barCpu" class="preenchimento-progresso status-bg-red" style="width: 0%;"></div>
-                    </div>
+            <section class="grade-indicadores">
+                <div class="card-padrao">
+                    <div class="titulo-indicador">MTTR (Tempo Médio de Reparo)</div>
+                    <div class="valor-indicador" id="valorMTTR">--</div>
+                    <div class="sub-indicador status-text-green">Calculado com base nos resolvidos</div>
                 </div>
 
-                <div class="linha-categoria">
-                    <div class="cabecalho-cat">
-                        <span><strong id="qtdRam">0</strong> <strong>Memória RAM</strong></span>
-                        <span id="pctRam">0%</span>
+                <div class="card-padrao">
+                    <div class="titulo-indicador">Total Alertas (Semana)</div>
+                    <div class="valor-indicador" id="mediaSemanal">0</div>
+                    <div class="sub-indicador">Alertas registrados na semana atual</div>
+                </div>
+
+                <div class="card-padrao">
+                    <div class="titulo-indicador">Alertas Críticos Ativos</div>
+                    <div class="valor-indicador status-text-red" id="indicadorCritico">0</div>
+                    <div class="sub-indicador">Ação imediata necessária</div>
+                </div>
+
+                <div class="legenda-container">
+                    <div class="legenda-item">
+                        <span class="legenda-bolinha bolinha-vermelha"></span>
+                        <span class="legenda-texto">Crítico</span>
+                        <span class="legenda-subtexto">( X >= 90%)</span>
                     </div>
-                    <div class="fundo-progresso">
-                        <div id="barRam" class="preenchimento-progresso status-bg-yellow" style="width: 0%;"></div>
+                    <div class="legenda-item">
+                        <span class="legenda-bolinha bolinha-amarela"></span>
+                        <span class="legenda-texto">Atenção</span>
+                        <span class="legenda-subtexto">( X >= 75% )</span>
+                    </div>
+                    <div class="legenda-item">
+                        <span class="legenda-bolinha bolinha-verde"></span>
+                        <span class="legenda-texto">Normal</span>
+                        <span class="legenda-subtexto">(Resolvido/Info)</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="secao-graficos">
+                <div class="card-padrao">
+                    <div class="titulo-grafico">Alertas Abertos por Categoria</div>
+
+                    <div class="linha-categoria">
+                        <div class="cabecalho-cat">
+                            <span><strong id="qtdCpu">0</strong> <strong>CPU</strong></span>
+                            <span id="pctCpu">0%</span>
+                        </div>
+                        <div class="fundo-progresso">
+                            <div id="barCpu" class="preenchimento-progresso status-bg-blue" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="linha-categoria">
+                        <div class="cabecalho-cat">
+                            <span><strong id="qtdRam">0</strong> <strong>Memória RAM</strong></span>
+                            <span id="pctRam">0%</span>
+                        </div>
+                        <div class="fundo-progresso">
+                            <div id="barRam" class="preenchimento-progresso status-bg-blue" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="linha-categoria">
+                        <div class="cabecalho-cat">
+                            <span><strong id="qtdDisco">0</strong> <strong>Disco / Storage</strong></span>
+                            <span id="pctDisco">0%</span>
+                        </div>
+                        <div class="fundo-progresso">
+                            <div id="barDisco" class="preenchimento-progresso status-bg-blue" style="width: 0%;"></div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="linha-categoria">
-                    <div class="cabecalho-cat">
-                        <span><strong id="qtdDisco">0</strong> <strong>Disco / Storage</strong></span>
-                        <span id="pctDisco">0%</span>
-                    </div>
-                    <div class="fundo-progresso">
-                        <div id="barDisco" class="preenchimento-progresso status-bg-blue" style="width: 0%;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-padrao">
-                <div class="titulo-grafico">Severidade Atual</div>
-                <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Classificação dos incidentes ativos
-                    (Tempo Real)</p>
-                <div class="container-severidade">
-                    <div class="estatistica-donut">
-                        <div class="indicador-circulo border-status-red status-text-red" id="bolaCrit">0</div>
-                        <span>Crítico</span>
-                    </div>
-                    <div class="estatistica-donut">
-                        <div class="indicador-circulo border-status-yellow status-text-yellow" id="bolaMed">0</div>
-                        <span>Atenção</span>
-                    </div>
-                    <div class="estatistica-donut">
-                        <div class="indicador-circulo border-status-green status-text-green">--</div>
-                        <span>Info</span>
+                <div class="card-padrao">
+                    <div class="titulo-grafico">Severidade Atual</div>
+                    <p style="font-size: 0.8rem; margin-bottom: 15px; opacity: 0.7;">Classificação dos incidentes ativos
+                        (Tempo Real)</p>
+                    <div class="container-severidade">
+                        <div class="estatistica-donut">
+                            <div class="indicador-circulo border-status-red status-text-red" id="bolaCrit">0</div>
+                            <span>Crítico</span>
+                        </div>
+                        <div class="estatistica-donut">
+                            <div class="indicador-circulo border-status-yellow status-text-yellow" id="bolaMed">0</div>
+                            <span>Atenção</span>
+                        </div>
+                        <div class="estatistica-donut">
+                            <div class="indicador-circulo border-status-green status-text-green">--</div>
+                            <span>Info</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="secao-tabela">
-            <div class="titulo-grafico">Detalhamento dos Incidentes</div>
+            <section class="secao-tabela">
+                <div class="titulo-grafico">Detalhamento dos Incidentes</div>
 
-            <div class="barra-filtros">
-                <select id="filtro-dataset" style="border: 2px solid #007bff; font-weight: bold;">
-                    <option value="geral">Visualizar: Todos (Histórico Geral)</option>
-                    <option value="abertos">Visualizar: Apenas Abertos</option>
-                </select>
+                <div class="barra-filtros">
+                    <select id="filtro-dataset" style="border: 2px solid #007bff; font-weight: bold;">
+                        <option value="geral">Visualizar: Todos (Histórico Geral)</option>
+                        <option value="abertos">Visualizar: Apenas Abertos</option>
+                    </select>
 
-                <select id="filtro-severidade">
-                    <option value="todos">Severidade: Todas</option>
-                    <option value="critico">Crítico</option>
-                    <option value="atencao">Atenção</option>
-                    <option value="info">Informativo</option>
-                </select>
+                    <select id="filtro-severidade">
+                        <option value="todos">Severidade: Todas</option>
+                        <option value="critico">Crítico</option>
+                        <option value="atencao">Atenção</option>
+                        <option value="info">Informativo</option>
+                    </select>
 
-                <select id="filtro-categoria">
-                    <option value="todos">Categoria: Todas</option>
-                    <option value="cpu">CPU</option>
-                    <option value="ram">RAM</option>
-                    <option value="disco">Disco</option>
-                </select>
+                    <select id="filtro-categoria">
+                        <option value="todos">Categoria: Todas</option>
+                        <option value="cpu">CPU</option>
+                        <option value="ram">RAM</option>
+                        <option value="disco">Disco</option>
+                    </select>
 
-                <select id="filtro-garagem">
-                    <option value="todos" selected>Local: Todos</option>
-                </select>
+                    <select id="filtro-garagem">
+                        <option value="todos" selected>Local: Todos</option>
+                    </select>
 
-                <button id="btn-limpar" class="btn-reset">Limpar Filtros</button>
-            </div>
-
-            <div class="tabela-scroll">
-                <table id="tabela-alertas">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Status</th>
-                            <th>Severidade</th>
-                            <th>Local</th>
-                            <th>Categoria</th>
-                            <th>Mensagem</th>
-                            <th>Data</th>
-                            <th>Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaFiller">
-                    </tbody>
-                </table>
-                <div id="msg-sem-resultados" style="display:none; text-align:center; padding: 20px; color: #666;">
-                    Nenhum alerta encontrado com os filtros selecionados.
+                    <button id="btn-limpar" class="btn-reset">Limpar Filtros</button>
                 </div>
-            </div>
-        </section>
 
-        <section style="margin-bottom: 20px;">
-            <div class="card-padrao">
-                <div class="titulo-grafico">
-                    <span>Comparativo de Incidentes (Semana Atual x Anterior)</span>
-                    <span class="status-text-red"
-                        style="font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
-                    </span>
+                <div class="tabela-scroll">
+                    <table id="tabela-alertas">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Status</th>
+                                <th>Severidade</th>
+                                <th>Local</th>
+                                <th>Categoria</th>
+                                <th>Mensagem</th>
+                                <th>Data</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaFiller">
+                        </tbody>
+                    </table>
+                    <div id="msg-sem-resultados" style="display:none; text-align:center; padding: 20px; color: #666;">
+                        Nenhum alerta encontrado com os filtros selecionados.
+                    </div>
                 </div>
-                <div id="grafico-comparativo"></div>
-            </div>
-        </section>
-    </div>
+            </section>
 
-    <div id="modal-overlay" class="modal-overlay">
-        <div class="modal-container card-padrao">
-            <div class="modal-header">
-                <h2>Detalhes do Incidente</h2>
-                <button class="fechar-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p id="modal-conteudo-dinamico">Carregando...</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-reset fechar-modal-btn">Fechar</button>
+            <section style="margin-bottom: 20px;">
+                <div class="card-padrao">
+                    <div class="titulo-grafico">
+                        <span>Comparativo de Incidentes (Semana Atual x Anterior)</span>
+                        <span class="status-text-red"
+                            style="font-size: 0.8rem; display: flex; align-items: center; gap: 5px;">
+                        </span>
+                    </div>
+                    <div id="grafico-comparativo"></div>
+                </div>
+            </section>
+        </div>
+
+        <div id="modal-overlay" class="modal-overlay">
+            <div class="modal-container card-padrao">
+                <div class="modal-header">
+                    <h2>Detalhes do Incidente</h2>
+                    <button class="fechar-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-conteudo-dinamico">Carregando...</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-reset fechar-modal-btn">Fechar</button>
+                </div>
             </div>
         </div>
-    </div>
-
+        </div>
 
     <script src="js/dashboardChamados.js"></script>
+    <script src="js/navbar.js"></script>
+    
+    <script>
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    </script>
 </body>
 
 </html>
