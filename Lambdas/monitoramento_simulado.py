@@ -7,7 +7,7 @@ from io import StringIO
 import time
 
 # --- CONFIGURAÇÕES GLOBAIS ---
-BUCKET_NAME = 'trusted-ontrack' 
+BUCKET_NAME = 's3-trusted-ontracksystems' 
 USUARIO_SIMULADO = 'servidor_itaimPaulista'
 DIAS_PARA_SIMULAR = 60
 INTERVALO_COLETA_SEGUNDOS = 5 
