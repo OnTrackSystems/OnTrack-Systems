@@ -6,26 +6,16 @@ function listarChamados(req,res){
     });
 }
 
-// variaveis que armazenam as aws key pra ficar mais facil de configurar
-const keyacesss = ""
-const secretkey = ""
-const sessionkey = ""
-
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3'); // requisitando o pacote
 
 async function getCallsFromBucket(req, res){
     
     const s3Client = new S3Client({
-        region: "us-east-1",
-         credentials: {
-            accessKeyId:keyacesss ,
-            secretAccessKey: secretkey,
-            sessionToken: sessionkey,
-        } // tem que configuar isso aq pra puxar do bucket
+        region: "us-east-1"
     });
 
     const input = {
-        Bucket: "awsontrackclient",  // nome do bucket
+        Bucket: "s3-client-trusted",  // nome do bucket
         Key: "chamados_dashboard.json" // nome do arquivo que voce esta puxando do bucket
     }
 
@@ -44,16 +34,11 @@ async function getCallsFromBucket(req, res){
 async function getCallsFromBucketOpen(req, res){
     
     const s3Client = new S3Client({
-        region: "us-east-1",
-         credentials: {
-            accessKeyId:keyacesss ,
-            secretAccessKey: secretkey,
-            sessionToken: sessionkey,
-        } // tem que configuar isso aq pra puxar do bucket
+        region: "us-east-1"
     });
 
     const input = {
-        Bucket: "awsontrackclient",  // nome do bucket
+        Bucket: "s3-client-ontracksystems",  // nome do bucket
         Key: "chamados_abertos.json" // nome do arquivo que voce esta puxando do bucket
     }
 

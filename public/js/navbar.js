@@ -28,11 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     <!-- SUBMENU (Sempre inicia oculto) -->
                     <ul id="dash-submenu" style="display: none; list-style: none; padding: 0; background-color: rgba(0,0,0,0.05);">
                         <li>
-                            <a class="nav-link" href="dashboard.html" style="padding-left: 3.5rem; font-size: 0.9em;">
-                                <span class="nav-link-text">Visão Geral</span>
-                            </a>
-                        </li>
-                        <li>
                             <a class="nav-link" href="dashboardDados.html" style="padding-left: 3.5rem; font-size: 0.9em;">
                                 <span class="nav-link-text">Dados Técnicos</span>
                             </a>
