@@ -21,12 +21,7 @@ async function JsonPreditiva(req, res) {
     console.log(`Buscando arquivo: ${arquivoKey}`);
 
     const s3Client = new S3Client({
-    region: "us-east-1",
-    credentials: {
-       // accessKeyId: "",
-        //secretAccessKey: "",
-        //sessionToken: ""
-    }
+    region: "us-east-1"
 })
 
     const input = {
