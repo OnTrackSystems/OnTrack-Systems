@@ -16,16 +16,15 @@ function getTamanhoDisco(req, res) {
     });
 }
 
-async function getJsonDashDados(req, res) {
+async function getJsonUnica(req, res) {
     const idGaragem = req.params.idGaragem;
 
-    // 1. Inicializa SEM credenciais. O SDK busca automaticamente no ~/.aws/credentials
     const s3Client = new S3Client({
         region: "us-east-1"
     });
 
-    const bucketName = "s3-client-04251055"; 
-    const nomeArquivo = `idGaragem=garagem_padrao/dashboard_novo.json`;
+    const bucketName = "s3-raw-04251055"; 
+    const nomeArquivo = `idGaragem=garagem_padrao/snapshot/coletaUnicaOTS.json`;
 
     console.log(`Buscando arquivo: ${nomeArquivo} no bucket: ${bucketName}`);
 
@@ -62,43 +61,33 @@ async function getJsonDashDados(req, res) {
     }
 }
 
-async function getJsonKPIs(req, res) {
+async function getJsonRelatorio(req, res) {
     const idGaragem = req.params.idGaragem;
+    const s3Client = new S3Client({ region: "us-east-1" });
+    const bucketName = "s3-client-04251055";
+    
+    // Caminho exato conforme sua print
+    const nomeArquivo = `idGaragem=garagem_padrao/relatorio/historico_geral.json`;
 
-    const s3Client = new S3Client({
-        region: "us-east-1"
-    });
+    console.log(`[Relatorio] Buscando: ${nomeArquivo}`);
 
-    const bucketName = "s3-client-04251055"; 
-
-    const nomeArquivo = "idGaragem=garagem_padrao/relatorio_onibus.json"; 
-
-    console.log(`[Alertas] Buscando: ${nomeArquivo}`);
-
-    const input = {
-        Bucket: bucketName,
-        Key: nomeArquivo
-    };
+    const input = { Bucket: bucketName, Key: nomeArquivo };
 
     try {
         const command = new GetObjectCommand(input);
         const response = await s3Client.send(command);
-
         const jsonString = await response.Body.transformToString("utf-8");
         const data = JSON.parse(jsonString);
-
         return res.status(200).json(data);
-
     } catch (error) {
-        console.error("Erro ao buscar alertas:", error);
-        return res.status(500).json({ mensagem: "Erro S3 Alertas", erro: error.message });
+        console.error("Erro S3 Relatorio:", error);
+        return res.status(500).json({ erro: error.message });
     }
 }
 
-
 module.exports = {
     listarGaragens,
-    getJsonDashDados,
-    getJsonKPIs,
-    getTamanhoDisco
+    getJsonUnica,
+    getTamanhoDisco,
+    getJsonRelatorio 
 }
