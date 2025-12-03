@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
+        <!-- Carrega a lib e o JS externo -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="js/dashboardPedro.js"></script>
+
     <style>
         .material-symbols-outlined {
             font-variation-settings:
@@ -114,44 +118,9 @@
                         <div
                             class="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-slate-800/20 min-h-[350px] lg:min-h-[400px] overflow-y-auto">
                             <p class="text-base font-medium text-slate-900 dark:text-white">Alertas de Instabilidade</p>
-                            <div class="flex flex-col gap-3">
-                                <div
-                                    class="flex items-center gap-4 rounded-lg border border-warning/50 bg-warning/10 p-3">
-                                    <div
-                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-warning/20 text-warning">
-                                        <span class="material-symbols-outlined">network_check</span>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <p class="font-semibold text-slate-900 dark:text-white">Queda Brusca de
-                                            Throughput</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Detectada queda de 40% no
-                                            envio às 14:32.</p>
-                                    </div>
-                                </div>
-                                <div
-                                    class="flex items-center gap-4 rounded-lg border border-danger/50 bg-danger/10 p-3">
-                                    <div
-                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-danger/20 text-danger">
-                                        <span class="material-symbols-outlined">error</span>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <p class="font-semibold text-slate-900 dark:text-white">Zero Throughput</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Transferência interrompida
-                                            por 5 minutos.</p>
-                                    </div>
-                                </div>
-                                <div
-                                    class="flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-100 p-3 dark:border-slate-700 dark:bg-slate-800">
-                                    <div
-                                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-success/20 text-success">
-                                        <span class="material-symbols-outlined">task_alt</span>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <p class="font-semibold text-slate-900 dark:text-white">Conexão Restaurada</p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Estabilidade normalizada
-                                            às 14:45.</p>
-                                    </div>
-                                </div>
+                            <div id="container-alertas" class="flex flex-col gap-3">
+                                <!-- Alertas serão carregados dinamicamente aqui -->
+                                <p class="text-sm text-gray-500">Carregando alertas...</p>
                             </div>
                         </div>
 
@@ -180,9 +149,7 @@
         </div>
     </div>
 
-    <!-- Carrega a lib e o JS externo -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="js/dashboardPedro.js"></script>
+
 </body>
 <script src="./js/navbar.js"></script>
 

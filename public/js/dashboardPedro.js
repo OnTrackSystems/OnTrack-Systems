@@ -19,39 +19,58 @@ async function atualizarPeriodo(periodo) {
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
         const dados = await response.json();
-        const todosDados = dados.timeseries || [];
-
-        // --- LÓGICA DE CORTE (SPLIT) CORRIGIDA ---
-        // O backend envia o dobro do período.
-        // Para garantir que pegamos os dados mais recentes corretamente, usamos slice negativo.
         
-        const totalRegistros = todosDados.length;
-        const tamanhoJanela = Math.floor(totalRegistros / 2);
-
-        // 1. Dados Atuais: Os últimos 'tamanhoJanela' registros
-        const dadosAtuais = todosDados.slice(-tamanhoJanela);
-
-        // 2. Dados Anteriores: Os registros imediatamente antes dos atuais
-        const dadosAnteriores = todosDados.slice(-tamanhoJanela * 2, -tamanhoJanela);
+        // Usa os dados processados pelo backend
+        const timeseries = dados.timeseries || [];
+        const kpis = dados.kpis_resumo || {};
+        const alertas = dados.alertas || [];
 
         console.log(`=== Período: ${periodo} ===`);
-        console.log(`Total: ${totalRegistros} | Janela: ${tamanhoJanela}`);
-        console.log(`Atuais: ${dadosAtuais.length} | Anteriores: ${dadosAnteriores.length}`);
+        console.log('KPIs recebidas:', kpis);
+        console.log('Alertas recebidos:', alertas);
 
-        renderizarKPIsCalculados(dadosAtuais, dadosAnteriores);
-        renderizarGraficos(dadosAtuais, periodo);
+        renderizarKPIsDoBackend(kpis);
+        renderizarGraficos(timeseries, periodo);
+        renderizarAlertas(alertas);
 
     } catch (error) {
         console.error("Erro ao carregar dashboard:", error);
     }
 }
 
-function renderizarKPIsCalculados(dadosAtuais, dadosAnteriores) {
-    // Função auxiliar para somar (com Number() para evitar concatenação de strings)
-    const somarRede = (lista) => lista.reduce((acc, item) => acc + Number(item.Rede_Env || 0), 0);
+function renderizarAlertas(alertas) {
+    const container = document.getElementById('container-alertas');
+    if (!container) return;
 
-    const totalAtualMB = somarRede(dadosAtuais);
-    const totalAnteriorMB = somarRede(dadosAnteriores);
+    container.innerHTML = ""; // Limpa o container
+
+    if (alertas.length === 0) {
+        container.innerHTML = '<p class="text-sm text-gray-500">Nenhuma instabilidade detectada no período.</p>';
+        return;
+    }
+
+    alertas.forEach(alerta => {
+        const div = document.createElement('div');
+        // Usa as classes enviadas pelo backend para manter o estilo
+        div.className = `flex items-center gap-4 rounded-lg border p-3 ${alerta.classes.container}`;
+        
+        div.innerHTML = `
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${alerta.classes.iconeBg}">
+                <span class="material-symbols-outlined">${alerta.icone}</span>
+            </div>
+            <div class="flex flex-col">
+                <p class="font-semibold ${alerta.classes.titulo}">${alerta.titulo}</p>
+                <p class="text-sm ${alerta.classes.texto}">${alerta.mensagem}</p>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function renderizarKPIsDoBackend(kpis) {
+    // 1. Volume Total (Vem direto do JSON, calculado corretamente no backend)
+    const totalAtualMB = kpis.mb_total_enviado_periodo || 0;
+    const totalAnteriorMB = kpis.mb_total_enviado_periodo_anterior || 0;
     
     const totalAtualGB = totalAtualMB / 1024;
     const totalAnteriorGB = totalAnteriorMB / 1024;
@@ -93,7 +112,7 @@ function renderizarKPIsCalculados(dadosAtuais, dadosAnteriores) {
         kpi2Sub.innerHTML = `<span class="${cor}">${icone} ${textoPercentual}</span> de variação`;
     }
 
-    // Última Atualização
+    // Última Atualização (Pode vir do backend ou ser o momento atual)
     const elUltima = document.getElementById('kpiUltimaAtualizacao');
     if (elUltima) {
         const hoje = new Date();
@@ -101,16 +120,57 @@ function renderizarKPIsCalculados(dadosAtuais, dadosAnteriores) {
     }
 }
 
+// Função para reduzir pontos nos gráficos para melhor visualização
+function amostrarDados(lista, periodo) {
+    if (!lista || lista.length === 0) return [];
+    
+    let maxPontos;
+    let intervalo;
+    
+    // Define quantos pontos mostrar baseado no período
+    if (periodo === '24h') {
+        maxPontos = Math.min(lista.length, 24); // Máximo 24 pontos (1 por hora)
+    } else if (periodo === '7d') {
+        maxPontos = Math.min(lista.length, 28); // Máximo 28 pontos (4 por dia)
+    } else { // 30d
+        maxPontos = Math.min(lista.length, 30); // Máximo 30 pontos (1 por dia)
+    }
+    
+    // Se já temos poucos pontos, retorna todos
+    if (lista.length <= maxPontos) {
+        return lista;
+    }
+    
+    // Calcula o intervalo de amostragem
+    intervalo = Math.floor(lista.length / maxPontos);
+    
+    // Cria array com pontos amostrados
+    const dadosAmostrados = [];
+    for (let i = 0; i < lista.length; i += intervalo) {
+        dadosAmostrados.push(lista[i]);
+    }
+    
+    // Garante que o último ponto seja sempre incluído
+    if (dadosAmostrados[dadosAmostrados.length - 1] !== lista[lista.length - 1]) {
+        dadosAmostrados.push(lista[lista.length - 1]);
+    }
+    
+    return dadosAmostrados;
+}
+
 function renderizarGraficos(lista, periodo) {
     if (!lista || lista.length === 0) return;
 
+    // Aplica amostragem para melhorar visualização
+    const listaAmostrada = amostrarDados(lista, periodo);
+    console.log(`Período: ${periodo}, Pontos originais: ${lista.length}, Pontos após amostragem: ${listaAmostrada.length}`);
+
     // --- GERAÇÃO DE LABELS PROPORCIONAL ---
     // Distribui o tempo total do período pelo número de pontos disponíveis.
-    // Isso corrige o erro de plotagem quando há muitos pontos (ex: 42 pontos em 7 dias).
     
-    const labels = lista.map((_, index) => {
+    const labels = listaAmostrada.map((_, index) => {
         const hoje = new Date();
-        const totalPontos = lista.length;
+        const totalPontos = listaAmostrada.length;
         // Índice invertido: 0 é "agora", totalPontos-1 é o mais antigo
         const iInvertido = totalPontos - 1 - index;
         
@@ -134,8 +194,18 @@ function renderizarGraficos(lista, periodo) {
         }
     });
 
-    const dataThroughput = lista.map(item => Number(item.Rede_Env || 0));
-    const dataCPU = lista.map(item => Number(item.CPU || 0)); 
+    const dataThroughput = listaAmostrada.map(item => Number(item.Rede_Env || 0));
+    const dataCPU = listaAmostrada.map(item => Number(item.CPU || 0)); 
+
+    // Define número de ticks no eixo X baseado no período para melhor legibilidade
+    let tickAmount;
+    if (periodo === '24h') {
+        tickAmount = Math.min(8, listaAmostrada.length); // Máximo 8 labels
+    } else if (periodo === '7d') {
+        tickAmount = Math.min(7, listaAmostrada.length); // Máximo 7 labels
+    } else { // 30d
+        tickAmount = Math.min(10, listaAmostrada.length); // Máximo 10 labels
+    }
 
     // --- GRÁFICO 1: Throughput ---
     const optionsThroughput = {
@@ -143,7 +213,15 @@ function renderizarGraficos(lista, periodo) {
         chart: { type: 'area', height: 350, toolbar: { show: false }, zoom: { enabled: false } },
         dataLabels: { enabled: false },
         stroke: { curve: 'smooth', width: 2 },
-        xaxis: { categories: labels, tickAmount: 10, labels: { rotate: -45, style: { fontSize: '12px' } } },
+        xaxis: { 
+            categories: labels, 
+            tickAmount: tickAmount, 
+            labels: { 
+                rotate: -45, 
+                style: { fontSize: '11px' },
+                maxHeight: 60
+            } 
+        },
         yaxis: { title: { text: 'Megabytes (MB)' } },
         colors: ['#2563EB'],
         fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.5, opacityTo: 0.05, stops: [0, 90, 100] } },
@@ -153,7 +231,15 @@ function renderizarGraficos(lista, periodo) {
     if (throughputChart) {
         throughputChart.updateOptions({
             series: [{ data: dataThroughput }],
-            xaxis: { categories: labels }
+            xaxis: { 
+                categories: labels,
+                tickAmount: tickAmount,
+                labels: { 
+                    rotate: -45, 
+                    style: { fontSize: '11px' },
+                    maxHeight: 60
+                }
+            }
         });
     } else {
         const el = document.querySelector("#chart-throughput");
@@ -170,6 +256,14 @@ function renderizarGraficos(lista, periodo) {
         stroke: { width: [0, 3] },
         dataLabels: { enabled: false },
         labels: labels,
+        xaxis: {
+            tickAmount: tickAmount,
+            labels: { 
+                rotate: -45, 
+                style: { fontSize: '11px' },
+                maxHeight: 60
+            }
+        },
         yaxis: [{ title: { text: 'Rede (MB)' } }, { opposite: true, title: { text: 'CPU (%)' }, max: 100 }],
         colors: ['#2563EB', '#DC3545'],
     };
@@ -177,7 +271,15 @@ function renderizarGraficos(lista, periodo) {
     if (correlationChart) {
         correlationChart.updateOptions({
             series: [{ data: dataThroughput }, { data: dataCPU }],
-            labels: labels
+            labels: labels,
+            xaxis: {
+                tickAmount: tickAmount,
+                labels: { 
+                    rotate: -45, 
+                    style: { fontSize: '11px' },
+                    maxHeight: 60
+                }
+            }
         });
     } else {
         const el = document.querySelector("#chart-correlation");
@@ -187,9 +289,10 @@ function renderizarGraficos(lista, periodo) {
         }
     }
 
-    // --- GRÁFICO 3: Distribuição ---
+    // --- GRÁFICO 3: Distribuição (usa dados originais para análise completa) ---
+    const todosValoresThroughput = lista.map(item => Number(item.Rede_Env || 0));
     let baixo = 0, medio = 0, alto = 0, pico = 0;
-    dataThroughput.forEach(valor => {
+    todosValoresThroughput.forEach(valor => {
         if (valor < 10) baixo++;
         else if (valor < 20) medio++;
         else if (valor < 30) alto++;
