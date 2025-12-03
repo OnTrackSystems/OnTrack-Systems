@@ -15,7 +15,7 @@ async function getCallsFromBucket(req, res){
     });
 
     const input = {
-        Bucket: "s3-client-trusted",  // nome do bucket
+        Bucket: "s3-client-ontracksystems",  // nome do bucket
         Key: "chamados_dashboard.json" // nome do arquivo que voce esta puxando do bucket
     }
 
