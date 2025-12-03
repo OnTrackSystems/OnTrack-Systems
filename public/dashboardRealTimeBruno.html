@@ -132,76 +132,76 @@
                 <p class="text-textSecondary mt-1">Visão objetiva do estado dos seus componentes de servidor.</p>
             </header>
 
+            <!-- Container dos Gráficos Redondos (KPIs de Hardware) -->
             <div id="kpi-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8"></div>
 
+            <!-- CARDS EXTERNOS (Feriados, Ônibus, Comparação) -->
             <div id="external-cards" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                
+                <!-- CARD 1: Padrão Operacional -->
                 <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
                     <div class="bg-success text-white text-center py-2 font-semibold text-lg">Padrão Operacional</div>
                     <div class="bg-white p-4 flex flex-col items-center justify-center">
-                        <p class="text-lg font-semibold text-textPrimary mb-1">Normal</p>
+                        <p id="kpi-feriado-titulo" class="text-lg font-semibold text-textPrimary mb-1">Carregando...</p>
                         <div class="flex flex-col items-center mt-4 mb-6">
-                            <span class="material-symbols-outlined text-success text-4xl mb-2">schedule</span>
-                            <p class="text-sm font-semibold text-textPrimary text-center">Hoje é Segunda — Carga
-                                histórica alta</p>
-                            <p class="text-sm text-textSecondary mt-1 text-center">Horário atual costuma apresentar
-                                maior volume</p>
+                            <span class="material-symbols-outlined text-success text-4xl mb-2">calendar_month</span>
+                            <p id="kpi-feriado-desc" class="text-sm font-semibold text-textPrimary text-center">Verificando calendário...</p>
+                            <p class="text-sm text-textSecondary mt-1 text-center">Planejamento Diário</p>
                         </div>
-                        <button onclick="showReport('Padrão Operacional')"
-                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
-                            Relatório</button>
+                        <button onclick="openModalRelatorio('feriados')" class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir Relatório</button>
                     </div>
                 </div>
+
+                <!-- CARD 2: Ônibus Ativos -->
                 <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
                     <div class="bg-success text-white text-center py-2 font-semibold text-lg">Ônibus Ativos</div>
                     <div class="bg-white p-4 flex flex-col items-center justify-center">
-                        <p class="text-lg font-semibold text-textPrimary mb-1">Normal</p>
+                        <p class="text-lg font-semibold text-textPrimary mb-1">Monitoramento</p>
                         <p class="text-sm text-textSecondary mb-2">Atualizado agora</p>
                         <div class="flex flex-col items-center mt-0 mb-4">
                             <p class="text-5xl font-extrabold leading-tight -mt-1">15</p>
                             <p class="text-sm font-semibold text-textPrimary mt-0">ônibus ativos</p>
-                            <p class="text-sm text-textSecondary mt-1">Média para este horário: 14</p>
+                            <p id="kpi-onibus-media" class="text-sm text-textSecondary mt-1">Média para este horário: --</p>
                         </div>
-                        <button onclick="showReport('Ônibus Ativos')"
-                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
-                            Relatório</button>
+                        <button class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm font-semibold cursor-not-allowed">Relatório Indisponível</button>
                     </div>
                 </div>
+
+                <!-- CARD 3: Comparação Carga -->
                 <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md bg-white">
-                    <div class="bg-danger text-white text-center py-2 font-semibold text-lg">Comparação Carga</div>
+                    <div id="card-comparacao-header" class="bg-danger text-white text-center py-2 font-semibold text-lg">Comparação Carga</div>
                     <div class="bg-white p-4 flex flex-col items-center justify-center">
-                        <p class="text-lg font-semibold text-textPrimary mb-1">Crítico</p>
-                        <p class="text-sm text-textSecondary mb-4">Atualizado agora</p>
+                        <p id="kpi-comparacao-status" class="text-lg font-semibold text-textPrimary mb-1">--</p>
+                        <p class="text-sm text-textSecondary mb-4">Diferença Percentual</p>
                         <div class="flex flex-col items-center mt-4 mb-6">
-                            <p class="text-4xl font-extrabold text-danger flex items-center gap-1">
-                                +35% <span class="material-symbols-outlined text-4xl">arrow_upward</span>
-                            </p>
-                            <p class="text-sm text-textSecondary mt-1">Acima do esperado</p>
+                            <p id="kpi-comparacao-valor" class="text-4xl font-extrabold text-danger flex items-center gap-1">--%</p>
+                            <p class="text-sm text-textSecondary mt-1">vs Esperado</p>
                         </div>
-                        <button onclick="showReport('Comparação de Carga')"
-                            class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir
-                            Relatório</button>
+                        <button onclick="openModalRelatorio('comparacao')" class="bg-success text-white px-4 py-2 rounded-lg text-sm font-semibold">Exibir Relatório</button>
                     </div>
                 </div>
             </div>
 
+            <!-- MODAL GENÉRICO -->
             <div id="report-modal" class="hidden modal">
-                <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-lg p-6">
-                    <h3 id="modal-title" class="text-xl font-bold mb-4 text-textPrimary"></h3>
-                    <table class="w-full border border-gray-200 rounded-lg mb-4">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="text-left px-4 py-2">Data/Hora</th>
-                                <th class="text-left px-4 py-2">Uso (%)</th>
-                                <th class="text-left px-4 py-2">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modal-table-body"></tbody>
-                    </table>
-                    <button onclick="closeModal()"
-                        class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Fechar</button>
+                <div class="bg-white rounded-xl shadow-lg w-11/12 max-w-2xl p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="modal-title" class="text-xl font-bold text-textPrimary">Relatório</h3>
+                        <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="overflow-x-auto max-h-96 custom-scrollbar">
+                        <table class="w-full border border-gray-200 rounded-lg mb-4">
+                            <thead class="bg-gray-100 sticky top-0"><tr id="modal-table-header"></tr></thead>
+                            <tbody id="modal-table-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="closeModal()" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Fechar</button>
+                    </div>
                 </div>
             </div>
 
+            <!-- Container dos Gráficos de Linha -->
             <div id="charts-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
 
         </div>
@@ -214,16 +214,22 @@
             theme: { extend: { colors: { success: "#10B981", warning: "#F59E0B", danger: "#DC2626", surface: "#FFFFFF", border: "#E5E7EB", textPrimary: "#111827", textSecondary: "#6B7280" }, fontFamily: { display: ["Inter", "sans-serif"] } } },
         };
 
+// --- Variáveis Globais ---
+        let globalDataCharts = null; // Dados S3 (Gráficos Linha)
+        let globalDataKPIs = null;   // Dados S3 (Cards Externos)
+        
         let activeComponents = [];
         const components = ["CPU", "RAM", "Disco", "Rede"];
-        const history = { CPU: [], RAM: [], Disco: [], Rede: [] };
         const charts = [];
+        
+        const history = { CPU: [], RAM: [], Disco: [], Rede: [] }; 
+
+        const keysMap = { "CPU": "cpu", "RAM": "ram", "Disco": "disco", "Rede": "rede" };
+        const periodMap = { "dia": "day", "semana": "week", "mês": "month" };
 
         function generateUsage() { return Math.floor(Math.random() * 100); }
-        function generateNetworkMB() {
-            return Math.round((Math.random() * 120).toFixed(1));
-        }
-
+        function generateNetworkMB() { return Math.round((Math.random() * 120).toFixed(1)); }
+        
         function getStatus(usage) {
             if (usage < 70) return { text: "Normal", color: "success" };
             if (usage < 90) return { text: "Alerta", color: "warning" };
@@ -236,67 +242,84 @@
             history[name].push({ time: timestamp, value });
             if (history[name].length > 10) history[name].shift();
         }
+        document.addEventListener("DOMContentLoaded", function() {
+            renderKPIs();
+            fetchDashboardData(); 
+            fetchKpiData();       
+        });
+
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(`/geral/getJsonDashDados/garagem_padrao`);
+                if (!response.ok) throw new Error("Erro API Gráficos");
+                globalDataCharts = await response.json();
+                renderCharts(); 
+            } catch (error) {
+                console.error(error);
+                document.getElementById("charts-container").innerHTML = `<p class="text-red-500">Erro ao carregar gráficos.</p>`;
+            }
+        }
+
+        async function fetchKpiData() {
+            try {
+                const response = await fetch(`/geral/getJsonKPIs/garagem_padrao`);
+                if (!response.ok) throw new Error("Erro API KPIs");
+                globalDataKPIs = await response.json();
+                updateKpiCards(globalDataKPIs);
+            } catch (error) { console.error(error); }
+        }
+
+        // =========================================================
+        // 2. LÓGICA DAS KPIS DE HARDWARE (Radial + Relatório)
+        // =========================================================
+
+// --- LÓGICA ORIGINAL RESTAURADA (Mock + Radial) ---
+        function renderKPIs() {
+            const container = document.getElementById("kpi-container");
+            container.innerHTML = "";
+            components.forEach((c) => {
+                // Gera dado aleatório
+                const usage = (c === "Rede") ? generateNetworkMB() : generateUsage();
+                // Salva no histórico local
+                addHistory(c, usage);
+                // Cria o card
+                container.innerHTML += createKPI(c, usage);
+            });
+        }
 
         function createKPI(name, usage) {
             const status = getStatus(usage);
-
-            const colorClasses = {
-                success: "bg-success text-white",
-                warning: "bg-warning text-white",
-                danger: "bg-danger text-white",
+            
+            // Cores específicas para o ApexCharts
+            const apexColors = { 
+                success: "#10B981", 
+                warning: "#F59E0B", 
+                danger: "#EF4444" 
             };
-
-            const apexColors = {
-                success: "#10B981",
-                warning: "#F59E0B",
-                danger: "#EF4444"
-            };
-
-            const lastUpdate = history[name].length
-                ? history[name][history[name].length - 1].time
+            
+            // Pega última atualização do histórico mockado
+            const lastUpdate = history[name].length 
+                ? history[name][history[name].length - 1].time 
                 : "—";
 
             const chartId = `radial-${name}-${Math.floor(Math.random() * 999999)}`;
 
+            // Renderiza o gráfico Radial (Redondo)
             setTimeout(() => {
                 var usoOptions = {
                     series: [usage],
-                    chart: {
-                        type: 'radialBar',
-                        height: 200,
-                    },
+                    chart: { type: 'radialBar', height: 200 },
                     colors: [apexColors[status.color]],
                     plotOptions: {
                         radialBar: {
-                            startAngle: -135,
-                            endAngle: 135,
-                            min: 0,
-                            max: 100,
-                            hollow: {
-                                margin: 15,
-                                size: '75%',
-                                background: 'transparent',
-                            },
-                            track: {
-                                background: '#F3F4F6',
-                                strokeWidth: '100%',
-                                margin: 0,
-                            },
+                            startAngle: -135, endAngle: 135,
+                            hollow: { margin: 15, size: '75%', background: 'transparent' },
+                            track: { background: '#F3F4F6', strokeWidth: '100%', margin: 0 },
                             dataLabels: {
-                                name: {
-                                    show: true,
-                                    color: '#6B7280',
-                                    fontSize: '14px',
-                                    offsetY: 20
-                                },
-                                value: {
-                                    formatter: function (val) {
-                                        return (name === "Rede") ? val + " MB/s" : val + "%";
-                                    },
-                                    color: '#111827',
-                                    fontSize: '28px',
-                                    fontWeight: 'bold',
-                                    offsetY: -10
+                                name: { show: true, color: '#6B7280', fontSize: '14px', offsetY: 20 },
+                                value: { 
+                                    formatter: function (val) { return (name === "Rede") ? val + " MB/s" : val + "%"; }, 
+                                    color: '#111827', fontSize: '28px', fontWeight: 'bold', offsetY: -10 
                                 }
                             }
                         }
@@ -304,87 +327,36 @@
                     labels: ['Utilizado'],
                     stroke: { lineCap: 'round' }
                 };
-
                 var chart = new ApexCharts(document.querySelector(`#${chartId}`), usoOptions);
                 chart.render();
             }, 20);
 
+            const colorClasses = { 
+                success: "bg-success text-white", 
+                warning: "bg-warning text-white", 
+                danger: "bg-danger text-white" 
+            };
+
+            // Retorna o HTML do Card Original com botão 'Exibir Relatório'
             return `
-    <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md">
-      <div class="${colorClasses[status.color]} text-center py-2 font-semibold text-lg">${name}</div>
-      <div class="bg-white p-4 flex flex-col items-center justify-center">
-        <p class="text-lg font-semibold text-textPrimary mb-1">${status.text}</p>
-        <p class="text-sm text-textSecondary mb-4">Última atualização ${lastUpdate}</p>
+            <div class="rounded-xl border border-gray-200 overflow-hidden shadow-md">
+              <div class="${colorClasses[status.color]} text-center py-2 font-semibold text-lg">${name}</div>
+              <div class="bg-white p-4 flex flex-col items-center justify-center">
+                <p class="text-lg font-semibold text-textPrimary mb-1">${status.text}</p>
+                <p class="text-sm text-textSecondary mb-4">Última atualização ${lastUpdate}</p>
 
-        <div id="${chartId}" class="w-full flex justify-center"></div>
+                <div id="${chartId}" class="w-full flex justify-center"></div>
 
-        <button onclick="showReport('${name}')" class="bg-${status.color} text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
-          Exibir Relatório
-        </button>
-      </div>
-    </div>`;
-        }
-
-        function renderKPIs() {
-            const container = document.getElementById("kpi-container");
-            container.innerHTML = "";
-            components.forEach((c) => {
-                const usage = (c === "Rede") ? generateNetworkMB() : generateUsage();
-                addHistory(c, usage);
-                container.innerHTML += createKPI(c, usage);
-            });
-        }
-
-        function showReport(name) {
-            const modal = document.getElementById("report-modal");
-            const title = document.getElementById("modal-title");
-            const tbody = document.getElementById("modal-table-body");
-            if (!modal || !title || !tbody) return;
-
-            title.textContent = `Relatório de ${name}`;
-            const ths = modal.querySelectorAll("th");
-            if (ths && ths.length >= 2) ths[1].textContent = (name === "Rede") ? "Uso (MB/s)" : "Uso (%)";
-
-            let rows = [];
-            const dataSrc = history[name] && history[name].length > 0 ? history[name].slice().reverse() : [];
-            if (dataSrc.length === 0) {
-                for (let i = 0; i < 10; i++) {
-                    const d = new Date(Date.now() - i * 60000);
-                    rows.push({ time: d.toLocaleString(), value: Math.floor(Math.random() * 100) });
-                }
-            } else { rows = dataSrc; }
-
-            tbody.innerHTML = rows.map(h => {
-                const val = Number(h.value);
-                const status = getStatus(val);
-                return `<tr><td class="px-4 py-2 border-b">${h.time}</td><td class="px-4 py-2 border-b">${h.value}%</td><td class="px-4 py-2 border-b font-semibold text-${status.color}">${status.text}</td></tr>`;
-            }).join("");
-            modal.classList.remove("hidden");
-        }
-
-        function closeModal() {
-            const modal = document.getElementById("report-modal");
-            if (modal) modal.classList.add("hidden");
-        }
-
-        function generateLabels(period) {
-            if (period === "dia") return Array.from({ length: 24 }, (_, i) => `${i}h`);
-            if (period === "semana") return ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-            return Array.from({ length: 30 }, (_, i) => `Dia ${i + 1}`);
-        }
-
-        function createChartElement(id) {
-            const compName = components[id];
-            return `
-            <div class="bg-white p-6 rounded-xl border border-border shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-textPrimary" id="chart-title-${id}">Gráfico Linha de ${compName}</h3>
-                    <button class="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300 text-gray-700" onclick="openChartConfig(${id})">Configurar Gráfico</button>
-                </div>
-                <div id="chart-${id}" class="h-64 w-full"></div>
+                <button onclick="showReport('${name}')" class="bg-${status.color} text-white px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition">
+                  Exibir Relatório
+                </button>
+              </div>
             </div>`;
         }
 
+        // =========================================================
+        // 3. GRÁFICOS DE LINHA (Configuração com Checkbox)
+        // =========================================================
         function renderCharts() {
             const container = document.getElementById("charts-container");
             container.innerHTML = "";
@@ -395,39 +367,114 @@
             });
         }
 
+        function createChartElement(id) {
+            const compName = components[id];
+            return `
+            <div class="bg-white p-6 rounded-xl border border-border shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-textPrimary" id="chart-title-${id}">Gráfico ${compName}</h3>
+                    <button class="bg-gray-200 px-3 py-1 rounded-lg text-sm hover:bg-gray-300 text-gray-700" onclick="openChartConfig(${id})">Configurar Gráfico</button>
+                </div>
+                <div id="chart-${id}" class="h-64 w-full"></div>
+            </div>`;
+        }
+
+        function initApexChart(elementId, comps, period) {
+            // Pega categorias do primeiro componente
+            const dataInfo = getDataForChart(components.indexOf(comps[0]), period);
+            
+            const series = comps.map(c => {
+                const d = getDataForChart(components.indexOf(c), period);
+                return { name: c, data: d.data, color: getColor(c) };
+            });
+
+            const options = {
+                chart: { type: 'area', height: 320, toolbar: { show: false }, zoom: { enabled: false } },
+                series: series,
+                xaxis: { categories: dataInfo.categories, labels: { style: { colors: "#6B7280" } } },
+                yaxis: { labels: { style: { colors: "#6B7280" }, formatter: v => comps.includes("Rede") ? v + " MB/s" : v + "%" } },
+                stroke: { curve: 'smooth', width: 2 },
+                fill: { opacity: 0.25, type: 'solid' },
+                dataLabels: { enabled: false },
+                legend: { show: true, position: "bottom" }
+            };
+            
+            const chart = new ApexCharts(document.querySelector(`#${elementId}`), options);
+            chart.render();
+            return chart;
+        }
+
+        function getDataForChart(componentIndex, period = "mês") {
+            if (!globalDataCharts) return { categories: [], data: [] };
+            const componentName = components[componentIndex];
+            const jsonKey = keysMap[componentName];      
+            const jsonPeriod = periodMap[period] || "month"; 
+
+            if (globalDataCharts[jsonKey] && globalDataCharts[jsonKey][jsonPeriod]) {
+                const rawArray = globalDataCharts[jsonKey][jsonPeriod];
+                const categories = rawArray.map(item => {
+                    const cleanTime = item.timestamp.split('[')[0];
+                    return new Date(cleanTime).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                });
+                const data = rawArray.map(item => parseFloat(item.value).toFixed(2));
+                return { categories, data };
+            }
+            return { categories: [], data: [] };
+        }
+
         function getColor(c) {
             return { CPU: "#191dec", RAM: "#69acff", Disco: "#b230fc", Rede: "#ef32aa" }[c] || "#6B7280";
         }
 
-        function randomData(points) {
-            return Array.from({ length: points }, () => Math.floor(Math.random() * 100));
-        }
+        // --- Configuração Modal dos Gráficos ---
 
-        function initApexChart(elementId, comps, period) {
-            const labels = generateLabels(period);
-            const series = comps.map(c => ({ name: c, data: randomData(labels.length), color: getColor(c) }));
-            const options = {
-                chart: { type: 'area', height: 320, toolbar: { show: false }, zoom: { enabled: false } },
-                series: series,
-                dataLabels: { enabled: false },
-                tooltip: { enabled: true, shared: true, intersect: false },
-                xaxis: { categories: labels, labels: { style: { colors: "#6B7280" } } },
-                yaxis: { max: comps.includes("Rede") ? 150 : 100, labels: { style: { colors: "#6B7280" }, formatter: v => comps.includes("Rede") ? v + " MB/s" : v + "%" } },
-                stroke: { curve: 'smooth', width: 2 },
-                fill: { opacity: 0.25, type: 'solid' },
-                legend: { show: true, position: "bottom" },
-                annotations: { yaxis: [{ y: 75, borderColor: '#EF4444', strokeDashArray: 6, label: { text: '75%', style: { color: '#EF4444', background: '#FFE4E6' } } }] }
-            };
-            const chart = new ApexCharts(document.querySelector(`#${elementId}`), options);
-            chart.render();
-            return chart;
+// --- Função MODAL Antiga (Para as 4 KPIs de Hardware) ---
+        function showReport(name) {
+            const modal = document.getElementById("report-modal");
+            const title = document.getElementById("modal-title");
+            const tbody = document.getElementById("modal-table-body");
+            const thead = document.getElementById("modal-table-header");
+            
+            if (!modal || !title || !tbody) return;
+
+            title.textContent = `Relatório de ${name}`;
+            
+            // Restaura o cabeçalho simples da tabela antiga
+            thead.innerHTML = `
+                <th class="text-left px-4 py-2">Data/Hora</th>
+                <th class="text-left px-4 py-2">Uso (${name === "Rede" ? "MB/s" : "%"})</th>
+                <th class="text-left px-4 py-2">Status</th>
+            `;
+
+            // Usa os dados do MOCK (variável history)
+            let rows = history[name] && history[name].length > 0 ? history[name].slice().reverse() : [];
+            
+            // Preenche mock se estiver vazio (fallback)
+            if (rows.length === 0) {
+                for (let i = 0; i < 10; i++) {
+                    const d = new Date(Date.now() - i * 60000);
+                    rows.push({ time: d.toLocaleString(), value: Math.floor(Math.random() * 100) });
+                }
+            }
+
+            tbody.innerHTML = rows.map(h => {
+                const val = Number(h.value);
+                const status = getStatus(val);
+                return `<tr>
+                    <td class="px-4 py-2 border-b">${h.time}</td>
+                    <td class="px-4 py-2 border-b">${h.value}%</td>
+                    <td class="px-4 py-2 border-b font-semibold text-${status.color}">${status.text}</td>
+                </tr>`;
+            }).join("");
+            
+            modal.classList.remove("hidden");
         }
 
         function openChartConfig(id) {
             const existing = document.getElementById(`chart-config-${id}`);
             if (existing) existing.remove();
 
-            const active = Array.isArray(activeComponents[id]) && activeComponents[id].length ? activeComponents[id] : [components[id]];
+            const active = activeComponents[id] || [components[id]];
             const checksHtml = components.map(c => {
                 const checked = active.includes(c) ? "checked" : "";
                 return `<label class="block mb-2 text-gray-700"><input type="checkbox" value="${c}" class="mr-2" ${checked}> ${c}</label>`;
@@ -449,23 +496,11 @@
                     </select>
                 </div>
                 <div class="flex justify-end space-x-2">
-                    <button id="apply-btn-${id}" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-700">Aplicar</button>
-                    <button id="close-btn-${id}" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700">Fechar</button>
+                    <button onclick="applyChartConfig(${id})" class="bg-success text-white px-4 py-2 rounded-lg hover:bg-green-700">Aplicar</button>
+                    <button onclick="document.getElementById('chart-config-${id}').remove()" class="bg-danger text-white px-4 py-2 rounded-lg hover:bg-red-700">Fechar</button>
                 </div>
             </div>`;
             document.body.appendChild(modal);
-
-            modal.addEventListener("click", (e) => {
-                const modalContent = e.target.closest(".bg-white");
-                if (!modalContent) closeChartConfig(id);
-            });
-            document.getElementById(`apply-btn-${id}`).addEventListener("click", () => applyChartConfig(id));
-            document.getElementById(`close-btn-${id}`).addEventListener("click", () => closeChartConfig(id));
-        }
-
-        function closeChartConfig(id) {
-            const modal = document.getElementById(`chart-config-${id}`);
-            if (modal) modal.remove();
         }
 
         function applyChartConfig(id) {
@@ -478,22 +513,109 @@
 
             activeComponents[id] = checked.length ? checked : [components[id]];
 
-            if (charts[id] && typeof charts[id].destroy === "function") {
-                try { charts[id].destroy(); } catch (e) { }
-            }
-
+            if (charts[id]) charts[id].destroy();
             charts[id] = initApexChart(`chart-${id}`, activeComponents[id], period);
+            
             const titleElement = document.getElementById(`chart-title-${id}`);
-            if (titleElement) titleElement.textContent = `Gráfico Linha de ${activeComponents[id].join(" + ")}`;
+            if (titleElement) titleElement.textContent = `Gráfico ${activeComponents[id].join(" + ")}`;
 
-            closeChartConfig(id);
+            modal.remove();
         }
 
-        renderKPIs();
-        renderCharts();
+        // =========================================================
+        // 4. LÓGICA MODAL UNIFICADA (Hardware + Feriados + Comparação)
+        // =========================================================
+        function openModalHardware(componentName) {
+            if (!globalDataCharts) return;
+            const key = keysMap[componentName];
+            const dataArr = globalDataCharts[key]?.day || []; // Pega histórico diário
+            
+            openModalGeneric(`Relatório de ${componentName}`, [
+                { title: "Horário", key: "timestamp", format: t => new Date(t.split('[')[0]).toLocaleTimeString('pt-BR') },
+                { title: "Valor", key: "value", format: v => parseFloat(v).toFixed(2) + (componentName === 'Rede' ? ' MB/s' : '%') }
+            ], dataArr);
+        }
+
+        function openModalRelatorio(tipo) {
+            if (!globalDataKPIs) return;
+            
+            if (tipo === 'feriados') {
+                openModalGeneric("Relatório de Feriados", [
+                    { title: "Data", key: "data", format: d => d.split('-').reverse().join('/') },
+                    { title: "Status", key: "feriado", format: f => f !== "❌" ? "Feriado" : "Dia Útil" }
+                ], globalDataKPIs.feriados);
+            } 
+            else if (tipo === 'comparacao') {
+                openModalGeneric("Histórico de Carga", [
+                    { title: "Data/Hora", key: "dataHora", format: d => new Date(d).toLocaleString('pt-BR') },
+                    { title: "Atual", key: "valorAtual" },
+                    { title: "Esperado", key: "valorEsperado" },
+                    { title: "Dif (%)", key: "comparacaoPercentual", format: p => p + '%' }
+                ], globalDataKPIs.comparacao);
+            }
+        }
+
+        function openModalGeneric(titulo, colunas, dados) {
+            const modal = document.getElementById("report-modal");
+            const thead = document.getElementById("modal-table-header");
+            const tbody = document.getElementById("modal-table-body");
+            
+            document.getElementById("modal-title").innerText = titulo;
+            thead.innerHTML = colunas.map(c => `<th class="text-left px-4 py-2">${c.title}</th>`).join("");
+            
+            tbody.innerHTML = "";
+            dados.slice().reverse().forEach(item => { // Mostra mais recente primeiro
+                const tds = colunas.map(c => {
+                    let val = item[c.key];
+                    if (c.format) val = c.format(val);
+                    return `<td class="px-4 py-2 border-b">${val}</td>`;
+                }).join("");
+                tbody.innerHTML += `<tr>${tds}</tr>`;
+            });
+            
+            modal.classList.remove("hidden");
+        }
+
+        function closeModal() {
+            document.getElementById("report-modal").classList.add("hidden");
+        }
+
+        // =========================================================
+        // 5. ATUALIZAÇÃO CARDS LATERAIS (Lógica Mantida)
+        // =========================================================
+        function updateKpiCards(data) {
+            // Feriado
+            const todayDate = new Date().toISOString().split('T')[0];
+            const hojeObj = data.feriados?.find(f => f.data === todayDate);
+            const isFeriado = hojeObj && hojeObj.feriado !== "❌";
+            document.getElementById("kpi-feriado-titulo").innerText = isFeriado ? "Feriado" : "Dia Normal";
+            document.getElementById("kpi-feriado-desc").innerText = `Hoje (${todayDate.split('-').reverse().join('/')})`;
+            
+            // Ônibus
+            const currentHour = new Date().getHours().toString().padStart(2, '0');
+            const media = data.mediaPorHora?.[currentHour] || 0;
+            document.getElementById("kpi-onibus-media").innerText = `Média para as ${currentHour}h: ${media} veículos`;
+
+            // Comparação
+            if (data.comparacao?.length > 0) {
+                const item = data.comparacao[0];
+                const pct = item.comparacaoPercentual;
+                const elValor = document.getElementById("kpi-comparacao-valor");
+                const elStatus = document.getElementById("kpi-comparacao-status");
+                const elHeader = document.getElementById("card-comparacao-header");
+
+                elValor.innerHTML = `${pct > 0 ? '+' : ''}${pct}% <span class="material-symbols-outlined text-4xl">${pct > 0 ? 'arrow_upward' : 'arrow_downward'}</span>`;
+                elStatus.innerText = Math.abs(pct) > 20 ? "Crítico" : "Estável";
+                
+                const cssClass = Math.abs(pct) > 20 ? "danger" : "success";
+                elValor.className = `text-4xl font-extrabold text-${cssClass} flex items-center gap-1`;
+                elHeader.className = `bg-${cssClass} text-white text-center py-2 font-semibold text-lg`;
+            }
+        }
 
         if (typeof lucide !== 'undefined') lucide.createIcons();
     </script>
 </body>
-
 </html>
+
+renderKPIsHardware
