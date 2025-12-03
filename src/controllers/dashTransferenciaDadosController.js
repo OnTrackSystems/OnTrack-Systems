@@ -37,7 +37,7 @@ async function getJsonDashDados(req, res) {
 
     try {
         const input = {
-            Bucket: "s3-client-ontracksystems",
+            Bucket: "client-ontrack",
             Key: `idGaragem=${idGaragem}/${nomeArquivo}`
         };
 

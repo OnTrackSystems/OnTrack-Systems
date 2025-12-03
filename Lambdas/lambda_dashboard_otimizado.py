@@ -250,30 +250,36 @@ def calculate_kpis_with_variation(df_filtered: pd.DataFrame, timeseries_current:
     summary['total_eventos_periodo'] = 0 	# Placeholder
     
     # --- CÁLCULO DE VOLUME TOTAL (SOMA DOS PONTOS) ---
-    # Conforme solicitado: "soma dos pontos do gráfico Histórico de Throughput"
-    # Rede_Env agora representa o Volume (GB) em cada intervalo
+    # Rede_Env está em MB (gráfico mostra MB)
+    # KPI deve mostrar em GB (soma dos MB / 1024)
     
-    # 1. Volume do Período Atual
+    # 1. Volume do Período Atual (soma em MB, depois converte para GB)
     if timeseries_current:
         volume_atual_mb = sum(float(p.get('Rede_Env', 0)) for p in timeseries_current)
-        # Ajuste de escala: Divide por 1024 (MB->GB) e por 1024 novamente conforme solicitado
-        volume_atual_gb = (volume_atual_mb / 1024) / 1024
+        volume_atual_gb = volume_atual_mb / 1024  # Converte MB -> GB
     else:
+        volume_atual_mb = 0
         volume_atual_gb = 0
 
-    # 2. Volume do Período Anterior
+    # 2. Volume do Período Anterior (soma em MB, depois converte para GB)
     if timeseries_previous:
         volume_anterior_mb = sum(float(p.get('Rede_Env', 0)) for p in timeseries_previous)
-        volume_anterior_gb = (volume_anterior_mb / 1024) / 1024
+        volume_anterior_gb = volume_anterior_mb / 1024  # Converte MB -> GB
     else:
+        volume_anterior_mb = 0
         volume_anterior_gb = 0
     
+    # KPIs em GB para exibição
     summary['gb_total_enviado_periodo'] = round(volume_atual_gb, 2)
     summary['gb_total_enviado_periodo_anterior'] = round(volume_anterior_gb, 2)
     
+    # Também envia os valores em MB para referência/debug
+    summary['mb_total_enviado_periodo'] = round(volume_atual_mb, 2)
+    summary['mb_total_enviado_periodo_anterior'] = round(volume_anterior_mb, 2)
+    
     # Log para debug
-    print(f"Volume Total (Soma dos Pontos) - Atual: {volume_atual:.2f}GB")
-    print(f"Volume Total (Soma dos Pontos) - Anterior: {volume_anterior:.2f}GB")
+    print(f"Volume Total (MB) - Atual: {volume_atual_mb:.2f}MB, Anterior: {volume_anterior_mb:.2f}MB")
+    print(f"Volume Total (GB) - Atual: {volume_atual_gb:.2f}GB, Anterior: {volume_anterior_gb:.2f}GB")
     
     return summary
 

@@ -29,10 +29,11 @@ async function atualizarPeriodo(periodo) {
         const alertas = dados.alertas || [];
 
         console.log(`=== Dashboard Pedro - Período: ${periodo} ===`);
-        console.log(`KPIs: ${kpis.gb_total_enviado_periodo}GB atual, ${kpis.gb_total_enviado_periodo_anterior}GB anterior`);
+        console.log(`KPIs do backend:`, kpis);
         console.log(`Dados: ${timeseries.length} pontos, ${alertas.length} alertas`);
 
-        renderizarKPIsDoBackend(kpis);
+        // Calcula KPIs a partir dos pontos do gráfico (soma de Rede_Env em MB -> converte para GB)
+        renderizarKPIsDoBackend(kpis, timeseries);
         renderizarGraficos(timeseries, periodo);
         renderizarAlertas(alertas);
 
@@ -106,23 +107,37 @@ function renderizarAlertas(alertas) {
     }
 }
 
-function renderizarKPIsDoBackend(kpis) {
+function renderizarKPIsDoBackend(kpis, timeseries) {
     // Debug: verificar estrutura dos KPIs recebidos
     console.log('KPIs recebidos:', kpis);
-    console.log('Campos disponíveis:', Object.keys(kpis));
+    console.log('Timeseries recebida:', timeseries?.length, 'pontos');
     
-    // 1. Volume Total - Suporta ambos formatos (GB e MB) para retrocompatibilidade
-    let totalAtualGB = kpis.gb_total_enviado_periodo || 0;
+    // CÁLCULO PRINCIPAL: Soma dos pontos do gráfico (Rede_Env em MB) e converte para GB
+    // Isso garante que a KPI seja exatamente a soma do que é mostrado no gráfico
+    let totalAtualMB = 0;
+    if (timeseries && timeseries.length > 0) {
+        totalAtualMB = timeseries.reduce((acc, ponto) => acc + (Number(ponto.Rede_Env) || 0), 0);
+    }
+    const totalAtualGB = totalAtualMB / 1024;
+    
+    // Volume anterior vem do backend (já calculado pelo Lambda)
+    // IMPORTANTE: Se o backend ainda envia valores altos, significa que está em MB e precisa converter
     let totalAnteriorGB = kpis.gb_total_enviado_periodo_anterior || 0;
     
-    // Fallback: se ainda estiver em MB (formato antigo), converte para GB
-    if (totalAtualGB === 0 && kpis.mb_total_enviado_periodo) {
-        totalAtualGB = kpis.mb_total_enviado_periodo / 1024;
-        totalAnteriorGB = (kpis.mb_total_enviado_periodo_anterior || 0) / 1024;
-        console.log('⚠️ Usando formato antigo (MB), convertendo para GB');
+    // Verifica se o valor parece estar em MB (muito alto para ser GB)
+    // Se totalAnteriorGB > 1000, provavelmente está em MB e precisa dividir por 1024
+    if (totalAnteriorGB > 1000) {
+        console.log('⚠️ Valor anterior muito alto, convertendo de MB para GB');
+        totalAnteriorGB = totalAnteriorGB / 1024;
+    }
+    
+    // Fallback: Se o backend ainda envia em MB (formato antigo), converte
+    if (totalAnteriorGB === 0 && kpis.mb_total_enviado_periodo_anterior) {
+        totalAnteriorGB = kpis.mb_total_enviado_periodo_anterior / 1024;
     }
 
-    console.log(`📊 Volume Total: ${totalAtualGB.toFixed(2)}GB, Anterior: ${totalAnteriorGB.toFixed(2)}GB`);
+    console.log(`📊 Volume Atual (soma gráfico): ${totalAtualMB.toFixed(2)} MB = ${totalAtualGB.toFixed(2)} GB`);
+    console.log(`📊 Volume Anterior (backend): ${totalAnteriorGB.toFixed(2)} GB`);
 
     // KPI Principal
     const elTotal = document.getElementById('kpiTotalTransferido');
