@@ -6,9 +6,8 @@ from datetime import datetime, timedelta
 from io import StringIO
 import time
 
-# --- CONFIGURAÇÕES GLOBAIS ---
-BUCKET_NAME = 'trusted-ontrack' 
-USUARIO_SIMULADO = 'servidor_itaimPaulista'
+BUCKET_NAME = 's3-trusted-lab-04251122' 
+USUARIO_SIMULADO = 'admin'
 DIAS_PARA_SIMULAR = 60
 INTERVALO_COLETA_SEGUNDOS = 5 
 
