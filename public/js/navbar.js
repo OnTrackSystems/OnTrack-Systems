@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         </li>
                         <li>
                             <a class="nav-link" href="dashboardPreditivaBia.html" style="padding-left: 3.5rem; font-size: 0.9em;">
-                                <span class="nav-link-text">Preditiva</span>
+                                <span class="nav-link-text">Tendências</span>
                             </a>
                         </li>
                          <li>
