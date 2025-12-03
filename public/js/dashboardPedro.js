@@ -7,31 +7,45 @@ const API_BASE_URL = "http://localhost:3333";
 const idGaragem = sessionStorage.ID_GARAGEM || "18897";
 
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM carregado, iniciando dashboard...");
     atualizarPeriodo('24h');
 });
 
 async function atualizarPeriodo(periodo) {
     atualizarBotoesAtivos(periodo);
 
+    // Mostra loading nos alertas
+    const containerAlertas = document.getElementById('alertas-container');
+    if (containerAlertas) {
+        containerAlertas.innerHTML = `
+            <div class="flex items-center justify-center p-4">
+                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span class="ml-2 text-slate-500">Carregando alertas...</span>
+            </div>
+        `;
+    }
+
     try {
-        const response = await fetch(`${API_BASE_URL}/dashTransferenciaDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`);
+        const url = `${API_BASE_URL}/dashTransferenciaDados/getJsonDashDados/${idGaragem}?periodo=${periodo}`;
+        console.log("Buscando dados:", url);
+        
+        const response = await fetch(url);
         
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
         const dados = await response.json();
+        console.log("Dados recebidos:", dados);
+        
         const todosDados = dados.timeseries || [];
+        const alertas = dados.alertas || [];
+
+        console.log(`Alertas no JSON: ${alertas.length}`, alertas);
 
         // --- LÓGICA DE CORTE (SPLIT) ---
-        // O backend envia o dobro do período (48h, 14d, 60d).
-        // Dividimos o array ao meio.
-        
         const totalRegistros = todosDados.length;
         const tamanhoJanela = Math.floor(totalRegistros / 2);
 
-        // Dados Atuais: Os últimos 'tamanhoJanela' registros
         const dadosAtuais = todosDados.slice(-tamanhoJanela);
-
-        // Dados Anteriores: Os registros imediatamente antes dos atuais
         const dadosAnteriores = todosDados.slice(-tamanhoJanela * 2, -tamanhoJanela);
 
         console.log(`=== Período: ${periodo} ===`);
@@ -44,8 +58,153 @@ async function atualizarPeriodo(periodo) {
         // Renderiza Gráficos (em MB)
         renderizarGraficos(dadosAtuais, periodo);
 
+        // Renderiza Alertas - SEMPRE chamar, mesmo se vazio
+        renderizarAlertas(alertas);
+
     } catch (error) {
         console.error("Erro ao carregar dashboard:", error);
+        
+        // Mostra erro nos alertas
+        if (containerAlertas) {
+            containerAlertas.innerHTML = `
+                <div class="flex items-center gap-3 p-4 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-full bg-red-100 text-red-600">
+                        <span class="material-symbols-outlined">error</span>
+                    </div>
+                    <div>
+                        <p class="font-medium text-red-800 dark:text-red-200">Erro ao carregar</p>
+                        <p class="text-sm text-red-600 dark:text-red-400">${error.message}</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+}
+
+function renderizarAlertas(alertas) {
+    console.log("Iniciando renderização de alertas...", alertas);
+    
+    const container = document.getElementById('alertas-container');
+    
+    if (!container) {
+        console.error("ERRO CRÍTICO: Elemento <div id='alertas-container'> não encontrado no DOM.");
+        return;
+    }
+
+    // Limpa o conteúdo atual (remove o spinner de loading)
+    container.innerHTML = '';
+
+    // Verifica se a lista é nula ou vazia
+    if (!alertas || alertas.length === 0) {
+        container.innerHTML = `
+            <div class="flex items-center gap-3 p-4 rounded-lg border border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
+                <div class="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                    <span class="material-symbols-outlined">check_circle</span>
+                </div>
+                <div>
+                    <p class="font-medium text-green-800 dark:text-green-200">Sistema Estável</p>
+                    <p class="text-sm text-green-600 dark:text-green-400">Nenhum alerta crítico no período.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Pega os últimos 10 alertas e inverte para mostrar o mais recente no topo
+    const alertasExibir = alertas.slice(-10).reverse();
+
+    alertasExibir.forEach(alerta => {
+        // Define cores baseadas no tipo
+        let cores = {
+            container: 'border-slate-200 bg-slate-50',
+            icone: 'bg-slate-200 text-slate-600',
+            titulo: 'text-slate-900',
+            texto: 'text-slate-600'
+        };
+
+        if (alerta.tipo === 'danger') {
+            cores.container = 'border-red-200 bg-red-50';
+            cores.icone = 'bg-red-100 text-red-600';
+            cores.titulo = 'text-red-900';
+            cores.texto = 'text-red-700';
+        } else if (alerta.tipo === 'warning') {
+            cores.container = 'border-yellow-200 bg-yellow-50';
+            cores.icone = 'bg-yellow-100 text-yellow-600';
+            cores.titulo = 'text-yellow-900';
+            cores.texto = 'text-yellow-700';
+        } else if (alerta.tipo === 'success') {
+            cores.container = 'border-green-200 bg-green-50';
+            cores.icone = 'bg-green-100 text-green-600';
+            cores.titulo = 'text-green-900';
+            cores.texto = 'text-green-700';
+        }
+
+        // Se o JSON já trouxer classes, usa elas (prioridade)
+        if (alerta.classes) {
+            if (alerta.classes.container) cores.container = alerta.classes.container;
+            if (alerta.classes.iconeBg) cores.icone = alerta.classes.iconeBg;
+        }
+
+        const html = `
+            <div class="flex items-start gap-3 p-3 rounded-lg border ${cores.container} mb-3 transition-all hover:shadow-sm">
+                <div class="flex items-center justify-center w-8 h-8 rounded-full ${cores.icone} flex-shrink-0 mt-1">
+                    <span class="material-symbols-outlined text-lg">${alerta.icone || 'info'}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-sm ${cores.titulo}">${alerta.titulo || 'Aviso'}</p>
+                    <p class="text-sm ${cores.texto} leading-tight">${alerta.mensagem || ''}</p>
+                    <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[10px]">schedule</span>
+                        ${formatarTimestamp(alerta.timestamp)}
+                    </p>
+                </div>
+            </div>
+        `;
+
+        container.insertAdjacentHTML('beforeend', html);
+    });
+
+    // Atualiza o contador (bolinha vermelha)
+    const contador = document.getElementById('contador-alertas');
+    if (contador) {
+        const qtdProblemas = alertas.filter(a => a.tipo === 'danger' || a.tipo === 'warning').length;
+        contador.innerText = qtdProblemas;
+        if (qtdProblemas > 0) {
+            contador.classList.remove('hidden');
+            contador.classList.add('flex');
+        } else {
+            contador.classList.add('hidden');
+            contador.classList.remove('flex');
+        }
+    }
+    
+    console.log("Alertas renderizados com sucesso!");
+}
+
+function formatarTimestamp(timestamp) {
+    if (!timestamp) return '';
+    try {
+        // Tenta diferentes formatos
+        let dt;
+        if (timestamp.includes('T')) {
+            dt = new Date(timestamp);
+        } else {
+            dt = new Date(timestamp.replace(' ', 'T'));
+        }
+        
+        if (isNaN(dt.getTime())) {
+            return timestamp;
+        }
+        
+        return dt.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (e) {
+        console.warn("Erro ao formatar timestamp:", e);
+        return timestamp;
     }
 }
 
@@ -120,24 +279,20 @@ function renderizarGraficos(lista, periodo) {
         const dataPonto = new Date();
         
         if (periodo === '24h') {
-            // Distribui 24 horas entre os pontos
             const horasParaVoltar = (24 / totalPontos) * iInvertido;
             dataPonto.setMinutes(hoje.getMinutes() - (horasParaVoltar * 60));
             return dataPonto.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         } else if (periodo === '7d') {
-            // Distribui 7 dias entre os pontos
             const diasParaVoltar = (7 / totalPontos) * iInvertido;
             dataPonto.setHours(hoje.getHours() - (diasParaVoltar * 24));
             return dataPonto.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         } else {
-            // Distribui 30 dias entre os pontos
             const diasParaVoltar = (30 / totalPontos) * iInvertido;
             dataPonto.setHours(hoje.getHours() - (diasParaVoltar * 24));
             return dataPonto.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
         }
     });
 
-    // Dados do gráfico em MB (Rede_Env já vem em MB)
     const dataThroughputMB = lista.map(item => Number(item.Rede_Env || 0));
     const dataCPU = lista.map(item => Number(item.CPU || 0)); 
 
@@ -204,12 +359,10 @@ function renderizarGraficos(lista, periodo) {
     }
 
     // --- GRÁFICO 3: Distribuição de Volume (em MB) ---
-    // Categorias ajustadas por período com base nos valores reais
     let categorias = [];
     let contagens = [0, 0, 0, 0];
 
     if (periodo === '24h') {
-        // 24h: menor ~20MB, maior ~44MB
         categorias = ['Baixo (<25 MB)', 'Médio (25-32 MB)', 'Alto (32-38 MB)', 'Pico (>38 MB)'];
         dataThroughputMB.forEach(valor => {
             if (valor < 25) contagens[0]++;
@@ -218,7 +371,6 @@ function renderizarGraficos(lista, periodo) {
             else contagens[3]++;
         });
     } else if (periodo === '7d') {
-        // 7d: menor ~72MB, maior ~192MB
         categorias = ['Baixo (<100 MB)', 'Médio (100-140 MB)', 'Alto (140-170 MB)', 'Pico (>170 MB)'];
         dataThroughputMB.forEach(valor => {
             if (valor < 100) contagens[0]++;
@@ -227,7 +379,6 @@ function renderizarGraficos(lista, periodo) {
             else contagens[3]++;
         });
     } else {
-        // 30d: menor ~550MB, maior ~840MB
         categorias = ['Baixo (<600 MB)', 'Médio (600-700 MB)', 'Alto (700-780 MB)', 'Pico (>780 MB)'];
         dataThroughputMB.forEach(valor => {
             if (valor < 600) contagens[0]++;
