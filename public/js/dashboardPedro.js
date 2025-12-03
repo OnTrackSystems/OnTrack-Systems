@@ -29,7 +29,7 @@ async function atualizarPeriodo(periodo) {
         const alertas = dados.alertas || [];
 
         console.log(`=== Dashboard Pedro - Período: ${periodo} ===`);
-        console.log(`KPIs: ${kpis.mb_total_enviado_periodo}MB atual, ${kpis.mb_total_enviado_periodo_anterior}MB anterior`);
+        console.log(`KPIs: ${kpis.gb_total_enviado_periodo}GB atual, ${kpis.gb_total_enviado_periodo_anterior}GB anterior`);
         console.log(`Dados: ${timeseries.length} pontos, ${alertas.length} alertas`);
 
         renderizarKPIsDoBackend(kpis);
@@ -107,16 +107,29 @@ function renderizarAlertas(alertas) {
 }
 
 function renderizarKPIsDoBackend(kpis) {
-    // 1. Volume Total (Vem direto do JSON, calculado corretamente no backend)
-    const totalAtualMB = kpis.mb_total_enviado_periodo || 0;
-    const totalAnteriorMB = kpis.mb_total_enviado_periodo_anterior || 0;
+    // Debug: verificar estrutura dos KPIs recebidos
+    console.log('KPIs recebidos:', kpis);
+    console.log('Campos disponíveis:', Object.keys(kpis));
     
-    const totalAtualGB = totalAtualMB / 1024;
-    const totalAnteriorGB = totalAnteriorMB / 1024;
+    // 1. Volume Total - Suporta ambos formatos (GB e MB) para retrocompatibilidade
+    let totalAtualGB = kpis.gb_total_enviado_periodo || 0;
+    let totalAnteriorGB = kpis.gb_total_enviado_periodo_anterior || 0;
+    
+    // Fallback: se ainda estiver em MB (formato antigo), converte para GB
+    if (totalAtualGB === 0 && kpis.mb_total_enviado_periodo) {
+        totalAtualGB = kpis.mb_total_enviado_periodo / 1024;
+        totalAnteriorGB = (kpis.mb_total_enviado_periodo_anterior || 0) / 1024;
+        console.log('⚠️ Usando formato antigo (MB), convertendo para GB');
+    }
+
+    console.log(`📊 Volume Total: ${totalAtualGB.toFixed(2)}GB, Anterior: ${totalAnteriorGB.toFixed(2)}GB`);
 
     // KPI Principal
     const elTotal = document.getElementById('kpiTotalTransferido');
-    if(elTotal) elTotal.innerText = totalAtualGB.toFixed(2) + " GB";
+    if(elTotal) {
+        const valorExibir = totalAtualGB > 0 ? totalAtualGB.toFixed(2) + " GB" : "--";
+        elTotal.innerText = valorExibir;
+    }
 
     // Cálculo da Variação
     const diferencaGB = totalAtualGB - totalAnteriorGB;
@@ -137,18 +150,33 @@ function renderizarKPIsDoBackend(kpis) {
 
     // KPI 1 Subtexto
     const elSub1 = document.getElementById('kpiVariacaoTransferido');
-    if(elSub1) elSub1.innerHTML = `<span class="${cor} font-bold">${icone} ${textoDiferencaGB}</span> vs período anterior`;
+    if(elSub1) {
+        if (totalAtualGB > 0) {
+            elSub1.innerHTML = `<span class="${cor} font-bold">${icone} ${textoDiferencaGB}</span> vs período anterior`;
+        } else {
+            elSub1.innerHTML = '<span class="text-gray-500">Aguardando dados...</span>';
+        }
+    }
 
     // KPI 2
     const kpi2Valor = document.getElementById('kpiValorVariacao');
     const kpi2Sub = document.getElementById('kpiPercentualVariacao');
     
     if(kpi2Valor) {
-        kpi2Valor.innerText = textoDiferencaGB;
-        kpi2Valor.className = `text-3xl font-bold mt-1 ${cor}`;
+        if (totalAtualGB > 0) {
+            kpi2Valor.innerText = textoDiferencaGB;
+            kpi2Valor.className = `text-3xl font-bold mt-1 ${cor}`;
+        } else {
+            kpi2Valor.innerText = "--";
+            kpi2Valor.className = 'text-3xl font-bold mt-1 text-gray-400';
+        }
     }
     if(kpi2Sub) {
-        kpi2Sub.innerHTML = `<span class="${cor}">${icone} ${textoPercentual}</span> de variação`;
+        if (totalAtualGB > 0) {
+            kpi2Sub.innerHTML = `<span class="${cor}">${icone} ${textoPercentual}</span> de variação`;
+        } else {
+            kpi2Sub.innerHTML = '<span class="text-gray-500">Aguardando dados...</span>';
+        }
     }
 
     // Última Atualização (Pode vir do backend ou ser o momento atual)

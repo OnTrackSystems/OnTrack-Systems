@@ -22,13 +22,13 @@ async function getJsonDashDados(req, res) {
     let nomeArquivo;
     switch (periodo) {
         case '24h':
-            nomeArquivo = 'summary_48h.json'; // Já processado com variação
+            nomeArquivo = 'summary_48h.json';
             break;
         case '7d':
-            nomeArquivo = 'summary_14d.json'; // Já processado com variação
+            nomeArquivo = 'summary_14d.json'; 
             break;
         case '30d':
-            nomeArquivo = 'summary_60d.json'; // Já processado com variação
+            nomeArquivo = 'summary_60d.json'; 
             break;
         default:
             nomeArquivo = 'summary_48h.json';
@@ -51,7 +51,9 @@ async function getJsonDashDados(req, res) {
 
         // O Lambda já calculou tudo: KPIs, variação, alertas e otimizou os dados
         // Apenas retorna os dados prontos para o frontend
-        console.log(`Sucesso: Dados otimizados carregados para ${periodo} - KPIs: ${data.kpis_resumo?.mb_total_enviado_periodo}MB, Alertas: ${data.alertas?.length || 0}`);
+        const volumeKPI = data.kpis_resumo?.gb_total_enviado_periodo || data.kpis_resumo?.mb_total_enviado_periodo || 0;
+        const unidade = data.kpis_resumo?.gb_total_enviado_periodo ? 'GB' : 'MB';
+        console.log(`Sucesso: Dados para ${periodo} - Volume: ${volumeKPI}${unidade}, Alertas: ${data.alertas?.length || 0}`);
         
         return res.status(200).json(data);
 
